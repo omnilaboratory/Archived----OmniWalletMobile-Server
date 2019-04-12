@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Implementation-Title: wallet_admin
+Implementation-Version: 0.0.1-SNAPSHOT
+Built-By: ZhuGuojun
+Implementation-Vendor-Id: com.lx.wallet_server
+Build-Jdk: 1.8.0_121
+Implementation-URL: https://projects.spring.io/spring-boot/#/spring-bo
+ ot-starter-parent/wallet_server/wallet_admin
+Created-By: Maven Integration for Eclipse
+
