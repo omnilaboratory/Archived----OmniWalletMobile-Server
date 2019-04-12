@@ -18,6 +18,7 @@ public class TestController extends AbstractController{
 	@GetMapping("test")
 	@ApiOperation("test")
 	public ResultTO test(String name) {
+		this.logger.info("test");
 		Assert.notNull(name, "名称不能为空");
 		return ResultTO.newSuccessResult(getUser());
 	}

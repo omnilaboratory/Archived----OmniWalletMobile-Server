@@ -17,10 +17,7 @@
 	<logger name="com.lx.server.dao" level="ALL">
 		<appender-ref ref="rollingAppender" />
 	</logger>
-	<logger name="com.lx.server.controller" level="ALL">
-		<appender-ref ref="rollingAppender" />
-	</logger>
-	<logger name="com.lx.server.config.jwt" level="ERROR">
+	<logger name="com.lx.server.walletapi.controller" level="ALL">
 		<appender-ref ref="rollingAppender" />
 	</logger>
 
