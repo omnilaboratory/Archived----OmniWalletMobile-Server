@@ -6,7 +6,7 @@
 		<file>./logs/application.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<fileNamePattern>./logs/application-%d{yyyy-MM-dd}.log</fileNamePattern>
-			<maxHistory>30</maxHistory>
+			<maxHistory>60</maxHistory>
 		</rollingPolicy>
 		<encoder><!-- 必须指定，否则不会往文件输出内容 -->
 			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{5} - %msg%n</pattern>
