@@ -21,10 +21,13 @@ import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+
+//  http://localhost:8080/swagger-ui.html#/
+
 @Configuration
 @EnableSwagger2
 @ComponentScan("com.lx.server.walletapi.controller")
-public class ApiDocumentationConfiguration {
+public class SwaggerConfig {
 
 	// swagger2的配置文件，这里可以配置swagger2的一些基本的内容，比如扫描的包等等
 	@Bean
