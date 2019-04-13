@@ -12,7 +12,6 @@ import com.lx.server.service.UserAdminService;
 @RequestMapping("admin")
 public class TestController {
 	
-	
 	@Autowired
 	private UserAdminService userAdminService;
 	
