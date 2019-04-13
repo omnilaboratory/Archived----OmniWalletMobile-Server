@@ -23,6 +23,7 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
 		registry
 		.addInterceptor(globalJwtInterceptor)
 		.addPathPatterns("/api/**")
+		.excludePathPatterns("/api/common/*")
 		;
 		super.addInterceptors(registry);
 	}

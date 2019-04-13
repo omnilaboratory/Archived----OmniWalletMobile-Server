@@ -1,0 +1,147 @@
+package com.lx.server.walletapi.controller;
+
+import java.math.BigDecimal;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
+import com.lx.server.bean.ResultTO;
+import com.lx.server.service.WalletServcie;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
+
+@RestController
+@RequestMapping("api/block")
+@Api(tags = { "区块链接口" })
+public class BlockChainController extends AbstractController{
+	
+	@Autowired
+    private WalletServcie walletServcie;
+    
+    //	@GetMapping("go")
+	public String client() {
+		String url = "http://39.105.139.121:8888/createAccount";
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+		params.add("acc_name", "a");
+		RestTemplate client = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		// 请勿轻易改变此提交方式，大部分的情况下，提交方式都是表单提交
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<MultiValueMap<String, String>>(params,headers);
+		// 执行HTTP请求
+		ResponseEntity<String> response = client.exchange(url, HttpMethod.POST, requestEntity, String.class);
+		return response.getBody();
+	}
+    
+    @GetMapping("createAddr")
+    @ApiOperation("创建新的地址")
+    public ResultTO createAddr(String account)throws Throwable{
+    	return ResultTO.newSuccessResult(walletServcie.createNewAddress(account));
+    }
+    @GetMapping("createFixedProperty")
+    public ResultTO createFixedProperty(String fromaddress,Integer ecosystem,Integer divideType,String name,BigDecimal amount) throws Exception{
+    	return ResultTO.newSuccessResult(walletServcie.createFixedProperty(fromaddress,ecosystem,divideType,name,"",null, amount));
+    }
+    
+    @GetMapping("createManageProperty")
+    public ResultTO createManageProperty(String fromAddress,Integer ecosystem,Integer divideType,String name,String url) throws Exception{
+    	return ResultTO.newSuccessResult(walletServcie.createManageProperty(fromAddress, ecosystem, divideType, name, url));
+    }
+    
+    @GetMapping("getBTCAccount")
+    @ApiOperation("获取btc的Account")
+    public ResultTO getBTCAccount(String address) throws Exception{
+    	return ResultTO.newSuccessResult("",walletServcie.getBTCAccount(address));
+    }
+    @GetMapping("getBtcBalance")
+    @ApiOperation("获取btc的余额")
+    public ResultTO getBtcBalance(String address) throws Exception{
+    	return ResultTO.newSuccessResult(walletServcie.getBtcBalance(address));
+    }
+    @ApiOperation("omni某个地址的所有资产信息")
+    @GetMapping("getOmniAllBalance")
+    public ResultTO getOmniAllBalance(String address) throws Exception{
+    	return ResultTO.newSuccessResult(walletServcie.getOmniAllBalance(address));
+    }
+    
+    @ApiOperation("某个地址的所有资产信息")
+    @GetMapping("getAllBalanceByAddress")
+    public ResultTO getAllBalanceByAddress(String address) throws Exception{
+    	return ResultTO.newSuccessResult(walletServcie.getAllBalanceByAddress(address));
+    }
+    
+    @ApiOperation("omni某个地址的某个资产的信息")
+    @GetMapping("getOmniBalanceOfPropertyId")
+    public ResultTO getOmniBalanceOfPropertyId(String address,Long propertyId) throws Exception{
+    	return ResultTO.newSuccessResult(walletServcie.getOmniBalanceOfPropertyId(address, propertyId));
+    }
+    @ApiOperation("omni获取资产列表")
+    @GetMapping("getOmniListproperties")
+    public ResultTO getOmniListproperties() throws Exception{
+    	return ResultTO.newSuccessResult(walletServcie.getOmniListProperties());
+    }
+    @ApiOperation("omni根据资产id获取资产")
+    @GetMapping("getOmniProperty")
+    public ResultTO getOmniProperty(Long propertyId) throws Exception{
+    	return ResultTO.newSuccessResult(walletServcie.getOmniProperty(propertyId));
+    }
+    
+    @ApiOperation("omni冻结")
+    @GetMapping("omniSendFreeze")
+    public ResultTO omniSendFreeze(String fromAddress,String toAddress,String name,Long propertyId,BigDecimal amount) throws Exception{
+    	return ResultTO.newSuccessResult(walletServcie.omniSendFreeze(fromAddress, toAddress, propertyId, amount.toString()));
+    }
+    
+    @ApiOperation("omni解冻")
+    @GetMapping("omniSendUnfreeze")
+    public ResultTO omniSendUnfreeze(String fromAddress,String toAddress,String name,Long propertyId,BigDecimal amount) throws Exception{
+    	return ResultTO.newSuccessResult(walletServcie.omniSendUnfreeze(fromAddress, toAddress, propertyId, amount.toString()));
+    }
+    
+    @ApiOperation("omni转账")
+    @GetMapping("omniSend")
+    public ResultTO omniSend(String fromAddress,String toAddress,Long propertyId,BigDecimal amount) throws Exception{
+    	return ResultTO.newSuccessResult(walletServcie.omniSend(fromAddress, toAddress, propertyId, amount.toString()));
+    }
+    @ApiOperation("btc转账")
+    @GetMapping("btcSend")
+    public ResultTO btcSend(String fromBitCoinAddress,String toBitCoinAddress,BigDecimal amount) throws Exception{
+    	return ResultTO.newSuccessResult(walletServcie.btcSend(fromBitCoinAddress, toBitCoinAddress, amount.toString(),"desc"));
+    }
+    
+    @ApiOperation("omni的交易")
+    @GetMapping("getOmniTransaction")
+    public ResultTO getOmniTransaction(String txid) throws Exception{
+    	return ResultTO.newSuccessResult(walletServcie.getOmniTransaction(txid));
+    }
+    @ApiOperation("btc的交易")
+    @GetMapping("getBtcTransaction")
+    public ResultTO getBtcTransaction(String txid) throws Exception{
+    	return ResultTO.newSuccessResult(walletServcie.getBtcTransaction(txid));
+    }
+    
+//    @ApiOperation("烧币")
+//    @GetMapping("omniSendRevoke")
+//    public ResultTO omniSendRevoke(String fromAddress,Long propertyId,BigDecimal amount) throws Exception{
+//    	return ResultTO.newSuccessResult(walletServcie.omniSendRevoke(fromAddress, propertyId, amount.toString()));
+//    }
+//    
+//    @ApiOperation("铸币")
+//    @GetMapping("omniSendGrant")
+//    public ResultTO omniSendGrant(String fromAddress,Long propertyId,BigDecimal amount) throws Exception{
+//    	return ResultTO.newSuccessResult(walletServcie.omniSendGrant(fromAddress, propertyId, amount.toString()));
+//    }
+
+}

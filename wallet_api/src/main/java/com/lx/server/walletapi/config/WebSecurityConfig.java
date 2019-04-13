@@ -29,13 +29,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Value("${site.upload.path}")
     String uploadPath;
     
-//	private UserDetailsService userDetailsService;
-//    private GlobalJwtInterceptor globalJwtInterceptor;
-//	
-//    public WebSecurityConfig(UserDetailsService userDetailsService, GlobalJwtInterceptor globalJwtInterceptor) {
-//        this.userDetailsService = userDetailsService;
-//        this.globalJwtInterceptor = globalJwtInterceptor;
-//    }
 	
 	@Override
     public void configure(WebSecurity webSecurity) {
@@ -58,9 +51,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
-//                .antMatchers(
-//                        "/api/common/**"
-//                        ).permitAll()
                 .anyRequest()
                 .authenticated()
                 ;

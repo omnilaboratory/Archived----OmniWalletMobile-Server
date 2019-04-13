@@ -17,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.lx.server.pojo.User;
 import com.lx.server.service.UserService;
-import com.lx.server.walletapi.config.Tools;
+import com.lx.server.utils.Tools;
 
 /**
  * 控制器抽象类 手机接口控制器 和 web控制器需继承此类

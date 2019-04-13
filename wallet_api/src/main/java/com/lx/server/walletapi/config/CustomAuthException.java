@@ -4,7 +4,12 @@ import org.springframework.security.core.AuthenticationException;
 
 public class CustomAuthException extends AuthenticationException {
 
-    public CustomAuthException(String message){
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	public CustomAuthException(String message){
         super(message);
     }
     public CustomAuthException(String msg, Throwable t) {
