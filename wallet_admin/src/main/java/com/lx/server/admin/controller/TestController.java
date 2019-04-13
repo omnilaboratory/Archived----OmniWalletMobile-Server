@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.lx.server.bean.ResultTO;
-import com.lx.server.service.UserService;
+import com.lx.server.service.UserAdminService;
 
 @RestController
 @RequestMapping("admin")
@@ -14,10 +14,10 @@ public class TestController {
 	
 	
 	@Autowired
-	private UserService userService;
+	private UserAdminService userAdminService;
 	
 	@GetMapping("test")
 	public ResultTO test() {
-		return ResultTO.newSuccessResult(this.userService.selectObjectList(null));
+		return ResultTO.newSuccessResult(this.userAdminService.selectObjectList(null));
 	}
 }

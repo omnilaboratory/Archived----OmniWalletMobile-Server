@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import com.lx.server.pojo.User;
-import com.lx.server.service.UserService;
+import com.lx.server.pojo.UserClient;
+import com.lx.server.service.UserClientService;
 
 
 @Component
@@ -30,7 +30,7 @@ public class GlobalJwtInterceptor extends HandlerInterceptorAdapter {
     private SimpleHandlerExceptionResolver resolver;
 	
 	@Autowired
-	UserService userService;
+	UserClientService userClientService;
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		String oldToken = request.getHeader(tokenHeader);
@@ -43,7 +43,7 @@ public class GlobalJwtInterceptor extends HandlerInterceptorAdapter {
 		}else{
 			if (authHeader != null && authHeader.startsWith(tokenHead)) {
 				final String token = oldToken.substring(tokenHead.length());
-				User user = userService.selectObject(token);
+				UserClient user = userClientService.selectObject(token);
 				if (user==null) {
 					this.resolver.resolveException(request, response, 1, new CustomAuthException("用户无效，请重新登录"));
 					return false;

@@ -15,8 +15,8 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.lx.server.pojo.User;
-import com.lx.server.service.UserService;
+import com.lx.server.pojo.UserClient;
+import com.lx.server.service.UserClientService;
 import com.lx.server.utils.Tools;
 
 /**
@@ -33,7 +33,7 @@ public abstract class AbstractController {
     protected HttpServletResponse response;
     
     @Autowired
-    public UserService userService;
+    public UserClientService userClientService;
     
     protected String getUserId() {
     	if (request==null) {
@@ -44,11 +44,11 @@ public abstract class AbstractController {
         return claims;
     }
     
-	protected User getUser() {
+	protected UserClient getUser() {
     	if (request==null) {
 			return null;
 		}
-    	User user = (User) request.getAttribute("user");
+    	UserClient user = (UserClient) request.getAttribute("user");
         Assert.notNull(user, "用户不存在");
         return user;
     }

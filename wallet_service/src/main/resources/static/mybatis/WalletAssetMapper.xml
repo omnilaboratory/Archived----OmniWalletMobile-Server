@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+【用户钱包地址的资产】对象关系映射 配置
+ @author AutoCode 309444359@qq.com
+ @date 2019-04-13 23:59:48
+ -->
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.lx.server.dao.WalletAssetDao">
+
+	<resultMap id="walletAssetResultMap" type="com.lx.server.pojo.WalletAsset">
+		<id property="id" column="id" />
+				<result property="addressId" column="address_id" />
+				<result property="assetType" column="asset_type" />
+				<result property="assetId" column="asset_id" />
+				<result property="createTime" column="create_time" />
+				<result property="userId" column="user_id" />
+	</resultMap>
+	<resultMap id="mapResultMap"  type="java.util.HashMap" extends="walletAssetResultMap"></resultMap>
+	<resultMap id="pageResultMap"  type="java.util.HashMap" extends="walletAssetResultMap"></resultMap>
+
+
+	<insert id="insert" parameterType="com.lx.server.pojo.WalletAsset" useGeneratedKeys="true" keyProperty="id" >
+	   insert into t_wallet_asset (
+	    <include refid="columns" />
+	   )values (
+	     #{id},
+	     #{addressId},
+	     #{assetType},
+	     #{assetId},
+	     #{createTime},
+	     #{userId}
+	   )
+	</insert>
+
+	<update id="update" parameterType="com.lx.server.pojo.WalletAsset">
+		update t_wallet_asset
+		<set>
+		<if test="addressId != null">
+			address_id=#{addressId},
+		</if>
+		<if test="assetType != null">
+			asset_type=#{assetType},
+		</if>
+		<if test="assetId != null">
+			asset_id=#{assetId},
+		</if>
+		<if test="createTime != null">
+			create_time=#{createTime},
+		</if>
+		<if test="userId != null">
+			user_id=#{userId},
+		</if>
+		</set>
+		<where>
+			1=1
+			<if test="id != null">
+				and id=#{id}
+			</if>
+			<if test="n_addressId != null">
+				and address_id=#{n_addressId}
+			</if>
+			<if test="n_assetType != null">
+				and asset_type=#{n_assetType}
+			</if>
+			<if test="n_assetId != null">
+				and asset_id=#{n_assetId}
+			</if>
+			<if test="n_createTime != null">
+				and create_time=#{n_createTime}
+			</if>
+			<if test="n_userId != null">
+				and user_id=#{n_userId}
+			</if>
+		</where>
+	</update>
+
+	<delete id="delete" parameterType="map">
+	   delete from
+	     t_wallet_asset
+	   	where 
+	    id=#{id}
+	</delete>
+
+	<select id="selectObject" parameterType="map" resultMap="walletAssetResultMap">
+	   select
+	<include refid="columns" />
+	   from t_wallet_asset
+	   where
+	    id=#{id}
+	</select>
+
+	<select id="selectObjectList" parameterType="map" resultMap="walletAssetResultMap">
+	   select
+	<include refid="columns" />
+	   from t_wallet_asset
+	   <where>
+	 <include refid="normalCondition"/>
+	   </where>
+	</select>
+
+	<select id="selectMap" parameterType="map" resultMap="mapResultMap">
+	   select
+	<include refid="columns" />
+	   from t_wallet_asset
+	   where
+	    id=#{id}
+	</select>
+
+	<select id="selectMapList" parameterType="map" resultMap="mapResultMap">
+	   select
+	<include refid="columns" />
+	   from t_wallet_asset
+	   <where>
+	   <include refid="normalCondition"/>
+	   </where>
+	</select>
+
+	<select id="page" parameterType="map" resultMap="pageResultMap">
+	   select
+	<include refid="columns" />
+	<include refid="pageCondition" />
+	limit #{offset},#{rows}
+	</select>
+
+	<select id="pageBean" parameterType="map" resultMap="walletAssetResultMap">
+	   select
+	<include refid="columns" />
+	<include refid="pageCondition" />
+	limit #{offset},#{rows}
+	</select>
+	
+	<select id="pageCount" parameterType="map" resultType="int">
+	   select count(1)
+	   <include refid="pageCondition" />
+	</select>
+
+	<sql id="pageCondition">
+	   from t_wallet_asset
+	   <where>
+			<include refid="normalCondition"/>
+	   </where>
+	</sql>
+
+	<sql id="normalCondition">
+		1=1
+		<if test="id != null">
+			and id=#{id}
+		</if>
+		<if test="addressId != null">
+			and address_id=#{addressId}
+		</if>
+		<if test="assetType != null">
+			and asset_type=#{assetType}
+		</if>
+		<if test="assetId != null">
+			and asset_id=#{assetId}
+		</if>
+		<if test="createTime != null">
+			and create_time=#{createTime}
+		</if>
+		<if test="userId != null">
+			and user_id=#{userId}
+		</if>
+		<if test="keyword != null">
+			and (name LIKE CONCAT("%", #{keyword}, "%") )
+		</if>
+		order by  id  desc 
+	</sql>
+	<sql id="columns">
+			id,
+			address_id,
+			asset_type,
+			asset_id,
+			create_time,
+			user_id
+	</sql>
+</mapper>
