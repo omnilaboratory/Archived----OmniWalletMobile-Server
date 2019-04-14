@@ -21,6 +21,7 @@
   	<module>wallet_api</module>
   	<module>wallet_admin</module>
   	<module>wallet_service</module>
+  	<module>wallet_kafka</module>
   </modules>
   
   <dependencies>
@@ -53,7 +54,11 @@
 		    <artifactId>lombok</artifactId>
 		    <scope>provided</scope>
 		</dependency>
-		
+		<!-- kafka -->
+		<dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka</artifactId>
+		</dependency>
 		
 		
 	</dependencies>
