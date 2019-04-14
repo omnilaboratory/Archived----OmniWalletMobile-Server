@@ -33,10 +33,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
     public void configure(WebSecurity webSecurity) {
 		webSecurity.ignoring().antMatchers(
+                "/api/**",
                 "/v2/api-docs",
                 "/swagger-resources/**",
                 "/swagger-ui.html",
-                "/api/**",
                 "/webjars/**"
         );
     }

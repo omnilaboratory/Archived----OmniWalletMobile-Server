@@ -67,7 +67,8 @@ public class SwaggerConfig {
 	private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
         		.title("接口文档")
-                .description("接口文档可直接执行，点击按钮 Try it 即可</br>需要令牌的接口点击界面左上角的Authorization按钮，填入Bearer +【token】")
+                .description("接口文档可直接执行，点击按钮 Try it 即可</br>需要令牌的接口点击界面左上角的Authorization按钮，填入Bearer +【token】"
+                		+ "</br>Bearer c4ca4238a0b923820dcc509a6f75849b")
                 .version("2.0")
                 .build();
     }

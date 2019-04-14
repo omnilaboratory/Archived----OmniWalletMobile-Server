@@ -1,6 +1,6 @@
 package com.lx.server.service;
 
-import com.lx.server.service.MybatisBaseService;
+import com.lx.server.pojo.UserClient;
 
 /**
  * 【钱包客户端用户】 服务类 接口
@@ -10,5 +10,7 @@ import com.lx.server.service.MybatisBaseService;
  *
  */
 public interface UserClientService extends MybatisBaseService {
+
+	UserClient createNewUser(String userId,String nickname);
 
 }

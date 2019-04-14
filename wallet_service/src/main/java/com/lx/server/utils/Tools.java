@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -510,6 +511,8 @@ public class Tools {
 	}
 
 	public static boolean isValidMessageAudio(String msg) {
+		Assert.isTrue(Tools.checkStringExist(msg), "input is empty");
+		msg = msg.trim();
 		int cnt = 0;
 	    for (int i=0; i<msg.length(); ++i) {
 	        switch (msg.charAt(i)) {
