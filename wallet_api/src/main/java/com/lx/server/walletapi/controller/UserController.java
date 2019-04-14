@@ -19,7 +19,7 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("api/user")
-@Api(tags = { "用户接口" })
+@Api(tags = {"用户接口"})
 public class UserController extends AbstractController{
 	
 	@GetMapping("getUserInfo")

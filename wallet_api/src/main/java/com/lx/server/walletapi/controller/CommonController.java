@@ -18,7 +18,7 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("api/common")
-@Api(tags = { "公共接口" })
+@Api(tags = {"公共接口"})
 public class CommonController extends AbstractController{
 	
 	@Autowired
