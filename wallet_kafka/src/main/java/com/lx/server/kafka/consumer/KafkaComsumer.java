@@ -14,7 +14,7 @@ import com.lx.server.kafka.bean.Message;
 public class KafkaComsumer {
 	
 	@KafkaListener(topics = {"userTopic"})
-    public  void  listen(ConsumerRecord<?,?> record){
+    public void userTopicListen(ConsumerRecord<?,?> record){
         Optional<Message> kafkaMessage = (Optional<Message>) Optional.ofNullable(record.value());
         Object message = kafkaMessage.get();
         JSONObject jsonObject = JSON.parseObject(message.toString());
