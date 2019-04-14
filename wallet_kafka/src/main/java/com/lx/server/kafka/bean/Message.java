@@ -1,27 +1,16 @@
 package com.lx.server.kafka.bean;
 
+import lombok.Data;
+
+@Data
 public class Message {
-    private  Integer id;
-    private  String name;
+    private Integer type;
+    private String title;
+    private Object data;
 
-    public Message(){}
-
-    public Message(Integer id,String name){
-        this.id = id;
-        this.name = name;
+    public Message(Integer type,String title,Object data){
+        this.type = type;
+        this.title = title;
+        this.data = data;
     }
-
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
-    public Integer getId() {
-        return id;
-    }
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
 }
