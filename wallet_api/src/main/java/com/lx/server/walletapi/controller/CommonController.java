@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.fastjson.JSON;
 import com.lx.server.bean.ResultTO;
 import com.lx.server.enums.EnumKafkaTopic;
-import com.lx.server.kafka.bean.Message;
+import com.lx.server.kafka.bean.KafkaMessage;
 import com.lx.server.pojo.UserClient;
 import com.lx.server.service.UserClientService;
 import com.lx.server.utils.Tools;
@@ -66,6 +66,6 @@ public class CommonController extends AbstractController{
 	@GetMapping("testKafka")
 	@ApiOperation("测试kafka")
 	public void testKafka() {
-		kafkaTemplate.send(EnumKafkaTopic.UserTopic.value,JSON.toJSONString(new Message(1,"msg",null)));
+		kafkaTemplate.send(EnumKafkaTopic.UserTopic.value,JSON.toJSONString(new KafkaMessage(1,null,"msg",null)));
 	}
 }

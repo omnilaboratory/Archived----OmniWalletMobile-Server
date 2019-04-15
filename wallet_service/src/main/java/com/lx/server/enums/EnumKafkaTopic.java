@@ -9,6 +9,7 @@ public enum EnumKafkaTopic {
 
 	DefaultTopic("defaultTopic"),
 	UserTopic("userTopic"),
+	WalletAddressTopic("walletAddressTopic"),
 	;
 	
 	public String value;
