@@ -12,7 +12,15 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.lx.server.kafka.bean.KafkaMessage;
 import com.lx.server.pojo.WalletAddress;
+import com.lx.server.pojo.WalletAsset;
 import com.lx.server.service.WalletAddressService;
+import com.lx.server.service.WalletAssetService;
+
+
+//DefaultTopic("wallet.defaultTopic"),
+//UserTopic("wallet.userTopic"),
+//WalletAddressTopic("wallet.addressTopic"),
+
 
 @Component
 public class KafkaComsumer {
@@ -20,22 +28,27 @@ public class KafkaComsumer {
 	@Autowired
 	private WalletAddressService walletAddressService;
 	
-	@KafkaListener(topics = {"userTopic"})
+	@Autowired
+	private WalletAssetService walletAssetService;
+	
+	@KafkaListener(topics = {"wallet.userTopic"})
     public void userTopicListen(ConsumerRecord<?,?> record){
 		KafkaMessage info = getKafkaMsg(record);
     }
 	
-	
-	
-	@KafkaListener(topics = {"walletAddressTopic"})
+	@KafkaListener(topics = {"wallet.addressTopic"})
 	public void WalletAddressTopicListen(ConsumerRecord<?,?> record){
 		KafkaMessage info = getKafkaMsg(record);
 		switch (info.getType()) {
 		case 1://创建新的钱包地址
 			this.createWalletAddress(info);
 			break;
+		case 2://创建新的钱包资产地址
+			this.createWalletAssetAddress(info);
+			break;
 		}
 	}
+	
 	private void createWalletAddress(KafkaMessage info) {
 		JSONObject jsonObject = (JSONObject) info.getData();
 		if (info!=null&&jsonObject.containsKey("address")) {
@@ -47,6 +60,19 @@ public class KafkaComsumer {
 			address.setCreateTime(new Date());
 			address.setIsEnable(true);
 			walletAddressService.insert(address);
+		}
+	}
+	
+	private void createWalletAssetAddress(KafkaMessage info) {
+		JSONObject jsonObject = (JSONObject) info.getData();
+		if (info!=null&&jsonObject.containsKey("assetId")) {
+			WalletAsset asset = new WalletAsset();
+			asset.setUserId(info.getUserId());
+			asset.setAddressId(jsonObject.getInteger("addressId"));
+			asset.setAssetType(jsonObject.getByte("assetType"));
+			asset.setAssetId(jsonObject.getInteger("assetId"));
+			asset.setCreateTime(new Date());
+			walletAssetService.insert(asset);
 		}
 	}
 	

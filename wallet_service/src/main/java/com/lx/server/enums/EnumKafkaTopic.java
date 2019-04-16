@@ -7,9 +7,9 @@ package com.lx.server.enums;
  */
 public enum EnumKafkaTopic {
 
-	DefaultTopic("defaultTopic"),
-	UserTopic("userTopic"),
-	WalletAddressTopic("walletAddressTopic"),
+	DefaultTopic("wallet.defaultTopic"),
+	UserTopic("wallet.userTopic"),
+	WalletAddressTopic("wallet.addressTopic"),
 	;
 	
 	public String value;
