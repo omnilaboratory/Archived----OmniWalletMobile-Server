@@ -3,7 +3,7 @@ package com.lx.server.kafka.bean;
 import lombok.Data;
 
 @Data
-public class KafkaMessage {
+public class KafkaMessage{
     private Integer type;
     private String userId;
     private String title;

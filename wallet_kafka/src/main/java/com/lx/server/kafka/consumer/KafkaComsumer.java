@@ -80,7 +80,7 @@ public class KafkaComsumer {
 	
 	
 	private KafkaMessage getKafkaMsg(ConsumerRecord<?, ?> record) {
-		Optional<KafkaMessage> kafkaMessage = (Optional<KafkaMessage>) Optional.ofNullable(record.value());
+		Optional<Object> kafkaMessage = (Optional<Object>) Optional.ofNullable(record.value());
 		Object message = kafkaMessage.get();
 		JSONObject jsonObject = JSON.parseObject(message.toString());
 		KafkaMessage info = new KafkaMessage(
@@ -89,7 +89,6 @@ public class KafkaComsumer {
 				jsonObject.getString("title"),
 				jsonObject.getJSONObject("data")
 				);
-		System.out.println(info);
 		return info;
 	}
 }
