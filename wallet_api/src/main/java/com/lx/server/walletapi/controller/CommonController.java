@@ -65,7 +65,8 @@ public class CommonController extends AbstractController{
 	
 	@GetMapping("testKafka")
 	@ApiOperation("测试kafka")
-	public void testKafka() {
+	public ResultTO testKafka() {
 		kafkaTemplate.send(EnumKafkaTopic.UserTopic.value,JSON.toJSONString(new KafkaMessage(1,null,"msg",null)));
+		return ResultTO.newSuccessResult("恢复失败");
 	}
 }

@@ -1,6 +1,7 @@
 package com.lx.server.bean;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 public class ResultTO implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
@@ -28,10 +29,10 @@ public class ResultTO implements Serializable, Cloneable {
 	}
 
 	public static ResultTO newFailResult(String msg) {
-		return new ResultTO(ResultTO.STATUS_FAILURE, msg, null);
+		return new ResultTO(ResultTO.STATUS_FAILURE, msg, new HashMap<>());
 	}
 	public static ResultTO newSuccessResult(String msg) {
-		return new ResultTO(ResultTO.STATUS_SUCCESS, msg, null);
+		return new ResultTO(ResultTO.STATUS_SUCCESS, msg, new HashMap<>());
 	}
 	public static ResultTO newSuccessResult(Object data) {
 		return ResultTO.newSuccessResult("success", data);
