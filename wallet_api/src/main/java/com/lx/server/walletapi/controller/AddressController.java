@@ -1,9 +1,11 @@
 package com.lx.server.walletapi.controller;
 
+import java.util.Date;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +18,7 @@ import com.lx.server.enums.EnumKafkaTopic;
 import com.lx.server.kafka.bean.KafkaMessage;
 import com.lx.server.pojo.WalletAddress;
 import com.lx.server.service.WalletAddressService;
+import com.lx.server.utils.Tools;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -34,8 +37,21 @@ public class AddressController extends AbstractController{
 	
 	@PostMapping("create")
 	@ApiOperation("创建新地址")
-	public ResultTO createAddress(WalletAddress address) {
-		KafkaMessage message = new KafkaMessage(1,getUserId(), null, address);
+	public ResultTO createAddress(WalletAddress walletAddress) {
+		Assert.isTrue(Tools.checkStringExist(walletAddress.getAddress()), "address is empty");
+		Assert.isTrue(Tools.checkStringExist(walletAddress.getAddressName()), "addressName is empty");
+		
+		walletAddress.setCreateTime(new Date());
+		walletAddress.setIsEnable(true);
+		walletAddress.setUserId(getUserId());
+		
+		int count =  walletAddressService.pageCount(new HashMap<String,Object>() {{
+			put("uesrId", walletAddress.getUserId());
+			put("address", walletAddress.getAddress());
+		}});
+		Assert.isTrue(count==0, "address is exist");
+		
+		KafkaMessage message = new KafkaMessage(1,getUserId(), null, walletAddress);
 		this.kafkaTemplate.send(EnumKafkaTopic.WalletAddressTopic.value, JSON.toJSONString(message));
 		return ResultTO.newSuccessResult("success");
 	}

@@ -49,6 +49,7 @@ public class KafkaComsumer {
 		}
 	}
 	
+	@SuppressWarnings("serial")
 	private void createWalletAddress(KafkaMessage info) {
 		JSONObject jsonObject = (JSONObject) info.getData();
 		if (info!=null&&jsonObject.containsKey("address")) {

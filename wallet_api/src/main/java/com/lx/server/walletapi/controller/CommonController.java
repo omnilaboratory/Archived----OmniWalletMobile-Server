@@ -7,13 +7,17 @@ import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.lx.server.bean.ResultTO;
+import com.lx.server.enums.EnumFolderURI;
 import com.lx.server.pojo.UserClient;
 import com.lx.server.service.UserClientService;
 import com.lx.server.utils.Tools;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
@@ -49,11 +53,31 @@ public class CommonController extends AbstractController{
 		Assert.isTrue(Tools.isValidMessageAudio(userId), "userId is not md5 type");
 		UserClient userClient = userClientService.selectObject(userId);
 		if (userClient==null) {
-			return ResultTO.newFailResult("restoreUser fail");
+			return ResultTO.newFailResult("your mnemonic is wrong");
 		}
 		return ResultTO.newSuccessResult(new HashMap<String,Object>() {{
 			put("userId", userClient.getId());
 			put("nickname", userClient.getNickname());
+			put("faceUrl", userClient.getFaceUrl());
 		}});
+	}
+	
+	/**
+	 * 单图片上传
+	 * @param file
+	 * @return
+	 */
+	@PostMapping("uploadImage")
+	@ApiOperation("图片上传")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "file", value = "图片"),
+	})
+	public ResultTO uploadFile(MultipartFile file){
+		Assert.isTrue(file!=null, "图片不存在");
+		String url = this.uploadImage(EnumFolderURI.getEnumByType(0).value,file);
+		if (url!=null) {
+			return ResultTO.newSuccessResult("上传成功",url);
+		}
+		return ResultTO.newFailResult("上传失败");
 	}
 }
