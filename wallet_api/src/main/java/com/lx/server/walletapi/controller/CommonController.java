@@ -3,14 +3,19 @@ package com.lx.server.walletapi.controller;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.alibaba.fastjson.JSON;
 import com.lx.server.bean.ResultTO;
 import com.lx.server.enums.EnumFolderURI;
+import com.lx.server.enums.EnumKafkaTopic;
+import com.lx.server.kafka.bean.KafkaMessage;
 import com.lx.server.pojo.UserClient;
 import com.lx.server.service.UserClientService;
 import com.lx.server.utils.Tools;
@@ -79,5 +84,14 @@ public class CommonController extends AbstractController{
 			return ResultTO.newSuccessResult("上传成功",url);
 		}
 		return ResultTO.newFailResult("上传失败");
+	}
+	
+	@Autowired
+    private KafkaTemplate<String, Object> kafkaTemplate;
+	
+	@GetMapping("testKafka")
+	@ApiOperation("测试kafka")
+	public void testKafka() {
+		kafkaTemplate.send(EnumKafkaTopic.UserTopic.value,JSON.toJSONString(new KafkaMessage(1,null,"msg",null)));
 	}
 }

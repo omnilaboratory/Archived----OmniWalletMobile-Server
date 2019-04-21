@@ -8,7 +8,7 @@ import com.lx.server.pojo.AbstractObject;
  * 【用户钱包地址的资产】持久化对象 数据库表：t_wallet_asset
  *
  * @author AutoCode 309444359@qq.com
- * @date 2019-04-13 23:59:48
+ * @date 2019-04-20 10:23:22
  *
  */
 public class WalletAsset extends AbstractObject {
@@ -23,6 +23,8 @@ public class WalletAsset extends AbstractObject {
     private Byte assetType;
     // 对应的omni的支持id
     private Integer assetId;
+    // 资产名称
+    private String assetName;
     // 创建时间
     private Date createTime;
     // t_user_client id
@@ -68,6 +70,16 @@ public class WalletAsset extends AbstractObject {
         this.assetId = assetId;
     }
 
+    /** 获取 资产名称 属性 */
+    public String getAssetName() {
+        return assetName;
+    }
+
+    /** 设置 资产名称 属性 */
+    public void setAssetName(String assetName) {
+        this.assetName = assetName;
+    }
+
     /** 获取 创建时间 属性 */
     public Date getCreateTime() {
         return createTime;
@@ -96,6 +108,7 @@ public class WalletAsset extends AbstractObject {
         sb.append(", addressId=").append(addressId);
         sb.append(", assetType=").append(assetType);
         sb.append(", assetId=").append(assetId);
+        sb.append(", assetName=").append(assetName);
         sb.append(", createTime=").append(createTime);
         sb.append(", userId=").append(userId);
         sb.append('}');

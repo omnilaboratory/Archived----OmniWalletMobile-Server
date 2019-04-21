@@ -4,7 +4,7 @@
 <!--
 【用户钱包地址的资产】对象关系映射 配置
  @author AutoCode 309444359@qq.com
- @date 2019-04-13 23:59:48
+ @date 2019-04-20 10:23:22
  -->
 <!-- namespace必须指向Dao接口 -->
 <mapper namespace="com.lx.server.dao.WalletAssetDao">
@@ -14,6 +14,7 @@
 				<result property="addressId" column="address_id" />
 				<result property="assetType" column="asset_type" />
 				<result property="assetId" column="asset_id" />
+				<result property="assetName" column="asset_name" />
 				<result property="createTime" column="create_time" />
 				<result property="userId" column="user_id" />
 	</resultMap>
@@ -29,6 +30,7 @@
 	     #{addressId},
 	     #{assetType},
 	     #{assetId},
+	     #{assetName},
 	     #{createTime},
 	     #{userId}
 	   )
@@ -45,6 +47,9 @@
 		</if>
 		<if test="assetId != null">
 			asset_id=#{assetId},
+		</if>
+		<if test="assetName != null">
+			asset_name=#{assetName},
 		</if>
 		<if test="createTime != null">
 			create_time=#{createTime},
@@ -66,6 +71,9 @@
 			</if>
 			<if test="n_assetId != null">
 				and asset_id=#{n_assetId}
+			</if>
+			<if test="n_assetName != null">
+				and asset_name=#{n_assetName}
 			</if>
 			<if test="n_createTime != null">
 				and create_time=#{n_createTime}
@@ -157,6 +165,9 @@
 		<if test="assetId != null">
 			and asset_id=#{assetId}
 		</if>
+		<if test="assetName != null">
+			and asset_name=#{assetName}
+		</if>
 		<if test="createTime != null">
 			and create_time=#{createTime}
 		</if>
@@ -173,6 +184,7 @@
 			address_id,
 			asset_type,
 			asset_id,
+			asset_name,
 			create_time,
 			user_id
 	</sql>

@@ -2,6 +2,8 @@ package com.lx.server.walletapi.controller;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -18,6 +20,8 @@ import com.lx.server.enums.EnumKafkaTopic;
 import com.lx.server.kafka.bean.KafkaMessage;
 import com.lx.server.pojo.WalletAddress;
 import com.lx.server.service.WalletAddressService;
+import com.lx.server.service.WalletAssetService;
+import com.lx.server.service.WalletServcie;
 import com.lx.server.utils.Tools;
 
 import io.swagger.annotations.Api;
@@ -34,6 +38,12 @@ public class AddressController extends AbstractController{
 	
 	@Autowired
 	private WalletAddressService walletAddressService;
+	
+	@Autowired
+	private WalletAssetService walletAssetService;
+	
+	@Autowired
+	private WalletServcie walletServcie;
 	
 	@PostMapping("create")
 	@ApiOperation("创建新地址")
@@ -55,19 +65,28 @@ public class AddressController extends AbstractController{
 		this.kafkaTemplate.send(EnumKafkaTopic.WalletAddressTopic.value, JSON.toJSONString(message));
 		return ResultTO.newSuccessResult("success");
 	}
-	@SuppressWarnings("serial")
+	@SuppressWarnings({ "serial", "unchecked" })
 	@GetMapping("list")
 	@ApiOperation("获取地址列表")
-	public ResultTO getAddressList(Integer pageIndex,Integer pageSize) {
+	public ResultTO getAddressList(Integer pageIndex,Integer pageSize) throws Exception {
 		if (pageIndex==null||pageIndex<1) {
 			pageIndex =1;
 		}
 		if (pageSize==null||pageSize<1) {
-			pageSize =10;
+			pageSize =100;
 		}
 		Page page = this.walletAddressService.page(new HashMap<String,Object>() {{
 			put("userId", getUserId());
 		}}, pageIndex, pageSize);
+		
+		if (page!=null) {
+			List<Object> nodes = page.getData();
+			for (Object object : nodes) {
+				Map<String, Object> node = (Map<String, Object>)object;
+				List<Map<String, Object>> list = walletServcie.getAllBalanceByAddress(node.get("address").toString());
+				node.put("assets", list);
+			}
+		}
 		return ResultTO.newSuccessResult("success",page);
 	}
 }
