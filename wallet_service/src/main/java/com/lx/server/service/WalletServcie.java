@@ -77,7 +77,7 @@ public interface WalletServcie{
 
 	Object omniSendUnfreeze(String fromAddress, String toAddress, Long propertyId, String amount) throws Exception;
 
-	String btcSend(String fromBitCoinAddress, String toBitCoinAddress, String amount,String note) throws Exception;
+	String btcSend(String fromBitCoinAddress,String privkey, String toBitCoinAddress, String amount,String note) throws Exception;
 
 	String createManageProperty(String fromAddress, Integer ecosystem, Integer type, String name, String url) throws Exception;
 
@@ -94,6 +94,8 @@ public interface WalletServcie{
 	 * @return
 	 * @throws Exception
 	 */
-	Object btcRawTransaction(String fromBitCoinAddress, String toBitCoinAddress, BigDecimal amount, String note) throws Exception;
+	Object btcRawTransaction(String fromBitCoinAddress,String privkey, String toBitCoinAddress, BigDecimal amount, String note) throws Exception;
+
+	<T> T sendCmd(String methodName, Object argument, Class<T> clazz) throws Exception;
 
 }

@@ -1,6 +1,9 @@
 package com.lx.server.walletapi.controller;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
+
+import javax.crypto.NoSuchPaddingException;
 
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.lx.server.bean.ResultTO;
 import com.lx.server.enums.EnumFolderURI;
+import com.lx.server.pojo.UserClient;
+import com.lx.server.utils.RSAEncrypt;
 import com.lx.server.utils.Tools;
 
 import io.swagger.annotations.Api;
@@ -24,9 +29,15 @@ public class UserController extends AbstractController{
 	
 	@GetMapping("getUserInfo")
 	@ApiOperation("获取用户信息")
-	public ResultTO getUserInfo() {
-		this.logger.info("getUserInfo");
-		return ResultTO.newSuccessResult(getUser());
+	public ResultTO getUserInfo() throws NoSuchAlgorithmException {
+		UserClient userClient = getUser();
+		return ResultTO.newSuccessResult(userClient);
+	}
+	@GetMapping("getUserRSAEncrypt")
+	@ApiOperation("获取用户公钥")
+	public ResultTO getUserRSAEncrypt() throws NoSuchAlgorithmException, NoSuchPaddingException {
+		String publicKey =  RSAEncrypt.genKeyPair(getUserId());
+		return ResultTO.newSuccessResult("success",publicKey);
 	}
 	
 	@SuppressWarnings("serial")

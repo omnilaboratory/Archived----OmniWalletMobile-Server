@@ -20,7 +20,6 @@ import com.lx.server.enums.EnumKafkaTopic;
 import com.lx.server.kafka.bean.KafkaMessage;
 import com.lx.server.pojo.WalletAddress;
 import com.lx.server.service.WalletAddressService;
-import com.lx.server.service.WalletAssetService;
 import com.lx.server.service.WalletServcie;
 import com.lx.server.utils.Tools;
 
@@ -38,9 +37,6 @@ public class AddressController extends AbstractController{
 	
 	@Autowired
 	private WalletAddressService walletAddressService;
-	
-	@Autowired
-	private WalletAssetService walletAssetService;
 	
 	@Autowired
 	private WalletServcie walletServcie;

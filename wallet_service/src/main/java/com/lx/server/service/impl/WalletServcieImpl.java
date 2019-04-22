@@ -251,8 +251,8 @@ public class WalletServcieImpl implements WalletServcie {
 	 * @throws Exception 
 	 */
 	@Override
-	public String btcSend(String fromBitCoinAddress,String toBitCoinAddress,String amount,String note) throws Exception {
-		return this.btcRawTransaction(fromBitCoinAddress, toBitCoinAddress, new BigDecimal(amount), note);
+	public String btcSend(String fromBitCoinAddress,String privkey,String toBitCoinAddress,String amount,String note) throws Exception {
+		return this.btcRawTransaction(fromBitCoinAddress,privkey, toBitCoinAddress, new BigDecimal(amount), note);
 	}
 	
 	/**
@@ -260,7 +260,7 @@ public class WalletServcieImpl implements WalletServcie {
 	 */
 	@SuppressWarnings({ "unchecked", "unused" })
 	@Override
-	public String btcRawTransaction(String fromBitCoinAddress,String toBitCoinAddress,BigDecimal amount,String note) throws Exception {
+	public String btcRawTransaction(String fromBitCoinAddress,String privkey,String toBitCoinAddress,BigDecimal amount,String note) throws Exception {
 		Assert.isTrue(amount!=null&&amount.compareTo(BigDecimal.ZERO)==1,"amount must greater 0");
 		Assert.isTrue(Tools.checkStringExist(fromBitCoinAddress),"fromBitCoinAddress can not be null");
 		Assert.isTrue(Tools.checkStringExist(toBitCoinAddress),"toBitCoinAddress can not be null");
@@ -302,7 +302,14 @@ public class WalletServcieImpl implements WalletServcie {
 			for (Map<String, Object> map : myList) {
 				map.put("scriptPubKey", scriptPubKey);
 			}
-			Map<String, Object> hex =  this.sendCmd("signrawtransaction", new Object[] {hexstring,myList,null,"ALL"}, Map.class);
+			
+			List<String> privkeys = new ArrayList<>();
+			if (privkey!=null) {
+				privkeys = new ArrayList<>();
+				privkeys.add(privkey);
+			}
+			
+			Map<String, Object> hex =  this.sendCmd("signrawtransaction", new Object[] {hexstring,myList,privkeys,"ALL"}, Map.class);
 			String hexStr = hex.get("hex").toString();
 			hexMap =  this.sendCmd("decoderawtransaction", new Object[] {hexStr}, Map.class);
 			String txId =  this.sendCmd("sendrawtransaction", new Object[] {hexStr}, String.class);
@@ -372,8 +379,9 @@ public class WalletServcieImpl implements WalletServcie {
 		Map<String, Object> object = this.sendCmd("omni_gettransaction", new Object[] {txid},Map.class);
 		return object;
 	}
-
-	private <T> T sendCmd(String methodName, Object argument,Class<T> clazz) throws Exception {
+	
+	@Override
+	public <T> T sendCmd(String methodName, Object argument,Class<T> clazz) throws Exception {
 		T object = null;
 		try {
 			object = this.jsonRpcHttpClient.invoke(methodName, argument, clazz);

@@ -1,6 +1,8 @@
 package com.lx.server.walletapi.controller;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -11,19 +13,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.lx.server.bean.ResultTO;
 import com.lx.server.service.WalletServcie;
+import com.lx.server.utils.RSAEncrypt;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 
 @RestController
-@RequestMapping("api/block")
+@RequestMapping("api/blockChain")
 @Api(tags = { "区块链接口" })
 public class BlockChainController extends AbstractController{
 	
@@ -116,9 +120,33 @@ public class BlockChainController extends AbstractController{
     	return ResultTO.newSuccessResult(walletServcie.omniSend(fromAddress, toAddress, propertyId, amount.toString()));
     }
     @ApiOperation("btc转账")
-    @GetMapping("btcSend")
-    public ResultTO btcSend(String fromBitCoinAddress,String toBitCoinAddress,BigDecimal amount) throws Exception{
-    	return ResultTO.newSuccessResult(walletServcie.btcSend(fromBitCoinAddress, toBitCoinAddress, amount.toString(),"desc"));
+    @PostMapping("btcSend")
+    public ResultTO btcSend(String fromBitCoinAddress,String privkey,String toBitCoinAddress,BigDecimal amount,BigDecimal minerFee) throws Exception{
+    	privkey = RSAEncrypt.decrypt(privkey, getUserId());
+    	return ResultTO.newSuccessResult(walletServcie.btcSend(fromBitCoinAddress,privkey, toBitCoinAddress, amount.toString(),"desc"));
+    }
+    
+    
+    @ApiOperation("发送omni命令")
+    @PostMapping("sendCmd")
+    public ResultTO sendCmd(String methodName, Object argument, String  clazzType) throws Exception{
+    	Class clazz = String.class;
+    	if (clazzType=="string") {
+    		clazz = String.class;
+		}
+    	if (clazzType=="map") {
+    		clazz = Map.class;
+    	}
+    	if (clazzType=="arrayList") {
+    		clazz = ArrayList.class;
+    	}
+    	if (clazzType=="string") {
+    		clazz = String.class;
+    	}
+    	if (clazzType=="string") {
+    		clazz = String.class;
+    	}
+    	return ResultTO.newSuccessResult(walletServcie.sendCmd(methodName, argument, clazz));
     }
     
     @ApiOperation("omni的交易")

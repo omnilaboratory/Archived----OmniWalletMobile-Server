@@ -1,6 +1,10 @@
 package com.lx.server.walletapi.controller;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
+
+import javax.annotation.PostConstruct;
+import javax.crypto.NoSuchPaddingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -18,6 +22,7 @@ import com.lx.server.enums.EnumKafkaTopic;
 import com.lx.server.kafka.bean.KafkaMessage;
 import com.lx.server.pojo.UserClient;
 import com.lx.server.service.UserClientService;
+import com.lx.server.utils.RSAEncrypt;
 import com.lx.server.utils.Tools;
 
 import io.swagger.annotations.Api;
@@ -33,10 +38,16 @@ public class CommonController extends AbstractController{
 	@Autowired
 	private UserClientService userClientService;
 	
+	@PostConstruct
+	public void InitBinder() throws NoSuchAlgorithmException, NoSuchPaddingException {
+		RSAEncrypt.init();
+	}
+	
+	
 	@SuppressWarnings("serial")
 	@PostMapping("createUser")
 	@ApiOperation("创建新用户")
-	public ResultTO createUser(String userId,String nickname) {
+	public ResultTO createUser(String userId,String nickname) throws NoSuchAlgorithmException {
 		this.logger.info("createUser");
 		Assert.isTrue(Tools.isValidMessageAudio(userId), "userId is not md5 type");
 		UserClient userClient = userClientService.createNewUser(userId,nickname);

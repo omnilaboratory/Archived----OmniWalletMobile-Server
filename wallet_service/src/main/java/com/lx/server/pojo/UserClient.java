@@ -2,8 +2,6 @@ package com.lx.server.pojo;
 
 import java.util.Date;
 
-import com.lx.server.pojo.AbstractObject;
-
 /**
  * 【钱包客户端用户】持久化对象 数据库表：t_user_client
  *
@@ -29,8 +27,18 @@ public class UserClient extends AbstractObject {
     private Date createTime;
     // 上次登录时间
     private Date lastLoginTime;
+    // 公钥
+    private String publicKey;
+    
+    public String getPublicKey() {
+		return publicKey;
+	}
 
-    /** 获取 id 属性 */
+	public void setPublicKey(String publicKey) {
+		this.publicKey = publicKey;
+	}
+
+	/** 获取 id 属性 */
     public String getId() {
         return id;
     }
