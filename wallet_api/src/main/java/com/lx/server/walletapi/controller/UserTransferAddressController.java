@@ -36,7 +36,7 @@ public class UserTransferAddressController extends AbstractController {
 		Assert.isTrue(Tools.checkStringExist(transferAddress.getNickname()), "name is empty");
 		
 		int count =  userTransferAddressService.pageCount(new HashMap<String,Object>() {{
-			put("uesrId", transferAddress.getUserId());
+			put("userId", getUserId());
 			put("address", transferAddress.getAddress());
 		}});
 		if (transferAddress.getId()==null) {

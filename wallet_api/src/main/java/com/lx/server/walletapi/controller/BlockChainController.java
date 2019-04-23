@@ -20,7 +20,6 @@ import org.springframework.web.client.RestTemplate;
 
 import com.lx.server.bean.ResultTO;
 import com.lx.server.service.WalletServcie;
-import com.lx.server.utils.RSAEncrypt;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -122,7 +121,7 @@ public class BlockChainController extends AbstractController{
     @ApiOperation("btc转账")
     @PostMapping("btcSend")
     public ResultTO btcSend(String fromBitCoinAddress,String privkey,String toBitCoinAddress,BigDecimal amount,BigDecimal minerFee) throws Exception{
-    	privkey = RSAEncrypt.decrypt(privkey, getUserId());
+//    	privkey = RSAEncrypt.decrypt(privkey, getUserId());
     	return ResultTO.newSuccessResult(walletServcie.btcSend(fromBitCoinAddress,privkey, toBitCoinAddress, amount.toString(),"desc"));
     }
     
