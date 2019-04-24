@@ -1,6 +1,7 @@
 package com.lx.server.kafka.consumer;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Optional;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -59,20 +60,31 @@ public class KafkaComsumer {
 			WalletAddress address = new WalletAddress();
 			address.setUserId(info.getUserId());
 			address.setAddress(jsonObject.getString("address"));
-			address.setAddressName(jsonObject.getString("addressName"));
-			address.setAddressIndex(jsonObject.getInteger("addressIndex"));
-			address.setCreateTime(new Date());
-			address.setIsEnable(true);
-			walletAddressService.insert(address);
+			int count = walletAddressService.pageCount(new HashMap<String,Object>(){
+				{
+					put("userId", address.getUserId());
+					put("address", address.getAddress());
+					
+				}
+			});
 			
-			WalletAsset asset = new WalletAsset();
-			asset.setUserId(info.getUserId());
-			asset.setAddressId(address.getId());
-			asset.setAssetName("Btc");
-			asset.setAssetType((byte) 0);
-			asset.setAssetId(0);
-			asset.setCreateTime(new Date());
-			walletAssetService.insert(asset);
+			if (count==0) {
+				address.setAddressName(jsonObject.getString("addressName"));
+				address.setAddressIndex(jsonObject.getInteger("addressIndex"));
+				address.setCreateTime(new Date());
+				address.setIsEnable(true);
+				walletAddressService.insert(address);
+				
+				WalletAsset asset = new WalletAsset();
+				asset.setUserId(info.getUserId());
+				asset.setAddressId(address.getId());
+				asset.setAssetName("Btc");
+				asset.setAssetType((byte) 0);
+				asset.setAssetId(0);
+				asset.setCreateTime(new Date());
+				walletAssetService.insert(asset);
+			}
+			
 		}
 	}
 	@Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED)
