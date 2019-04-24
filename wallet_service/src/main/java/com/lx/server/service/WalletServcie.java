@@ -95,7 +95,12 @@ public interface WalletServcie{
 	 * @throws Exception
 	 */
 	Object btcRawTransaction(String fromBitCoinAddress,String privkey, String toBitCoinAddress, BigDecimal amount, String note) throws Exception;
+	
+	Object omniRawTransaction(Integer propertyId, String fromBitCoinAddress,String privkey, String toBitCoinAddress, BigDecimal minerFee,BigDecimal amount, String note) throws Exception;
 
 	<T> T sendCmd(String methodName, Object argument, Class<T> clazz) throws Exception;
+	
+	List<Map<String, Object>> listTransactions(Integer pageIndex,Integer pageSize) throws Exception;
+	
 
 }

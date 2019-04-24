@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -26,6 +28,8 @@ public class WalletServcieImpl implements WalletServcie {
 
 	@Autowired
 	private JsonRpcHttpClient jsonRpcHttpClient;
+	
+	protected final Log logger = LogFactory.getLog(getClass());
 
 	// btc 创建token omni和btc公用 getnewaddress.
 	@Override
@@ -119,15 +123,15 @@ public class WalletServcieImpl implements WalletServcie {
 	@Override
 	public Map<String, Object> getBtcBalance(String address) throws Exception {
 		Assert.isTrue(Tools.checkStringExist(address), "address be empty");
+		this.sendCmd("importaddress", new Object[] {address},String.class);
 		List<Map<String, Object>> list = null;
 		try {
 			List<String> fromAddress = new ArrayList<>();
 			fromAddress.add(address);
-			list = this.sendCmd("listunspent", new Object[] {1,10000,fromAddress},ArrayList.class);
+			list = this.sendCmd("listunspent", new Object[] {0,Integer.MAX_VALUE,fromAddress},ArrayList.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 		BigDecimal balance = BigDecimal.ZERO;
 		Map<String, Object> btcNode = null;
 		if (list!=null) {
@@ -171,6 +175,8 @@ public class WalletServcieImpl implements WalletServcie {
 	@Override
 	public List<Map<String, Object>> getAllBalanceByAddress(String address) throws Exception {
 		Assert.isTrue(Tools.checkStringExist(address), "address be empty");
+		
+		this.sendCmd("importaddress", new Object[] {address},String.class);
 		List<Map<String, Object>> omniList = null;
 		try {
 			omniList = this.jsonRpcHttpClient.invoke("omni_getallbalancesforaddress", new Object[] { address }, List.class);
@@ -255,6 +261,7 @@ public class WalletServcieImpl implements WalletServcie {
 		return this.btcRawTransaction(fromBitCoinAddress,privkey, toBitCoinAddress, new BigDecimal(amount), note);
 	}
 	
+	
 	/**
 	 * btc的转账
 	 */
@@ -266,7 +273,11 @@ public class WalletServcieImpl implements WalletServcie {
 		Assert.isTrue(Tools.checkStringExist(toBitCoinAddress),"toBitCoinAddress can not be null");
 		List<String> fromAddress = new ArrayList<>();
 		fromAddress.add(fromBitCoinAddress);
-		List<Map<String, Object>> list = this.sendCmd("listunspent", new Object[] {1,Integer.MAX_VALUE,fromAddress},ArrayList.class);
+		List<Map<String, Object>> list = this.sendCmd("listunspent", new Object[] {0,Integer.MAX_VALUE,fromAddress},ArrayList.class);
+		
+		Assert.isTrue(list!=null&&list.isEmpty()==false, "empty balance");
+		logger.info("list.size: "+list.size());
+		logger.info(list);
 		//矿工费
 		BigDecimal fee = new BigDecimal("0.00005");
 		BigDecimal out= fee.add(amount);
@@ -283,35 +294,44 @@ public class WalletServcieImpl implements WalletServcie {
 					scriptPubKey = item.get("scriptPubKey").toString();
 				}
 				myList.add(node);
+				logger.info("item.get(amount) " +item.get("amount"));
 				balance = balance.add(new BigDecimal(item.get("amount").toString()));
 				if (balance.compareTo(out)>-1) {
 					break;
 				}
 			}
 		}
+ 		logger.info("balance "+balance);
+ 		logger.info("myList "+myList.size());
+ 		Assert.isTrue(myList.size()>0&&balance.compareTo(out)>-1, "not enough balance");
  		
  		if (myList.size()>0&&balance.compareTo(out)>-1) {
+ 			logger.info("begin ");
  			BigDecimal back= balance.subtract(out);
  			Map<String, Object> address= new HashMap<>();
  			address.put(toBitCoinAddress, amount);
  			address.put(fromBitCoinAddress, back);
  			
+ 			logger.info("createrawtransaction ");
 			String hexstring =  this.sendCmd("createrawtransaction", new Object[] {myList,address}, String.class);
 			
-			Map<String, Object> hexMap =  this.sendCmd("decoderawtransaction", new Object[] {hexstring}, Map.class);
+//			Map<String, Object> hexMap =  this.sendCmd("decoderawtransaction", new Object[] {hexstring}, Map.class);
 			for (Map<String, Object> map : myList) {
 				map.put("scriptPubKey", scriptPubKey);
 			}
 			
-			List<String> privkeys = new ArrayList<>();
-			if (privkey!=null) {
+			List<String> privkeys = null;
+			Map<String, Object> hex;
+			if (privkey!=null&&privkey.trim().length()>0) {
 				privkeys = new ArrayList<>();
 				privkeys.add(privkey);
+				hex =  this.sendCmd("signrawtransaction", new Object[] {hexstring,myList,privkeys,"ALL"}, Map.class);
+			}else {
+				hex =  this.sendCmd("signrawtransaction", new Object[] {hexstring,myList,null,"ALL"}, Map.class);
 			}
-			
-			Map<String, Object> hex =  this.sendCmd("signrawtransaction", new Object[] {hexstring,myList,privkeys,"ALL"}, Map.class);
 			String hexStr = hex.get("hex").toString();
-			hexMap =  this.sendCmd("decoderawtransaction", new Object[] {hexStr}, Map.class);
+			logger.info("signrawtransaction "+ hexStr);
+//			hexMap =  this.sendCmd("decoderawtransaction", new Object[] {hexStr}, Map.class);
 			String txId =  this.sendCmd("sendrawtransaction", new Object[] {hexStr}, String.class);
 			return txId;
 		}
@@ -390,5 +410,117 @@ public class WalletServcieImpl implements WalletServcie {
 			throw new Exception(e.getMessage()+" 传入参数值有误");
 		}
 		return object;
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public Object omniRawTransaction(Integer propertyId,
+			String fromBitCoinAddress, String privkey, String toBitCoinAddress,
+			BigDecimal minerFee, BigDecimal amount, String note) throws Exception {
+
+		Assert.isTrue(propertyId!=null&&propertyId>=0, "propertyId is wrong");
+		Assert.isTrue(amount!=null&&amount.compareTo(BigDecimal.ZERO)==1,"amount must greater 0");
+		Assert.isTrue(Tools.checkStringExist(fromBitCoinAddress),"fromBitCoinAddress can not be null");
+		Assert.isTrue(Tools.checkStringExist(toBitCoinAddress),"toBitCoinAddress can not be null");
+//		Assert.isTrue(Tools.checkStringExist(privkey),"privkey can not be null");
+		Assert.isTrue(minerFee!=null&&minerFee.compareTo(BigDecimal.ZERO)==1,"minerFee must greater 0");
+		
+		this.sendCmd("importaddress", new Object[] {fromBitCoinAddress},String.class);
+		this.sendCmd("importaddress", new Object[] {toBitCoinAddress},String.class);
+		
+		logger.info("1.读取指定地址的UTXO（listunspent）");
+		//1.读取指定地址的UTXO（listunspent）
+		List<String> fromAddress = new ArrayList<>();
+		fromAddress.add(fromBitCoinAddress);
+		List<Map<String, Object>> list = this.sendCmd("listunspent", new Object[] {0,Integer.MAX_VALUE,fromAddress},ArrayList.class);
+		logger.info("unspent list");
+		logger.info(list);
+		Assert.isTrue(list!=null&&list.isEmpty()==false, "empty balance");
+		//矿工费
+		BigDecimal pMoney = new BigDecimal("0.00000546");
+		BigDecimal out= minerFee.add(pMoney);
+		BigDecimal balance = BigDecimal.ZERO;
+ 		for (Map<String, Object> item : list) {
+			if (item.containsKey("address")&&item.get("address").equals(fromBitCoinAddress)) {
+				logger.info("item.get(amount) " +item.get("amount"));
+				balance = balance.add(new BigDecimal(item.get("amount").toString()));
+				if (balance.compareTo(out)>-1) {
+					break;
+				}
+			}
+		}
+ 		logger.info("1 balance "+balance);
+ 		Assert.isTrue(balance.compareTo(out)>-1, "not enough balance");
+		
+ 		logger.info("2.构造发送代币类型和代币数量数据");
+//		2.构造发送代币类型和代币数量数据（payload）
+		String payload = this.sendCmd("omni_createpayload_simplesend", new Object[] {propertyId,amount.toString()}, String.class);
+		logger.info("2 payload "+payload);
+		
+		logger.info("3.构造交易基本数据（transaction base）");
+//		3.构造交易基本数据（transaction base）
+		Map<String, Object> address= new HashMap<>();
+		String createrawtransactionStr =  this.sendCmd("createrawtransaction", new Object[] {list,address}, String.class);
+		logger.info("3 createrawtransactionStr "+createrawtransactionStr);
+		
+//		4.在交易数据中加上omni代币数据  这一步把omni代币数据也组合到交易数据上
+		logger.info("4.在交易数据中加上omni代币数据  这一步把omni代币数据也组合到交易数据上");
+		String opreturn = this.sendCmd("omni_createrawtx_opreturn", new Object[] {createrawtransactionStr,payload}, String.class);
+		logger.info("4 opreturn "+opreturn);
+		
+//		5.在交易数据上加上接收地址
+		logger.info("5.在交易数据上加上接收地址");
+		String referenc = this.sendCmd("omni_createrawtx_reference", new Object[] {opreturn,toBitCoinAddress}, String.class);
+		logger.info("5 referenc "+referenc);
+		
+//		6.在交易数据上指定矿工费用
+		logger.info("6.在交易数据上指定矿工费用");
+		List<Map<String, Object>> myList = new ArrayList<>();
+		Map<String, Object> node = new HashMap<>();
+		for (Map<String, Object> item : list) {
+			node = new HashMap<>();
+			node.put("txid", item.get("txid"));
+			node.put("vout", item.get("vout"));
+			node.put("scriptPubKey", item.get("scriptPubKey"));
+			node.put("value", item.get("amount"));
+			myList.add(node);
+		}
+		logger.info(referenc);
+		logger.info(myList);
+		logger.info(fromBitCoinAddress);
+		logger.info(minerFee);
+		
+		String change = this.sendCmd("omni_createrawtx_change", new Object[] {referenc,myList,fromBitCoinAddress,minerFee}, String.class);
+		logger.info("6 change "+change);
+		
+//		7.交易签名
+		logger.info("7.交易签名");
+		Map<String, Object> signrawtransaction ;
+		if (Tools.checkStringExist(privkey)) {
+			List<String> privkeys = new ArrayList<>();
+			privkeys.add(privkey);
+			signrawtransaction =  this.sendCmd("signrawtransaction", new Object[] {change,list,privkeys,"ALL"}, Map.class);
+		}else {
+			signrawtransaction =  this.sendCmd("signrawtransaction", new Object[] {change,list,null,"ALL"}, Map.class);
+		}
+		logger.info("7.交易签名 结果 ");
+		logger.info(signrawtransaction);
+		
+//		8.广播
+		logger.info("8.广播");
+		String hexStr = signrawtransaction.get("hex").toString();
+		String txId = ""; //this.sendCmd("sendrawtransaction", new Object[] {hexStr}, String.class);
+		logger.info(txId);
+		return txId;
+	}
+	
+	@Override
+	public List<Map<String, Object>> listTransactions(Integer pageIndex, Integer pageSize) throws Exception {
+		if (pageIndex==null||pageIndex<1) {
+			pageIndex=1;
+		}
+		if (pageSize==null&&pageIndex<1) {
+			pageSize = 10;
+		}
+		return this.sendCmd("listtransactions", new Object[] {"*",pageSize,(pageIndex-1)*pageSize}, ArrayList.class);
 	}
 }

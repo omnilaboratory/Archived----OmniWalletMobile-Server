@@ -1,7 +1,12 @@
 package com.lx.server.walletapi.controller;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.crypto.NoSuchPaddingException;
@@ -15,12 +20,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.alibaba.fastjson.JSON;
 import com.lx.server.bean.ResultTO;
 import com.lx.server.enums.EnumFolderURI;
-import com.lx.server.enums.EnumKafkaTopic;
-import com.lx.server.kafka.bean.KafkaMessage;
 import com.lx.server.pojo.UserClient;
+import com.lx.server.service.CommonService;
 import com.lx.server.service.UserClientService;
 import com.lx.server.utils.RSAEncrypt;
 import com.lx.server.utils.Tools;
@@ -37,6 +40,9 @@ public class CommonController extends AbstractController{
 	
 	@Autowired
 	private UserClientService userClientService;
+	
+	@Autowired
+	private CommonService commonService;
 	
 	@PostConstruct
 	public void InitBinder() throws NoSuchAlgorithmException, NoSuchPaddingException {
@@ -100,9 +106,52 @@ public class CommonController extends AbstractController{
 	@Autowired
     private KafkaTemplate<String, Object> kafkaTemplate;
 	
-	@GetMapping("testKafka")
-	@ApiOperation("测试kafka")
-	public void testKafka() {
-		kafkaTemplate.send(EnumKafkaTopic.UserTopic.value,JSON.toJSONString(new KafkaMessage(1,null,"msg",null)));
+	/**
+	 * 获取交易汇率
+	 * @return
+	 */
+	@GetMapping("btcAndUsdtExchangeRate")
+	@ApiOperation("比特币、Usdt和欧元的实时汇率")
+	public ResultTO btcAndUsdtExchangeRates(){
+		List<Map<String, Object>> data = new ArrayList<>();
+		//获取对应数字币的汇率
+		BigDecimal rate = commonService.getCoinExchangeRate("btc","usd");
+		Assert.notNull(rate, "fail to get  btc rate ");
+		Map<String, Object> node = new HashMap<>();
+		node.put("name", "btc");
+		node.put("rate", rate);
+		data.add(0,node);
+		
+		rate = commonService.getCoinExchangeRate("btc","cny");
+		Assert.notNull(rate, "fail to get  btc rate ");
+		node = new HashMap<>();
+		node.put("name", "btcCNY");
+		node.put("rate", rate);
+		data.add(1,node);
+		
+		rate =commonService.getCoinExchangeRate("usdt","usd");
+		Assert.notNull(rate, "fail to get  usdt rate ");
+		node = new HashMap<>();
+		node.put("name", "usdt");
+		node.put("rate", rate);
+		data.add(2,node);
+		
+		
+		rate =commonService.getCoinExchangeRate("usdt","cny");
+		Assert.notNull(rate, "fail to get  usdt rate ");
+		node = new HashMap<>();
+		node.put("name", "usdt");
+		node.put("rate", rate);
+		data.add(3,node);
+		
+		rate =commonService.getExchangeRateBaseEUR("USD");
+		Assert.notNull(rate, "fail to get  usd rate ");
+		node = new HashMap<>();
+		node.put("name", "EUR");
+		node.put("rate", BigDecimal.ONE.divide(rate, 4, RoundingMode.FLOOR));
+		data.add(4,node);
+		
+		return ResultTO.newSuccessResult(data);
 	}
+	
 }

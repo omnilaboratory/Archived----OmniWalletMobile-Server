@@ -19,6 +19,7 @@ import com.lx.server.bean.ResultTO;
 import com.lx.server.enums.EnumKafkaTopic;
 import com.lx.server.kafka.bean.KafkaMessage;
 import com.lx.server.pojo.WalletAddress;
+import com.lx.server.service.CommonService;
 import com.lx.server.service.WalletAddressService;
 import com.lx.server.service.WalletServcie;
 import com.lx.server.utils.Tools;
@@ -40,6 +41,9 @@ public class AddressController extends AbstractController{
 	
 	@Autowired
 	private WalletServcie walletServcie;
+	
+	@Autowired
+	private CommonService commonService;
 	
 	@PostMapping("create")
 	@ApiOperation("创建新地址")
@@ -84,5 +88,21 @@ public class AddressController extends AbstractController{
 			}
 		}
 		return ResultTO.newSuccessResult("success",page);
+	}
+	
+	
+	/**
+	 * 根据address获取交易记录
+	 * @return
+	 */
+	@GetMapping("getTransactionsByAddress")
+	@ApiOperation("根据address获取交易记录")
+	public ResultTO getTransactionsByAddress(String address){
+		Assert.isTrue(Tools.checkStringExist(address), "address is empty");
+		Map<String, Object> data = commonService.getTransactionsByAddress(address);
+		if (data!=null) {
+			return ResultTO.newSuccessResult(data);
+		}
+		return ResultTO.newFailResult("fail");
 	}
 }

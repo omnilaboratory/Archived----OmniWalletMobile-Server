@@ -1,8 +1,6 @@
 package com.lx.server.walletapi.controller;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -113,40 +111,24 @@ public class BlockChainController extends AbstractController{
     	return ResultTO.newSuccessResult(walletServcie.omniSendUnfreeze(fromAddress, toAddress, propertyId, amount.toString()));
     }
     
-    @ApiOperation("omni转账")
-    @GetMapping("omniSend")
-    public ResultTO omniSend(String fromAddress,String toAddress,Long propertyId,BigDecimal amount) throws Exception{
-    	return ResultTO.newSuccessResult(walletServcie.omniSend(fromAddress, toAddress, propertyId, amount.toString()));
+    
+    @ApiOperation("omni原生转账")
+    @GetMapping("omniRawTransaction")
+    public ResultTO omniRawTransaction(Integer propertyId, String fromBitCoinAddress,String privkey, String toBitCoinAddress, BigDecimal minerFee,BigDecimal amount, String note) throws Exception{
+//    	privkey = RSAEncrypt.decrypt(privkey, getUserId());
+    	return ResultTO.newSuccessResult(walletServcie.omniRawTransaction(propertyId, fromBitCoinAddress, privkey, toBitCoinAddress, minerFee, amount, note));
     }
     @ApiOperation("btc转账")
     @PostMapping("btcSend")
     public ResultTO btcSend(String fromBitCoinAddress,String privkey,String toBitCoinAddress,BigDecimal amount,BigDecimal minerFee) throws Exception{
 //    	privkey = RSAEncrypt.decrypt(privkey, getUserId());
-    	return ResultTO.newSuccessResult(walletServcie.btcSend(fromBitCoinAddress,privkey, toBitCoinAddress, amount.toString(),"desc"));
-    }
-    
-    
-    @ApiOperation("发送omni命令")
-    @PostMapping("sendCmd")
-    public ResultTO sendCmd(String methodName, Object argument, String  clazzType) throws Exception{
-    	Class clazz = String.class;
-    	if (clazzType=="string") {
-    		clazz = String.class;
+    	String ret = walletServcie.btcSend(fromBitCoinAddress,privkey, toBitCoinAddress, amount.toString(),"desc");
+    	if (ret!=null) {
+    		return ResultTO.newSuccessResult("success",ret);
 		}
-    	if (clazzType=="map") {
-    		clazz = Map.class;
-    	}
-    	if (clazzType=="arrayList") {
-    		clazz = ArrayList.class;
-    	}
-    	if (clazzType=="string") {
-    		clazz = String.class;
-    	}
-    	if (clazzType=="string") {
-    		clazz = String.class;
-    	}
-    	return ResultTO.newSuccessResult(walletServcie.sendCmd(methodName, argument, clazz));
+    	return ResultTO.newFailResult("fail");
     }
+    
     
     @ApiOperation("omni的交易")
     @GetMapping("getOmniTransaction")
@@ -157,6 +139,17 @@ public class BlockChainController extends AbstractController{
     @GetMapping("getBtcTransaction")
     public ResultTO getBtcTransaction(String txid) throws Exception{
     	return ResultTO.newSuccessResult(walletServcie.getBtcTransaction(txid));
+    }
+    @ApiOperation("btc的交易")
+    @GetMapping("getBtcTransactions")
+    public ResultTO getBtcTransactions(Integer pageIndex,Integer pageSize) throws Exception{
+    	if (pageSize==null) {
+			pageSize = 10;
+		}
+    	if (pageIndex==null) {
+    		pageIndex = 1;
+    	}
+    	return ResultTO.newSuccessResult(walletServcie.listTransactions(pageIndex, pageSize));
     }
     
 //    @ApiOperation("烧币")
