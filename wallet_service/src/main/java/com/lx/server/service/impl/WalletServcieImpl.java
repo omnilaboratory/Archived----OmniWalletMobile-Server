@@ -123,7 +123,7 @@ public class WalletServcieImpl implements WalletServcie {
 	@Override
 	public Map<String, Object> getBtcBalance(String address) throws Exception {
 		Assert.isTrue(Tools.checkStringExist(address), "address be empty");
-		this.sendCmd("importaddress", new Object[] {address},String.class);
+		this.sendCmd("importaddress", new Object[] {address,"",false},String.class);
 		List<Map<String, Object>> list = null;
 		try {
 			List<String> fromAddress = new ArrayList<>();
@@ -176,7 +176,7 @@ public class WalletServcieImpl implements WalletServcie {
 	public List<Map<String, Object>> getAllBalanceByAddress(String address) throws Exception {
 		Assert.isTrue(Tools.checkStringExist(address), "address be empty");
 		
-		this.sendCmd("importaddress", new Object[] {address},String.class);
+		this.sendCmd("importaddress", new Object[] {address,"",false},String.class);
 		List<Map<String, Object>> omniList = null;
 		try {
 			omniList = this.jsonRpcHttpClient.invoke("omni_getallbalancesforaddress", new Object[] { address }, List.class);
@@ -425,8 +425,8 @@ public class WalletServcieImpl implements WalletServcie {
 //		Assert.isTrue(Tools.checkStringExist(privkey),"privkey can not be null");
 		Assert.isTrue(minerFee!=null&&minerFee.compareTo(BigDecimal.ZERO)==1,"minerFee must greater 0");
 		
-		this.sendCmd("importaddress", new Object[] {fromBitCoinAddress},String.class);
-		this.sendCmd("importaddress", new Object[] {toBitCoinAddress},String.class);
+		this.sendCmd("importaddress", new Object[] {fromBitCoinAddress ,"",false},String.class);
+		this.sendCmd("importaddress", new Object[] {toBitCoinAddress,"",false},String.class);
 		
 		logger.info("1.读取指定地址的UTXO（listunspent）");
 		//1.读取指定地址的UTXO（listunspent）
