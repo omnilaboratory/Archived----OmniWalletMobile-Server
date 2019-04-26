@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-
-
-	<!-- test文件路径 -->
-    <property name="TEST_FILE_PATH" value="./logs"/>
     <!-- prod文件路径 -->
     <property name="PRO_FILE_PATH" value="/opt/tomcat/logs" />
-
 
 	<include resource="org/springframework/boot/logging/logback/base.xml" />
 	<appender name="rollingAppender"

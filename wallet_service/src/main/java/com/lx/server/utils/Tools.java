@@ -22,6 +22,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.lx.server.config.CustomPasswordEncoder;
 import com.lx.server.config.GlobalConfig;
 import com.lx.server.pojo.AbstractObject;
 
@@ -536,4 +537,12 @@ public class Tools {
 	    }
 	    return false;
 	}
+	
+	static CustomPasswordEncoder encoder;
+	public static CustomPasswordEncoder getEncoder() {
+        if (encoder == null) {
+            encoder = new CustomPasswordEncoder();
+        }
+        return encoder;
+    }
 }

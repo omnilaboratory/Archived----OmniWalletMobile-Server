@@ -8,7 +8,7 @@ import com.lx.server.pojo.AbstractObject;
  * 【用户钱包地址的资产】持久化对象 数据库表：t_wallet_asset
  *
  * @author AutoCode 309444359@qq.com
- * @date 2019-04-20 10:23:22
+ * @date 2019-04-26 14:37:44
  *
  */
 public class WalletAsset extends AbstractObject {
@@ -19,6 +19,8 @@ public class WalletAsset extends AbstractObject {
     private Integer id;
     // t_wallet_address id
     private Integer addressId;
+    // 钱包地址
+    private String address;
     // 支持类型 0 btc币，1omni资产
     private Byte assetType;
     // 对应的omni的支持id
@@ -29,6 +31,8 @@ public class WalletAsset extends AbstractObject {
     private Date createTime;
     // t_user_client id
     private String userId;
+    // 是否可见
+    private Boolean visible;
 
     /** 获取 id 属性 */
     public Integer getId() {
@@ -48,6 +52,16 @@ public class WalletAsset extends AbstractObject {
     /** 设置 t_wallet_address id 属性 */
     public void setAddressId(Integer addressId) {
         this.addressId = addressId;
+    }
+
+    /** 获取 钱包地址 属性 */
+    public String getAddress() {
+        return address;
+    }
+
+    /** 设置 钱包地址 属性 */
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     /** 获取 支持类型 0 btc币，1omni资产 属性 */
@@ -100,17 +114,29 @@ public class WalletAsset extends AbstractObject {
         this.userId = userId;
     }
 
+    /** 获取 是否可见 属性 */
+    public Boolean getVisible() {
+        return visible;
+    }
+
+    /** 设置 是否可见 属性 */
+    public void setVisible(Boolean visible) {
+        this.visible = visible;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("WalletAsset");
         sb.append("{id=").append(id);
         sb.append(", addressId=").append(addressId);
+        sb.append(", address=").append(address);
         sb.append(", assetType=").append(assetType);
         sb.append(", assetId=").append(assetId);
         sb.append(", assetName=").append(assetName);
         sb.append(", createTime=").append(createTime);
         sb.append(", userId=").append(userId);
+        sb.append(", visible=").append(visible);
         sb.append('}');
         return sb.toString();
     }

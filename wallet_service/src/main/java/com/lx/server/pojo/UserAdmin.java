@@ -8,7 +8,7 @@ import com.lx.server.pojo.AbstractObject;
  * 【用户表】持久化对象 数据库表：t_user_admin
  *
  * @author AutoCode 309444359@qq.com
- * @date 2019-04-14 00:09:20
+ * @date 2019-04-26 17:42:20
  *
  */
 public class UserAdmin extends AbstractObject {
@@ -20,7 +20,7 @@ public class UserAdmin extends AbstractObject {
     // 登录账号
     private String username;
     // 密码
-    private String passwod;
+    private String password;
     // 昵称
     private String nickname;
     // 头像
@@ -33,6 +33,8 @@ public class UserAdmin extends AbstractObject {
     private Boolean isDelete;
     // 创建时间
     private Date createTime;
+    // 上一次修改密码的时间
+    private Date lastPasswordResetDate;
 
     /** 获取 id 属性 */
     public Integer getId() {
@@ -55,13 +57,13 @@ public class UserAdmin extends AbstractObject {
     }
 
     /** 获取 密码 属性 */
-    public String getPasswod() {
-        return passwod;
+    public String getPassword() {
+        return password;
     }
 
     /** 设置 密码 属性 */
-    public void setPasswod(String passwod) {
-        this.passwod = passwod;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     /** 获取 昵称 属性 */
@@ -124,19 +126,30 @@ public class UserAdmin extends AbstractObject {
         this.createTime = createTime;
     }
 
+    /** 获取 上一次修改密码的时间 属性 */
+    public Date getLastPasswordResetDate() {
+        return lastPasswordResetDate;
+    }
+
+    /** 设置 上一次修改密码的时间 属性 */
+    public void setLastPasswordResetDate(Date lastPasswordResetDate) {
+        this.lastPasswordResetDate = lastPasswordResetDate;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("UserAdmin");
         sb.append("{id=").append(id);
         sb.append(", username=").append(username);
-        sb.append(", passwod=").append(passwod);
+        sb.append(", password=").append(password);
         sb.append(", nickname=").append(nickname);
         sb.append(", faceUrl=").append(faceUrl);
         sb.append(", lastLoginTime=").append(lastLoginTime);
         sb.append(", isEnable=").append(isEnable);
         sb.append(", isDelete=").append(isDelete);
         sb.append(", createTime=").append(createTime);
+        sb.append(", lastPasswordResetDate=").append(lastPasswordResetDate);
         sb.append('}');
         return sb.toString();
     }

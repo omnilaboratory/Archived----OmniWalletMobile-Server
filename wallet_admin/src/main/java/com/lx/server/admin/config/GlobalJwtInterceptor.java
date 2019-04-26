@@ -1,4 +1,4 @@
-package com.lx.server.walletapi.config;
+package com.lx.server.admin.config;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -10,10 +10,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import com.lx.server.config.CustomAuthException;
-import com.lx.server.pojo.UserClient;
-import com.lx.server.service.UserClientService;
+import com.lx.server.config.JwtTokenUtil;
+import com.lx.server.pojo.UserAdmin;
+import com.lx.server.service.UserAdminService;
 
+import io.jsonwebtoken.Claims;
 
 @Component
 public class GlobalJwtInterceptor extends HandlerInterceptorAdapter {
@@ -28,10 +29,15 @@ public class GlobalJwtInterceptor extends HandlerInterceptorAdapter {
 	private String tokenHead;
 	
 	@Autowired
-    private SimpleHandlerExceptionResolver resolver;
+	private JwtTokenUtil jwtTokenUtil;
 	
 	@Autowired
-	UserClientService userClientService;
+	UserAdminService userService;
+	
+	
+	@Autowired
+    private SimpleHandlerExceptionResolver resolver;
+	
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		String oldToken = request.getHeader(tokenHeader);
@@ -44,13 +50,28 @@ public class GlobalJwtInterceptor extends HandlerInterceptorAdapter {
 		}else{
 			if (authHeader != null && authHeader.startsWith(tokenHead)) {
 				final String token = oldToken.substring(tokenHead.length());
-				UserClient user = userClientService.selectObject(token);
-				if (user==null) {
-					this.resolver.resolveException(request, response, 1, new CustomAuthException("用户无效，请重新登录"));
+				
+				Integer userId = jwtTokenUtil.getUserIdFromToken(token);
+				if (userId==null) {
+					this.resolver.resolveException(request, response, 1, new CustomAuthException("用户认证失效，请重新登录"));
 					return false;
 				}
-				request.setAttribute("claims", token);
+				
+				UserAdmin user = userService.selectObject(userId);
+				
+				if (user==null||user.getIsEnable()==false) {
+					this.resolver.resolveException(request, response, 1, new CustomAuthException("用户认证失效，请重新登录"));
+					return false;
+				}
+				if (jwtTokenUtil.validateToken(token, user)==false) {
+					this.resolver.resolveException(request, response, 1, new CustomAuthException("用户认证失效，请重新登录"));
+					return false;
+				}
+				
+				Claims claims = jwtTokenUtil.getClaimsFromToken(token);
+				request.setAttribute("claims", claims);
 				request.setAttribute("user", user);
+				
 				return super.preHandle(request, response, handler);
 			} else {
 				super.preHandle(request, response, handler);

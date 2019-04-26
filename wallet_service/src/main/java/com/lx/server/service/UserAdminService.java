@@ -1,6 +1,8 @@
 package com.lx.server.service;
 
-import com.lx.server.service.MybatisBaseService;
+import javax.servlet.http.HttpServletRequest;
+
+import com.lx.server.pojo.UserAdmin;
 
 /**
  * 【用户表】 服务类 接口
@@ -10,5 +12,13 @@ import com.lx.server.service.MybatisBaseService;
  *
  */
 public interface UserAdminService extends MybatisBaseService {
+	
+	Object login(String username, String password);
+
+	String generateToken(UserAdmin user);
+
+	String register(UserAdmin user, String code, HttpServletRequest request);
+
+	Boolean changePsw(Integer userId, String psw);
 
 }

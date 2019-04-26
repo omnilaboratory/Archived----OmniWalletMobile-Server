@@ -4,7 +4,7 @@
 <!--
 【用户表】对象关系映射 配置
  @author AutoCode 309444359@qq.com
- @date 2019-04-14 00:09:20
+ @date 2019-04-26 17:42:20
  -->
 <!-- namespace必须指向Dao接口 -->
 <mapper namespace="com.lx.server.dao.UserAdminDao">
@@ -12,13 +12,14 @@
 	<resultMap id="userAdminResultMap" type="com.lx.server.pojo.UserAdmin">
 		<id property="id" column="id" />
 				<result property="username" column="username" />
-				<result property="passwod" column="passwod" />
+				<result property="password" column="password" />
 				<result property="nickname" column="nickname" />
 				<result property="faceUrl" column="face_url" />
 				<result property="lastLoginTime" column="last_login_time" />
 				<result property="isEnable" column="is_enable" />
 				<result property="isDelete" column="is_delete" />
 				<result property="createTime" column="create_time" />
+				<result property="lastPasswordResetDate" column="last_password_reset_date" />
 	</resultMap>
 	<resultMap id="mapResultMap"  type="java.util.HashMap" extends="userAdminResultMap"></resultMap>
 	<resultMap id="pageResultMap"  type="java.util.HashMap" extends="userAdminResultMap"></resultMap>
@@ -30,13 +31,14 @@
 	   )values (
 	     #{id},
 	     #{username},
-	     #{passwod},
+	     #{password},
 	     #{nickname},
 	     #{faceUrl},
 	     #{lastLoginTime},
 	     #{isEnable},
 	     #{isDelete},
-	     #{createTime}
+	     #{createTime},
+	     #{lastPasswordResetDate}
 	   )
 	</insert>
 
@@ -46,8 +48,8 @@
 		<if test="username != null">
 			username=#{username},
 		</if>
-		<if test="passwod != null">
-			passwod=#{passwod},
+		<if test="password != null">
+			password=#{password},
 		</if>
 		<if test="nickname != null">
 			nickname=#{nickname},
@@ -67,6 +69,9 @@
 		<if test="createTime != null">
 			create_time=#{createTime},
 		</if>
+		<if test="lastPasswordResetDate != null">
+			last_password_reset_date=#{lastPasswordResetDate},
+		</if>
 		</set>
 		<where>
 			1=1
@@ -76,8 +81,8 @@
 			<if test="n_username != null">
 				and username=#{n_username}
 			</if>
-			<if test="n_passwod != null">
-				and passwod=#{n_passwod}
+			<if test="n_password != null">
+				and password=#{n_password}
 			</if>
 			<if test="n_nickname != null">
 				and nickname=#{n_nickname}
@@ -96,6 +101,9 @@
 			</if>
 			<if test="n_createTime != null">
 				and create_time=#{n_createTime}
+			</if>
+			<if test="n_lastPasswordResetDate != null">
+				and last_password_reset_date=#{n_lastPasswordResetDate}
 			</if>
 		</where>
 	</update>
@@ -175,8 +183,8 @@
 		<if test="username != null">
 			and username=#{username}
 		</if>
-		<if test="passwod != null">
-			and passwod=#{passwod}
+		<if test="password != null">
+			and password=#{password}
 		</if>
 		<if test="nickname != null">
 			and nickname=#{nickname}
@@ -196,6 +204,9 @@
 		<if test="createTime != null">
 			and create_time=#{createTime}
 		</if>
+		<if test="lastPasswordResetDate != null">
+			and last_password_reset_date=#{lastPasswordResetDate}
+		</if>
 		<if test="keyword != null">
 			and (name LIKE CONCAT("%", #{keyword}, "%") )
 		</if>
@@ -204,12 +215,13 @@
 	<sql id="columns">
 			id,
 			username,
-			passwod,
+			password,
 			nickname,
 			face_url,
 			last_login_time,
 			is_enable,
 			is_delete,
-			create_time
+			create_time,
+			last_password_reset_date
 	</sql>
 </mapper>

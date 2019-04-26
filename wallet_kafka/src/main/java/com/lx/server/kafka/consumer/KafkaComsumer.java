@@ -79,6 +79,8 @@ public class KafkaComsumer {
 				asset.setUserId(info.getUserId());
 				asset.setAddressId(address.getId());
 				asset.setAssetName("Btc");
+				asset.setAddress(address.getAddress());
+				asset.setVisible(true);
 				asset.setAssetType((byte) 0);
 				asset.setAssetId(0);
 				asset.setCreateTime(new Date());

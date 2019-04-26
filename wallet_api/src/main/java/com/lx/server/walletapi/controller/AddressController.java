@@ -22,6 +22,7 @@ import com.lx.server.kafka.bean.KafkaMessage;
 import com.lx.server.pojo.WalletAddress;
 import com.lx.server.service.CommonService;
 import com.lx.server.service.WalletAddressService;
+import com.lx.server.service.WalletAssetService;
 import com.lx.server.service.WalletServcie;
 import com.lx.server.utils.Tools;
 
@@ -39,6 +40,9 @@ public class AddressController extends AbstractController{
 	
 	@Autowired
 	private WalletAddressService walletAddressService;
+	
+	@Autowired
+	private WalletAssetService assetService;
 	
 	@Autowired
 	private WalletServcie walletServcie;
@@ -94,6 +98,11 @@ public class AddressController extends AbstractController{
 				btcNode.put("balance", 0);
 				btcNode.put("reserved", 0);
 				btcNode.put("frozen", 0);
+				btcNode.put("visible", assetService.pageCount(new HashMap<String,Object>() {{
+					put("address", node.get("address").toString());
+					put("assetId", 0);
+					put("visible", true);
+				}})>0);
 				list.add(btcNode);
 				node.put("assets", list);
 			}

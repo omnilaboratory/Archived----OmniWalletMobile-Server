@@ -1,4 +1,4 @@
-package com.lx.server.walletapi.config;
+package com.lx.server.config;
 
 import org.springframework.security.core.AuthenticationException;
 

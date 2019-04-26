@@ -2,56 +2,39 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!--
-【用户钱包地址的资产】对象关系映射 配置
+【平台推广资产列表】对象关系映射 配置
  @author AutoCode 309444359@qq.com
- @date 2019-04-26 14:37:44
+ @date 2019-04-26 16:50:49
  -->
 <!-- namespace必须指向Dao接口 -->
-<mapper namespace="com.lx.server.dao.WalletAssetDao">
+<mapper namespace="com.lx.server.dao.PopularAssetDao">
 
-	<resultMap id="walletAssetResultMap" type="com.lx.server.pojo.WalletAsset">
+	<resultMap id="popularAssetResultMap" type="com.lx.server.pojo.PopularAsset">
 		<id property="id" column="id" />
-				<result property="addressId" column="address_id" />
-				<result property="address" column="address" />
-				<result property="assetType" column="asset_type" />
 				<result property="assetId" column="asset_id" />
 				<result property="assetName" column="asset_name" />
 				<result property="createTime" column="create_time" />
-				<result property="userId" column="user_id" />
-				<result property="visible" column="visible" />
+				<result property="createBy" column="create_by" />
 	</resultMap>
-	<resultMap id="mapResultMap"  type="java.util.HashMap" extends="walletAssetResultMap"></resultMap>
-	<resultMap id="pageResultMap"  type="java.util.HashMap" extends="walletAssetResultMap"></resultMap>
+	<resultMap id="mapResultMap"  type="java.util.HashMap" extends="popularAssetResultMap"></resultMap>
+	<resultMap id="pageResultMap"  type="java.util.HashMap" extends="popularAssetResultMap"></resultMap>
 
 
-	<insert id="insert" parameterType="com.lx.server.pojo.WalletAsset" useGeneratedKeys="true" keyProperty="id" >
-	   insert into t_wallet_asset (
+	<insert id="insert" parameterType="com.lx.server.pojo.PopularAsset" useGeneratedKeys="true" keyProperty="id" >
+	   insert into t_popular_asset (
 	    <include refid="columns" />
 	   )values (
 	     #{id},
-	     #{addressId},
-	     #{address},
-	     #{assetType},
 	     #{assetId},
 	     #{assetName},
 	     #{createTime},
-	     #{userId},
-	     #{visible}
+	     #{createBy}
 	   )
 	</insert>
 
-	<update id="update" parameterType="com.lx.server.pojo.WalletAsset">
-		update t_wallet_asset
+	<update id="update" parameterType="com.lx.server.pojo.PopularAsset">
+		update t_popular_asset
 		<set>
-		<if test="addressId != null">
-			address_id=#{addressId},
-		</if>
-		<if test="address != null">
-			address=#{address},
-		</if>
-		<if test="assetType != null">
-			asset_type=#{assetType},
-		</if>
 		<if test="assetId != null">
 			asset_id=#{assetId},
 		</if>
@@ -61,26 +44,14 @@
 		<if test="createTime != null">
 			create_time=#{createTime},
 		</if>
-		<if test="userId != null">
-			user_id=#{userId},
-		</if>
-		<if test="visible != null">
-			visible=#{visible},
+		<if test="createBy != null">
+			create_by=#{createBy},
 		</if>
 		</set>
 		<where>
 			1=1
 			<if test="id != null">
 				and id=#{id}
-			</if>
-			<if test="n_addressId != null">
-				and address_id=#{n_addressId}
-			</if>
-			<if test="n_address != null">
-				and address=#{n_address}
-			</if>
-			<if test="n_assetType != null">
-				and asset_type=#{n_assetType}
 			</if>
 			<if test="n_assetId != null">
 				and asset_id=#{n_assetId}
@@ -91,34 +62,31 @@
 			<if test="n_createTime != null">
 				and create_time=#{n_createTime}
 			</if>
-			<if test="n_userId != null">
-				and user_id=#{n_userId}
-			</if>
-			<if test="n_visible != null">
-				and visible=#{n_visible}
+			<if test="n_createBy != null">
+				and create_by=#{n_createBy}
 			</if>
 		</where>
 	</update>
 
 	<delete id="delete" parameterType="map">
 	   delete from
-	     t_wallet_asset
+	     t_popular_asset
 	   	where 
 	    id=#{id}
 	</delete>
 
-	<select id="selectObject" parameterType="map" resultMap="walletAssetResultMap">
+	<select id="selectObject" parameterType="map" resultMap="popularAssetResultMap">
 	   select
 	<include refid="columns" />
-	   from t_wallet_asset
+	   from t_popular_asset
 	   where
 	    id=#{id}
 	</select>
 
-	<select id="selectObjectList" parameterType="map" resultMap="walletAssetResultMap">
+	<select id="selectObjectList" parameterType="map" resultMap="popularAssetResultMap">
 	   select
 	<include refid="columns" />
-	   from t_wallet_asset
+	   from t_popular_asset
 	   <where>
 	 <include refid="normalCondition"/>
 	   </where>
@@ -127,7 +95,7 @@
 	<select id="selectMap" parameterType="map" resultMap="mapResultMap">
 	   select
 	<include refid="columns" />
-	   from t_wallet_asset
+	   from t_popular_asset
 	   where
 	    id=#{id}
 	</select>
@@ -135,7 +103,7 @@
 	<select id="selectMapList" parameterType="map" resultMap="mapResultMap">
 	   select
 	<include refid="columns" />
-	   from t_wallet_asset
+	   from t_popular_asset
 	   <where>
 	   <include refid="normalCondition"/>
 	   </where>
@@ -148,7 +116,7 @@
 	limit #{offset},#{rows}
 	</select>
 
-	<select id="pageBean" parameterType="map" resultMap="walletAssetResultMap">
+	<select id="pageBean" parameterType="map" resultMap="popularAssetResultMap">
 	   select
 	<include refid="columns" />
 	<include refid="pageCondition" />
@@ -161,7 +129,7 @@
 	</select>
 
 	<sql id="pageCondition">
-	   from t_wallet_asset
+	   from t_popular_asset
 	   <where>
 			<include refid="normalCondition"/>
 	   </where>
@@ -172,15 +140,6 @@
 		<if test="id != null">
 			and id=#{id}
 		</if>
-		<if test="addressId != null">
-			and address_id=#{addressId}
-		</if>
-		<if test="address != null">
-			and address=#{address}
-		</if>
-		<if test="assetType != null">
-			and asset_type=#{assetType}
-		</if>
 		<if test="assetId != null">
 			and asset_id=#{assetId}
 		</if>
@@ -190,11 +149,8 @@
 		<if test="createTime != null">
 			and create_time=#{createTime}
 		</if>
-		<if test="userId != null">
-			and user_id=#{userId}
-		</if>
-		<if test="visible != null">
-			and visible=#{visible}
+		<if test="createBy != null">
+			and create_by=#{createBy}
 		</if>
 		<if test="keyword != null">
 			and (name LIKE CONCAT("%", #{keyword}, "%") )
@@ -203,13 +159,9 @@
 	</sql>
 	<sql id="columns">
 			id,
-			address_id,
-			address,
-			asset_type,
 			asset_id,
 			asset_name,
 			create_time,
-			user_id,
-			visible
+			create_by
 	</sql>
 </mapper>
