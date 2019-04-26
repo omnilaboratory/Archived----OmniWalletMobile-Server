@@ -1,5 +1,6 @@
 package com.lx.server.walletapi.controller;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -83,7 +84,17 @@ public class AddressController extends AbstractController{
 			List<Object> nodes = page.getData();
 			for (Object object : nodes) {
 				Map<String, Object> node = (Map<String, Object>)object;
-				List<Map<String, Object>> list = walletServcie.getAllBalanceByAddress(node.get("address").toString());
+//				List<Map<String, Object>> list = walletServcie.getAllBalanceByAddress(node.get("address").toString());
+				List<Map<String, Object>> list = new ArrayList<Map<String,Object>>();
+				Map<String, Object> btcNode = new HashMap<>();
+				btcNode.put("propertyid", 0);
+				btcNode.put("name", "Btc");
+				btcNode.put("address", node.get("address").toString());
+				btcNode.put("account", "");
+				btcNode.put("balance", 0);
+				btcNode.put("reserved", 0);
+				btcNode.put("frozen", 0);
+				list.add(btcNode);
 				node.put("assets", list);
 			}
 		}

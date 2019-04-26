@@ -140,7 +140,7 @@ public class CommonController extends AbstractController{
 		rate =commonService.getCoinExchangeRate("usdt","cny");
 		Assert.notNull(rate, "fail to get  usdt rate ");
 		node = new HashMap<>();
-		node.put("name", "usdt");
+		node.put("name", "usdtCny");
 		node.put("rate", rate);
 		data.add(3,node);
 		
