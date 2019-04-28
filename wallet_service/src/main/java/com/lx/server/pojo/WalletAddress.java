@@ -8,7 +8,7 @@ import com.lx.server.pojo.AbstractObject;
  * 【用户钱包地址】持久化对象 数据库表：t_wallet_address
  *
  * @author AutoCode 309444359@qq.com
- * @date 2019-04-13 23:59:47
+ * @date 2019-04-28 09:36:25
  *
  */
 public class WalletAddress extends AbstractObject {
@@ -29,6 +29,8 @@ public class WalletAddress extends AbstractObject {
     private Boolean isEnable;
     // 创建时间
     private Date createTime;
+    // 是否可见
+    private Boolean visible;
 
     /** 获取 id 属性 */
     public Integer getId() {
@@ -100,6 +102,16 @@ public class WalletAddress extends AbstractObject {
         this.createTime = createTime;
     }
 
+    /** 获取 是否可见 属性 */
+    public Boolean getVisible() {
+        return visible;
+    }
+
+    /** 设置 是否可见 属性 */
+    public void setVisible(Boolean visible) {
+        this.visible = visible;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
@@ -111,6 +123,7 @@ public class WalletAddress extends AbstractObject {
         sb.append(", addressName=").append(addressName);
         sb.append(", isEnable=").append(isEnable);
         sb.append(", createTime=").append(createTime);
+        sb.append(", visible=").append(visible);
         sb.append('}');
         return sb.toString();
     }

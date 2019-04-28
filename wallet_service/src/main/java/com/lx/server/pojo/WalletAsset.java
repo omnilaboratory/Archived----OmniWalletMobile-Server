@@ -8,7 +8,7 @@ import com.lx.server.pojo.AbstractObject;
  * 【用户钱包地址的资产】持久化对象 数据库表：t_wallet_asset
  *
  * @author AutoCode 309444359@qq.com
- * @date 2019-04-26 14:37:44
+ * @date 2019-04-28 10:00:16
  *
  */
 public class WalletAsset extends AbstractObject {
@@ -17,8 +17,6 @@ public class WalletAsset extends AbstractObject {
 
     // id
     private Integer id;
-    // t_wallet_address id
-    private Integer addressId;
     // 钱包地址
     private String address;
     // 支持类型 0 btc币，1omni资产
@@ -42,16 +40,6 @@ public class WalletAsset extends AbstractObject {
     /** 设置 id 属性 */
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    /** 获取 t_wallet_address id 属性 */
-    public Integer getAddressId() {
-        return addressId;
-    }
-
-    /** 设置 t_wallet_address id 属性 */
-    public void setAddressId(Integer addressId) {
-        this.addressId = addressId;
     }
 
     /** 获取 钱包地址 属性 */
@@ -129,7 +117,6 @@ public class WalletAsset extends AbstractObject {
         final StringBuilder sb = new StringBuilder();
         sb.append("WalletAsset");
         sb.append("{id=").append(id);
-        sb.append(", addressId=").append(addressId);
         sb.append(", address=").append(address);
         sb.append(", assetType=").append(assetType);
         sb.append(", assetId=").append(assetId);

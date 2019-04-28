@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -18,11 +21,15 @@ import org.springframework.web.client.RestTemplate;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.lx.server.service.CommonService;
+import com.lx.server.service.WalletServcie;
 
 @Service(value = "commonService")
 public class CommonServiceImpl implements CommonService{
 
+	@Autowired
+	private WalletServcie walletServcie;
 	
+	private final Log logger = LogFactory.getLog(getClass());
 	/**
 	 * 获取btc和美元的汇率
 	 * @return
@@ -43,6 +50,7 @@ public class CommonServiceImpl implements CommonService{
 			unit = "usd";
 		}
 		String url = "http://market.jinse.com/api/v1/tick/BITFINEX:"+coinName+"usd?unit="+unit;
+		logger.info("url "+url);
 		if (coinName.startsWith("usdt")) {
 			url = "http://market.jinse.com/api/v1/tick/BITTREX:"+coinName+"usd?unit="+unit;
 		}
@@ -100,7 +108,7 @@ public class CommonServiceImpl implements CommonService{
 	private BigDecimal divider = new BigDecimal("100000000");
 
 	@Override
-	public Map<String, Object> getTransactionsByAddress(String address) {
+	public Map<String, Object> getTransactionsByAddress(String address) throws Exception {
 //		14rihN27NqVTtBfQVq6KrccQSWeWGKK46H
 		String url = "https://blockchain.info/address/"+address+"?format=json";
 		RestTemplate client = new RestTemplate();
@@ -124,8 +132,17 @@ public class CommonServiceImpl implements CommonService{
 		{
 			Map<String, Object> node = new HashMap<>();
 			JSONObject jsonObject = dataArray.getJSONObject(i);
+			String txId = jsonObject.getString("hash");
+			Object transObj = walletServcie.getBtcTransaction(txId);
+			Integer confirmAmount = 0;
+			if (transObj != null) {
+				Map<String, Object> transaction = (Map<String, Object>) transObj;
+				confirmAmount = (Integer) transaction.get("confirmations");
+			}
 			node.put("time", jsonObject.getDate("time"));
-			node.put("txId", jsonObject.get("hash"));
+			node.put("txId", txId);
+			node.put("result", jsonObject.getInteger("result"));
+			node.put("confirmAmount",confirmAmount);
 			node.put("blockHeight", jsonObject.get("block_height"));
 			boolean isSend = this.checkAddressIsSend(jsonObject, address);
 			node.put("isSend", isSend);

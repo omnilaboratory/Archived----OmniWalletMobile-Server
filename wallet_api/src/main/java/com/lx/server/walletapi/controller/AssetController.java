@@ -63,7 +63,7 @@ public class AssetController extends AbstractController{
 	@ApiOperation("设置asset是否显示")
 	public ResultTO setAssetVisible(String address,Integer assetId, Boolean visible) {
 		Assert.isTrue(Tools.checkStringExist(address), "address is null");
-		Assert.notNull(assetId, "assetId is null");
+		Assert.isTrue(assetId!=null && assetId>0, "assetId is wrong");
 		Assert.notNull(visible, "visible is null");
 		if (walletAssetService.update(new HashMap<String,Object>() {{
 			put("n_assetId", assetId);

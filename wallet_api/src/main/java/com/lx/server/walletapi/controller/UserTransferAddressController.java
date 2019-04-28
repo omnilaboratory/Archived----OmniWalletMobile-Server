@@ -77,7 +77,7 @@ public class UserTransferAddressController extends AbstractController {
 	@ApiOperation("删除地址")
 	public ResultTO delAddress(Integer id) throws Exception {
 		if (userTransferAddressService.delete(id)>0) {
-			ResultTO.newSuccessResult("success");
+			return ResultTO.newSuccessResult("success");
 		}
 		return ResultTO.newFailResult("fail");
 	}

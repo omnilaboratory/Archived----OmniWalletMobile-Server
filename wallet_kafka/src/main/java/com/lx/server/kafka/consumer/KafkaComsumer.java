@@ -73,11 +73,11 @@ public class KafkaComsumer {
 				address.setAddressIndex(jsonObject.getInteger("addressIndex"));
 				address.setCreateTime(new Date());
 				address.setIsEnable(true);
+				address.setVisible(true);
 				walletAddressService.insert(address);
 				
 				WalletAsset asset = new WalletAsset();
 				asset.setUserId(info.getUserId());
-				asset.setAddressId(address.getId());
 				asset.setAssetName("Btc");
 				asset.setAddress(address.getAddress());
 				asset.setVisible(true);
@@ -95,14 +95,11 @@ public class KafkaComsumer {
 		if (info!=null&&jsonObject.containsKey("assetId")) {
 			WalletAsset asset = new WalletAsset();
 			asset.setUserId(info.getUserId());
-			asset.setAddressId(jsonObject.getInteger("addressId"));
+			asset.setAddress(jsonObject.getString("address"));
 			asset.setAssetType(jsonObject.getByte("assetType"));
 			asset.setAssetId(jsonObject.getInteger("assetId"));
 			asset.setCreateTime(new Date());
 			walletAssetService.insert(asset);
-			
-			
-			
 		}
 	}
 	

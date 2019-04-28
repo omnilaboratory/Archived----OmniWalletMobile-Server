@@ -4,14 +4,13 @@
 <!--
 【用户钱包地址的资产】对象关系映射 配置
  @author AutoCode 309444359@qq.com
- @date 2019-04-26 14:37:44
+ @date 2019-04-28 10:00:16
  -->
 <!-- namespace必须指向Dao接口 -->
 <mapper namespace="com.lx.server.dao.WalletAssetDao">
 
 	<resultMap id="walletAssetResultMap" type="com.lx.server.pojo.WalletAsset">
 		<id property="id" column="id" />
-				<result property="addressId" column="address_id" />
 				<result property="address" column="address" />
 				<result property="assetType" column="asset_type" />
 				<result property="assetId" column="asset_id" />
@@ -29,7 +28,6 @@
 	    <include refid="columns" />
 	   )values (
 	     #{id},
-	     #{addressId},
 	     #{address},
 	     #{assetType},
 	     #{assetId},
@@ -43,9 +41,6 @@
 	<update id="update" parameterType="com.lx.server.pojo.WalletAsset">
 		update t_wallet_asset
 		<set>
-		<if test="addressId != null">
-			address_id=#{addressId},
-		</if>
 		<if test="address != null">
 			address=#{address},
 		</if>
@@ -72,9 +67,6 @@
 			1=1
 			<if test="id != null">
 				and id=#{id}
-			</if>
-			<if test="n_addressId != null">
-				and address_id=#{n_addressId}
 			</if>
 			<if test="n_address != null">
 				and address=#{n_address}
@@ -172,9 +164,6 @@
 		<if test="id != null">
 			and id=#{id}
 		</if>
-		<if test="addressId != null">
-			and address_id=#{addressId}
-		</if>
 		<if test="address != null">
 			and address=#{address}
 		</if>
@@ -203,7 +192,6 @@
 	</sql>
 	<sql id="columns">
 			id,
-			address_id,
 			address,
 			asset_type,
 			asset_id,

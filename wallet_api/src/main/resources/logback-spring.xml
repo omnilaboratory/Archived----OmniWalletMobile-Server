@@ -7,7 +7,6 @@
     <!-- prod文件路径 -->
     <property name="PRO_FILE_PATH" value="/opt/tomcat/logs" />
 
-
 	<include resource="org/springframework/boot/logging/logback/base.xml" />
 	<appender name="rollingAppender"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -16,12 +15,13 @@
 			<fileNamePattern>${PRO_FILE_PATH}//application-%d{yyyy-MM-dd}.log</fileNamePattern>
 			<maxHistory>60</maxHistory>
 		</rollingPolicy>
-		<encoder><!-- 必须指定，否则不会往文件输出内容 -->
+		<encoder>
 			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{5} - %msg%n</pattern>
 		</encoder>
 		<append>true</append>
 		<prudent>false</prudent>
-	</appender>
+	</appender> 
+	
 	<logger name="com.lx.server.dao" level="ALL">
 		<appender-ref ref="rollingAppender" />
 	</logger>

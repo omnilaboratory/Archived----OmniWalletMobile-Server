@@ -123,12 +123,14 @@ public class WalletServcieImpl implements WalletServcie {
 	@Override
 	public Map<String, Object> getBtcBalance(String address) throws Exception {
 		Assert.isTrue(Tools.checkStringExist(address), "address be empty");
-		this.sendCmd("importaddress", new Object[] {address,"",false},String.class);
+		if (this.omniValidateaddress(address)==false) {
+			this.sendCmd("importaddress", new Object[] {address,"",false},String.class);
+		}
 		List<Map<String, Object>> list = null;
 		try {
 			List<String> fromAddress = new ArrayList<>();
 			fromAddress.add(address);
-			list = this.sendCmd("listunspent", new Object[] {0,Integer.MAX_VALUE,fromAddress},ArrayList.class);
+			list = this.sendCmd("listunspent", new Object[] {1,Integer.MAX_VALUE,fromAddress},ArrayList.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -176,7 +178,10 @@ public class WalletServcieImpl implements WalletServcie {
 	public List<Map<String, Object>> getAllBalanceByAddress(String address) throws Exception {
 		Assert.isTrue(Tools.checkStringExist(address), "address be empty");
 		
-		this.sendCmd("importaddress", new Object[] {address,"",false},String.class);
+		if (this.omniValidateaddress(address)==false) {
+			this.sendCmd("importaddress", new Object[] {address,"",false},String.class);
+		}
+		
 		List<Map<String, Object>> omniList = null;
 		try {
 			omniList = this.jsonRpcHttpClient.invoke("omni_getallbalancesforaddress", new Object[] { address }, List.class);
@@ -258,7 +263,7 @@ public class WalletServcieImpl implements WalletServcie {
 	 */
 	@Override
 	public String btcSend(String fromBitCoinAddress,String privkey,String toBitCoinAddress,String amount,String note) throws Exception {
-		return this.btcRawTransaction(fromBitCoinAddress,privkey, toBitCoinAddress, new BigDecimal(amount), note);
+		return this.btcRawTransaction(fromBitCoinAddress,privkey, toBitCoinAddress, new BigDecimal(amount),new BigDecimal(0.0005), note);
 	}
 	
 	
@@ -267,19 +272,20 @@ public class WalletServcieImpl implements WalletServcie {
 	 */
 	@SuppressWarnings({ "unchecked", "unused" })
 	@Override
-	public String btcRawTransaction(String fromBitCoinAddress,String privkey,String toBitCoinAddress,BigDecimal amount,String note) throws Exception {
+	public String btcRawTransaction(String fromBitCoinAddress,String privkey,String toBitCoinAddress,BigDecimal amount,BigDecimal mineFee,String note) throws Exception {
 		Assert.isTrue(amount!=null&&amount.compareTo(BigDecimal.ZERO)==1,"amount must greater 0");
+		Assert.isTrue(mineFee!=null&&mineFee.compareTo(BigDecimal.ZERO)==1,"mineFee must greater 0");
 		Assert.isTrue(Tools.checkStringExist(fromBitCoinAddress),"fromBitCoinAddress can not be null");
 		Assert.isTrue(Tools.checkStringExist(toBitCoinAddress),"toBitCoinAddress can not be null");
 		List<String> fromAddress = new ArrayList<>();
 		fromAddress.add(fromBitCoinAddress);
-		List<Map<String, Object>> list = this.sendCmd("listunspent", new Object[] {0,Integer.MAX_VALUE,fromAddress},ArrayList.class);
+		List<Map<String, Object>> list = this.sendCmd("listunspent", new Object[] {1,Integer.MAX_VALUE,fromAddress},ArrayList.class);
 		
 		Assert.isTrue(list!=null&&list.isEmpty()==false, "empty balance");
 		logger.info("list.size: "+list.size());
 		logger.info(list);
 		//矿工费
-		BigDecimal fee = new BigDecimal("0.00005");
+		BigDecimal fee = mineFee;
 		BigDecimal out= fee.add(amount);
 		List<Map<String, Object>> myList = new ArrayList<>();
 		Map<String, Object> node = new HashMap<>();
@@ -387,6 +393,15 @@ public class WalletServcieImpl implements WalletServcie {
 		String object = this.sendCmd("omni_sendunfreeze", new Object[] {fromAddress,toAddress,propertyId,amount},String.class);
 		return object;
 	}
+	//验证此地址是否是服务器生成的
+	private boolean omniValidateaddress(String address) throws Exception {
+		Map<String, Object> map = this.sendCmd("validateaddress", new Object[] {address},Map.class);
+		Boolean ismine = (Boolean) map.get("ismine");
+		if (ismine!=null&&ismine==true) {
+			return true;
+		}
+		return false;
+	}
 	
 	/**
 	 * 获取有关Omni事务的详细信息 omni_gettransaction
@@ -425,14 +440,19 @@ public class WalletServcieImpl implements WalletServcie {
 //		Assert.isTrue(Tools.checkStringExist(privkey),"privkey can not be null");
 		Assert.isTrue(minerFee!=null&&minerFee.compareTo(BigDecimal.ZERO)==1,"minerFee must greater 0");
 		
-		this.sendCmd("importaddress", new Object[] {fromBitCoinAddress ,"",false},String.class);
-		this.sendCmd("importaddress", new Object[] {toBitCoinAddress,"",false},String.class);
+		logger.info("0.importaddress");
+		if (this.omniValidateaddress(fromBitCoinAddress)==false) {
+			this.sendCmd("importaddress", new Object[] {fromBitCoinAddress ,"",false},String.class);
+		}
+		if (this.omniValidateaddress(toBitCoinAddress)==false) {
+			this.sendCmd("importaddress", new Object[] {toBitCoinAddress,"",false},String.class);
+		}
 		
 		logger.info("1.读取指定地址的UTXO（listunspent）");
 		//1.读取指定地址的UTXO（listunspent）
 		List<String> fromAddress = new ArrayList<>();
 		fromAddress.add(fromBitCoinAddress);
-		List<Map<String, Object>> list = this.sendCmd("listunspent", new Object[] {0,Integer.MAX_VALUE,fromAddress},ArrayList.class);
+		List<Map<String, Object>> list = this.sendCmd("listunspent", new Object[] {1,Integer.MAX_VALUE,fromAddress},ArrayList.class);
 		logger.info("unspent list");
 		logger.info(list);
 		Assert.isTrue(list!=null&&list.isEmpty()==false, "empty balance");
@@ -509,7 +529,7 @@ public class WalletServcieImpl implements WalletServcie {
 //		8.广播
 		logger.info("8.广播");
 		String hexStr = signrawtransaction.get("hex").toString();
-		String txId = ""; //this.sendCmd("sendrawtransaction", new Object[] {hexStr}, String.class);
+		String txId = this.sendCmd("sendrawtransaction", new Object[] {hexStr}, String.class);
 		logger.info(txId);
 		return txId;
 	}

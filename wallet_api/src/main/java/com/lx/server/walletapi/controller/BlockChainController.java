@@ -122,7 +122,7 @@ public class BlockChainController extends AbstractController{
     @PostMapping("btcSend")
     public ResultTO btcSend(String fromBitCoinAddress,String privkey,String toBitCoinAddress,BigDecimal amount,BigDecimal minerFee) throws Exception{
 //    	privkey = RSAEncrypt.decrypt(privkey, getUserId());
-    	String ret = walletServcie.btcSend(fromBitCoinAddress,privkey, toBitCoinAddress, amount.toString(),"desc");
+    	String ret =walletServcie.btcRawTransaction(fromBitCoinAddress, privkey, toBitCoinAddress, amount, minerFee,"");
     	if (ret!=null) {
     		return ResultTO.newSuccessResult("success",ret);
 		}

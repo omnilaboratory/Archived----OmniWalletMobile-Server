@@ -9,6 +9,6 @@ public interface CommonService {
 
 	BigDecimal getExchangeRateBaseEUR(String type);
 
-	Map<String, Object> getTransactionsByAddress(String address);
+	Map<String, Object> getTransactionsByAddress(String address) throws Exception;
 
 }
