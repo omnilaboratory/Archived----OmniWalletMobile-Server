@@ -31,6 +31,9 @@
 	<logger name="com.lx.server.service.impl" level="ALL">
 		<appender-ref ref="rollingAppender" />
 	</logger>
+	<logger name="com.lx.server.kafka" level="ALL">
+		<appender-ref ref="rollingAppender" />
+	</logger>
 	
 
 </configuration>

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.lx.server.service.CommonService;
@@ -42,6 +43,22 @@ public class CommonServiceImpl implements CommonService{
 		}
 		return null;
 	}
+	
+	@Override
+	public JSONObject getRateFromBlockChain() {
+		String url = "https://blockchain.info/ticker";
+		RestTemplate client = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<MultiValueMap<String, String>>(null,headers);
+		ResponseEntity<String> response = client.exchange(url, HttpMethod.GET, requestEntity, String.class);
+		if (response!=null) {
+			return JSON.parseObject(response.getBody()); 
+		}
+		return null;
+	}
+	
+	
 	
 //	{"date":"1546853359","ticker":{"high":"4074.32","vol":"287.6153","last":"4006.97","low":"3790.83","buy":"4000.99","sell":"4007.45"}}
 //	https://github.com/jinsecaijing/api_wiki/wiki/%E8%A1%8C%E6%83%85%E6%8E%A5%E5%8F%A3  行情接口
@@ -78,8 +95,12 @@ public class CommonServiceImpl implements CommonService{
 				}
 			}
 		}
+		
 		return null;
 	}
+	
+	
+	
 	
 	@Override
 	public BigDecimal getExchangeRateBaseEUR(String type) {
@@ -119,9 +140,8 @@ public class CommonServiceImpl implements CommonService{
 		String data = response.getBody();
 		JSONObject dataJson = JSONObject.parseObject(data);
 		JSONArray dataArray = dataJson.getJSONArray("txs");
+		
 		Map<String, Object> retData = new HashMap<>();
-		
-		
 		
 		retData.put("txCount", dataJson.getInteger("n_tx"));
 		retData.put("finalBalance", dataJson.getBigDecimal("final_balance").divide(divider));
@@ -207,6 +227,47 @@ public class CommonServiceImpl implements CommonService{
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public Map<String, Object> getOmniTransactions(String address, Integer assetId) throws Exception {
+		List<Map<String, Object>> omniData = walletServcie.getOmniTransactions(address);
+		List<Map<String, Object>> datas = new ArrayList<>();
+		for (Map<String, Object> map : omniData) {
+			Integer propertyid = (Integer) map.get("propertyid");
+			if (propertyid.compareTo(assetId)==0) {
+				datas.add(map);
+			}
+		}
+		
+		Map<String, Object> retData = new HashMap<>();
+		
+		retData.put("txCount", datas.size());
+		List<Object> list = new ArrayList<>();
+		for(int i = 0;i<datas.size();i++) 
+		{
+			Map<String, Object> dateNode = datas.get(i);
+			Map<String, Object> node = new HashMap<>();
+			node.put("time", dateNode.get("blocktime"));
+			node.put("txId", dateNode.get("txid"));
+			node.put("result", dateNode.get("amount"));
+			node.put("confirmAmount",dateNode.get("confirmations"));
+			node.put("blockHeight", dateNode.get("block"));
+			String sendingaddress = (String) dateNode.get("sendingaddress");
+			String referenceaddress = (String) dateNode.get("referenceaddress");
+			boolean isSend = false;
+			if (sendingaddress.equals(address)) {
+				isSend =true;
+				node.put("targetAddress",referenceaddress);
+			}else {
+				node.put("targetAddress",sendingaddress);
+			}
+			node.put("isSend", isSend);
+			node.put("txValue",dateNode.get("amount"));
+			list.add(node);
+		}
+		retData.put("list", list);
+		return retData;
 	}
 	
 }

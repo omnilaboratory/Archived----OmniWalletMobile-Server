@@ -544,4 +544,10 @@ public class WalletServcieImpl implements WalletServcie {
 		}
 		return this.sendCmd("listtransactions", new Object[] {"*",pageSize,(pageIndex-1)*pageSize}, ArrayList.class);
 	}
+	
+	@Override
+	public List<Map<String, Object>> getOmniTransactions(String address) throws Exception {
+		List<Map<String, Object>> nodes = this.sendCmd("omni_listtransactions", new Object[] {address,10000}, ArrayList.class);
+		return nodes;
+	}
 }

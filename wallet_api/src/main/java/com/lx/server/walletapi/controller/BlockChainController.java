@@ -113,7 +113,7 @@ public class BlockChainController extends AbstractController{
     
     
     @ApiOperation("omni原生转账")
-    @GetMapping("omniRawTransaction")
+    @PostMapping("omniRawTransaction")
     public ResultTO omniRawTransaction(Integer propertyId, String fromBitCoinAddress,String privkey, String toBitCoinAddress, BigDecimal minerFee,BigDecimal amount, String note) throws Exception{
 //    	privkey = RSAEncrypt.decrypt(privkey, getUserId());
     	return ResultTO.newSuccessResult(walletServcie.omniRawTransaction(propertyId, fromBitCoinAddress, privkey, toBitCoinAddress, minerFee, amount, note));

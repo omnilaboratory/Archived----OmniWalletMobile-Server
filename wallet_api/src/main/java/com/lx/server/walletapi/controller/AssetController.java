@@ -59,7 +59,7 @@ public class AssetController extends AbstractController{
 	}
 	
 	@SuppressWarnings("serial")
-	@GetMapping("setAssetVisible")
+	@PostMapping("setAssetVisible")
 	@ApiOperation("设置asset是否显示")
 	public ResultTO setAssetVisible(String address,Integer assetId, Boolean visible) {
 		Assert.isTrue(Tools.checkStringExist(address), "address is null");

@@ -1,7 +1,6 @@
 package com.lx.server.walletapi.controller;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.alibaba.fastjson.JSONObject;
 import com.lx.server.bean.ResultTO;
 import com.lx.server.enums.EnumFolderURI;
 import com.lx.server.pojo.UserClient;
@@ -114,44 +114,61 @@ public class CommonController extends AbstractController{
 	@ApiOperation("比特币、Usdt和欧元的实时汇率")
 	public ResultTO btcAndUsdtExchangeRates(){
 		List<Map<String, Object>> data = new ArrayList<>();
-		//获取对应数字币的汇率
-		BigDecimal rate = commonService.getCoinExchangeRate("btc","usd");
-		Assert.notNull(rate, "fail to get  btc rate ");
-		Map<String, Object> node = new HashMap<>();
-		node.put("name", "btc");
-		node.put("rate", rate);
-		data.add(0,node);
+		JSONObject jsonObject = commonService.getRateFromBlockChain();
+		if (jsonObject!=null) {
+			//获取对应数字币的汇率
+			BigDecimal rate = jsonObject.getJSONObject("USD").getBigDecimal("last");
+			Map<String, Object> node = new HashMap<>();
+			node.put("name", "btc");
+			node.put("rate", rate);
+			data.add(0,node);
+			
+			rate = jsonObject.getJSONObject("CNY").getBigDecimal("last");
+			node = new HashMap<>();
+			node.put("name", "btcCNY");
+			node.put("rate", rate);
+			data.add(1,node);
+			return ResultTO.newSuccessResult(data);
+		}
+		return ResultTO.newFailResult("fail");
 		
-		rate = commonService.getCoinExchangeRate("btc","cny");
-		Assert.notNull(rate, "fail to get  btc rate ");
-		node = new HashMap<>();
-		node.put("name", "btcCNY");
-		node.put("rate", rate);
-		data.add(1,node);
+//		BigDecimal rate = commonService.getCoinExchangeRate("btc","usd");
+//		Assert.notNull(rate, "fail to get  btc rate ");
+//		Map<String, Object> node = new HashMap<>();
+//		node.put("name", "btc");
+//		node.put("rate", rate);
+//		data.add(0,node);
+//		
+//		rate = commonService.getCoinExchangeRate("btc","cny");
+//		Assert.notNull(rate, "fail to get  btc rate ");
+//		node = new HashMap<>();
+//		node.put("name", "btcCNY");
+//		node.put("rate", rate);
+//		data.add(1,node);
+//		
+//		rate =commonService.getCoinExchangeRate("usdt","usd");
+//		Assert.notNull(rate, "fail to get  usdt rate ");
+//		node = new HashMap<>();
+//		node.put("name", "usdt");
+//		node.put("rate", rate);
+//		data.add(2,node);
+//		
+//		
+//		rate =commonService.getCoinExchangeRate("usdt","cny");
+//		Assert.notNull(rate, "fail to get  usdt rate ");
+//		node = new HashMap<>();
+//		node.put("name", "usdtCny");
+//		node.put("rate", rate);
+//		data.add(3,node);
+//		
+//		rate =commonService.getExchangeRateBaseEUR("USD");
+//		Assert.notNull(rate, "fail to get  usd rate ");
+//		node = new HashMap<>();
+//		node.put("name", "EUR");
+//		node.put("rate", BigDecimal.ONE.divide(rate, 4, RoundingMode.FLOOR));
+//		data.add(4,node);
 		
-		rate =commonService.getCoinExchangeRate("usdt","usd");
-		Assert.notNull(rate, "fail to get  usdt rate ");
-		node = new HashMap<>();
-		node.put("name", "usdt");
-		node.put("rate", rate);
-		data.add(2,node);
 		
-		
-		rate =commonService.getCoinExchangeRate("usdt","cny");
-		Assert.notNull(rate, "fail to get  usdt rate ");
-		node = new HashMap<>();
-		node.put("name", "usdtCny");
-		node.put("rate", rate);
-		data.add(3,node);
-		
-		rate =commonService.getExchangeRateBaseEUR("USD");
-		Assert.notNull(rate, "fail to get  usd rate ");
-		node = new HashMap<>();
-		node.put("name", "EUR");
-		node.put("rate", BigDecimal.ONE.divide(rate, 4, RoundingMode.FLOOR));
-		data.add(4,node);
-		
-		return ResultTO.newSuccessResult(data);
 	}
 	
 }

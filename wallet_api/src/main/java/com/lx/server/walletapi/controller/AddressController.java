@@ -61,7 +61,7 @@ public class AddressController extends AbstractController{
 		walletAddress.setUserId(getUserId());
 		
 		int count =  walletAddressService.pageCount(new HashMap<String,Object>() {{
-			put("uesrId", walletAddress.getUserId());
+			put("userId", walletAddress.getUserId());
 			put("address", walletAddress.getAddress());
 		}});
 		Assert.isTrue(count==0, "address is exist");
@@ -72,7 +72,7 @@ public class AddressController extends AbstractController{
 	}
 	
 	@SuppressWarnings("serial")
-	@GetMapping("addAsset")
+	@PostMapping("addAsset")
 	@ApiOperation("添加资产")
 	public ResultTO setVisible(String address, Integer assetId,String assetName) {
 		Assert.isTrue(Tools.checkStringExist(address), "address is null");
@@ -102,8 +102,8 @@ public class AddressController extends AbstractController{
 	}
 	
 	@SuppressWarnings("serial")
-	@GetMapping("setVisible")
-	@ApiOperation("设置asset是否显示")
+	@PostMapping("setVisible")
+	@ApiOperation("设置address是否显示")
 	public ResultTO setVisible(String address, Boolean visible) {
 		Assert.isTrue(Tools.checkStringExist(address), "address is null");
 		Assert.notNull(visible, "visible is null");
@@ -183,15 +183,32 @@ public class AddressController extends AbstractController{
 	
 	
 	/**
-	 * 根据address获取交易记录
+	 * 根据address获取btc交易记录
 	 * @return
 	 * @throws Exception 
 	 */
 	@GetMapping("getTransactionsByAddress")
-	@ApiOperation("根据address获取交易记录")
+	@ApiOperation("根据address获取btc交易记录")
 	public ResultTO getTransactionsByAddress(String address) throws Exception{
 		Assert.isTrue(Tools.checkStringExist(address), "address is empty");
 		Map<String, Object> data = commonService.getTransactionsByAddress(address);
+		if (data!=null) {
+			return ResultTO.newSuccessResult(data);
+		}
+		return ResultTO.newFailResult("fail");
+	}
+	
+	/**
+	 * 根据address获取omni交易记录
+	 * @return
+	 * @throws Exception 
+	 */
+	@GetMapping("getOmniTransactionsByAddress")
+	@ApiOperation("根据address获取omni交易记录")
+	public ResultTO getOmniTransactionsByAddress(String address,Integer assetId) throws Exception{
+		Assert.isTrue(Tools.checkStringExist(address), "address is empty");
+		Assert.isTrue(assetId!=null&&assetId>0, "assetId is empty");
+		Map<String, Object> data = commonService.getOmniTransactions(address,assetId);
 		if (data!=null) {
 			return ResultTO.newSuccessResult(data);
 		}

@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Optional;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -35,6 +37,8 @@ public class KafkaComsumer {
 	@Autowired
 	private WalletAssetService walletAssetService;
 	
+	private final Log logger = LogFactory.getLog(getClass());
+	
 	@KafkaListener(topics = {"wallet.userTopic"})
     public void userTopicListen(ConsumerRecord<?,?> record){
 		System.err.println("wallet.userTopic");
@@ -55,6 +59,8 @@ public class KafkaComsumer {
 	}
 	
 	private void createWalletAddress(KafkaMessage info) {
+		logger.info("createWalletAddress");
+		logger.info(info);
 		JSONObject jsonObject = (JSONObject) info.getData();
 		if (info!=null&&jsonObject.containsKey("address")) {
 			WalletAddress address = new WalletAddress();
