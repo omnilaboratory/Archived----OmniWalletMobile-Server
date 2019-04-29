@@ -1,23 +1,22 @@
 package com.lx.server.walletapi.controller;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alibaba.fastjson.JSON;
 import com.lx.server.bean.ResultTO;
-import com.lx.server.enums.EnumKafkaTopic;
-import com.lx.server.kafka.bean.KafkaMessage;
 import com.lx.server.pojo.WalletAsset;
 import com.lx.server.service.PopularAssetService;
 import com.lx.server.service.WalletAssetService;
+import com.lx.server.service.WalletServcie;
 import com.lx.server.utils.Tools;
 
 import io.swagger.annotations.Api;
@@ -29,22 +28,25 @@ import io.swagger.annotations.ApiOperation;
 public class AssetController extends AbstractController{
 	
 
-	@Autowired
-    private KafkaTemplate<String, Object> kafkaTemplate;
+//	@Autowired
+//    private KafkaTemplate<String, Object> kafkaTemplate;
 	
 	@Autowired
 	private WalletAssetService walletAssetService;
 	
 	@Autowired
+	private WalletServcie walletServcie ;
+	
+	@Autowired
 	private PopularAssetService popularAssetService;
 	
-	@PostMapping("create")
-	@ApiOperation("创建新地址")
-	public ResultTO createAddress(WalletAsset info) {
-		KafkaMessage message = new KafkaMessage(2,getUserId(), null, info);
-		this.kafkaTemplate.send(EnumKafkaTopic.WalletAddressTopic.value, JSON.toJSONString(message));
-		return ResultTO.newSuccessResult("success");
-	}
+//	@PostMapping("create")
+//	@ApiOperation("创建新地址")
+//	public ResultTO createAddress(WalletAsset info) {
+//		KafkaMessage message = new KafkaMessage(2,getUserId(), null, info);
+//		this.kafkaTemplate.send(EnumKafkaTopic.WalletAddressTopic.value, JSON.toJSONString(message));
+//		return ResultTO.newSuccessResult("success");
+//	}
 	
 	
 	@SuppressWarnings("serial")
@@ -58,19 +60,41 @@ public class AssetController extends AbstractController{
 		return ResultTO.newSuccessResult(list);
 	}
 	
-	@SuppressWarnings("serial")
+	@SuppressWarnings({ "serial", "unchecked" })
 	@PostMapping("setAssetVisible")
 	@ApiOperation("设置asset是否显示")
-	public ResultTO setAssetVisible(String address,Integer assetId, Boolean visible) {
+	public ResultTO setAssetVisible(String address,Integer assetId, Boolean visible) throws NumberFormatException, Exception {
 		Assert.isTrue(Tools.checkStringExist(address), "address is null");
-		Assert.isTrue(assetId!=null && assetId>0, "assetId is wrong");
+		Assert.isTrue(assetId!=null, "assetId is wrong");
 		Assert.notNull(visible, "visible is null");
-		if (walletAssetService.update(new HashMap<String,Object>() {{
-			put("n_assetId", assetId);
-			put("n_address", address);
-			put("visible", visible);
-		}})>0) {
-			return ResultTO.newSuccessResult("success");
+		
+		int count = walletAssetService.pageCount(new HashMap<String,Object>() {{
+			put("assetId", assetId);
+			put("address", address);
+		}});
+		
+		if (count==0) {
+			Map<String, Object> node = (Map<String, Object>) walletServcie.getOmniProperty(Long.parseLong(assetId.toString()));
+			if (node!=null) {
+				WalletAsset asset = new WalletAsset();
+				asset.setUserId(getUserId());
+				asset.setAddress(address);
+				asset.setAssetName(node.get("name")!=null?node.get("name").toString():"");
+				asset.setAssetType((byte) (assetId==0?0:1));
+				asset.setAssetId(assetId);
+				asset.setCreateTime(new Date());
+				if (walletAssetService.insert(asset)>0) {
+					return ResultTO.newSuccessResult("success");
+				}
+			}
+		}else {
+			if (walletAssetService.update(new HashMap<String,Object>() {{
+				put("n_assetId", assetId);
+				put("n_address", address);
+				put("visible", visible);
+			}})>0) {
+				return ResultTO.newSuccessResult("success");
+			}
 		}
 		return ResultTO.newFailResult("fail");
 	}

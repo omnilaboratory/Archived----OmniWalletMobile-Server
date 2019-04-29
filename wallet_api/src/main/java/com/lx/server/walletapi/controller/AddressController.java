@@ -6,18 +6,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alibaba.fastjson.JSON;
 import com.lx.server.bean.Page;
 import com.lx.server.bean.ResultTO;
-import com.lx.server.enums.EnumKafkaTopic;
-import com.lx.server.kafka.bean.KafkaMessage;
 import com.lx.server.pojo.WalletAddress;
 import com.lx.server.pojo.WalletAsset;
 import com.lx.server.service.CommonService;
@@ -35,8 +31,8 @@ import io.swagger.annotations.ApiOperation;
 public class AddressController extends AbstractController{
 	
 
-	@Autowired
-    private KafkaTemplate<String, Object> kafkaTemplate;
+//	@Autowired
+//    private KafkaTemplate<String, Object> kafkaTemplate;
 	
 	@Autowired
 	private WalletAddressService walletAddressService;
@@ -50,14 +46,33 @@ public class AddressController extends AbstractController{
 	@Autowired
 	private CommonService commonService;
 	
+	
+	@SuppressWarnings("serial")
+	@PostMapping("changeAddressName")
+	@ApiOperation("修改钱包名称")
+	public ResultTO changeAddressName(String address,String addressName) {
+		Assert.isTrue(Tools.checkStringExist(address), "address is empty");
+		Assert.isTrue(Tools.checkStringExist(addressName), "addressName is empty");
+		if (walletAddressService.update(new HashMap<String,Object>() {{
+			put("n_address", address);
+			put("n_userId", getUserId());
+			put("addressName", addressName);
+		}})>0) {
+			return ResultTO.newSuccessResult("success");
+		}
+		return ResultTO.newFailResult("fail");
+	}
+	
 	@PostMapping("create")
 	@ApiOperation("创建新地址")
 	public ResultTO createAddress(WalletAddress walletAddress) {
 		Assert.isTrue(Tools.checkStringExist(walletAddress.getAddress()), "address is empty");
 		Assert.isTrue(Tools.checkStringExist(walletAddress.getAddressName()), "addressName is empty");
+		Assert.isTrue(walletAddress.getAddressIndex()!=null&&walletAddress.getAddressIndex()>-1, "error  index ");
 		
 		walletAddress.setCreateTime(new Date());
 		walletAddress.setIsEnable(true);
+		walletAddress.setVisible(true);
 		walletAddress.setUserId(getUserId());
 		
 		int count =  walletAddressService.pageCount(new HashMap<String,Object>() {{
@@ -66,10 +81,54 @@ public class AddressController extends AbstractController{
 		}});
 		Assert.isTrue(count==0, "address is exist");
 		
-		KafkaMessage message = new KafkaMessage(1,getUserId(), null, walletAddress);
-		this.kafkaTemplate.send(EnumKafkaTopic.WalletAddressTopic.value, JSON.toJSONString(message));
+		this.createWalletAddress(walletAddress);
+		
 		return ResultTO.newSuccessResult("success");
 	}
+	
+	private void createWalletAddress(WalletAddress address) {
+		logger.info("createWalletAddress");
+		if (address!=null) {
+			address.setCreateTime(new Date());
+			address.setIsEnable(true);
+			address.setVisible(true);
+			walletAddressService.insert(address);
+			
+			WalletAsset asset = new WalletAsset();
+			asset.setUserId(getUserId());
+			asset.setAssetName("BTC");
+			asset.setAddress(address.getAddress());
+			asset.setVisible(true);
+			asset.setAssetType((byte) 0);
+			asset.setAssetId(0);
+			asset.setCreateTime(new Date());
+			assetService.insert(asset);
+			
+			asset = new WalletAsset();
+			asset.setUserId(getUserId());
+			asset.setAssetName("OMNI");
+			asset.setAddress(address.getAddress());
+			asset.setVisible(true);
+			asset.setAssetType((byte) 1);
+			asset.setAssetId(1);
+			asset.setCreateTime(new Date());
+			assetService.insert(asset);
+			
+			asset = new WalletAsset();
+			asset.setUserId(getUserId());
+			asset.setAssetName("LunarX");
+			asset.setAddress(address.getAddress());
+			asset.setVisible(true);
+			asset.setAssetType((byte) 1);
+			asset.setAssetId(361);
+			asset.setCreateTime(new Date());
+			assetService.insert(asset);
+		}
+	}
+	
+	
+	
+	
 	
 	@SuppressWarnings("serial")
 	@PostMapping("addAsset")
@@ -134,32 +193,34 @@ public class AddressController extends AbstractController{
 		
 		if (page!=null) {
 			List<Object> nodes = page.getData();
-			logger.info(nodes);
 			for (Object object : nodes) {
-				Map<String, Object> node = (Map<String, Object>)object;
 				
-				List<Map<String, Object>> list = walletServcie.getAllBalanceByAddress(node.get("address").toString());
-				logger.info("assetList from omni");
-				logger.info(list);
+				Map<String, Object> node = (Map<String, Object>)object;
 				String address = node.get("address").toString();
+				
+				//有转账记录的资产列表
+				List<Map<String, Object>> list = walletServcie.getAllBalanceByAddress(address);
+				
+				for (Map<String, Object> btcNode : list) {
+					btcNode.put("visible", true);
+				}
+				
+				//获取数据库的某个地址的资产列表  有可能里面有的资产没有交易，就不在list里面   如果在list里面有的，assetllist没有，在设置asset显隐的地方处理
 				List<Map<String, Object>> assetList = assetService.selectMapList(new HashMap<String,Object>() {{
 					put("address", address);
 				}});
-				logger.info("assetList from mysql");
-				logger.info(assetList);
+				
+				
 				boolean flag = false;
 				for (Map<String, Object> map : assetList) {
 					Integer assetId = (Integer) map.get("assetId");
 					flag =true;
 					for (Map<String, Object> btcNode : list) {
 						Integer tempId = (Integer) btcNode.get("propertyid");
-						if (assetId.compareTo(tempId)==0&&tempId.compareTo(0)!=0) {
+						if (assetId.compareTo(tempId)==0) {
 							btcNode.put("visible", map.get("visible"));
-							flag = false;
+							flag = false;//数据库数据找到了与omni的数据的对应
 							break;
-						}
-						if (tempId.compareTo(0)==0) {
-							flag=false;
 						}
 					}
 					if (flag) {
@@ -171,9 +232,9 @@ public class AddressController extends AbstractController{
 						btcNode.put("balance", 0);
 						btcNode.put("reserved", 0);
 						btcNode.put("frozen", 0);
+						btcNode.put("visible", map.get("visible"));
 						list.add(btcNode);
 					}
-					
 				}
 				node.put("assets", list);
 			}

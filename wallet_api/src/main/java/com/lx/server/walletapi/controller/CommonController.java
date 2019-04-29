@@ -11,7 +11,6 @@ import javax.annotation.PostConstruct;
 import javax.crypto.NoSuchPaddingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -103,8 +102,8 @@ public class CommonController extends AbstractController{
 		return ResultTO.newFailResult("上传失败");
 	}
 	
-	@Autowired
-    private KafkaTemplate<String, Object> kafkaTemplate;
+//	@Autowired
+//    private KafkaTemplate<String, Object> kafkaTemplate;
 	
 	/**
 	 * 获取交易汇率

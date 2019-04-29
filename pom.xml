@@ -80,10 +80,10 @@
 		    <scope>provided</scope>
 		</dependency>
 		<!-- kafka -->
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.springframework.kafka</groupId>
 			<artifactId>spring-kafka</artifactId>
-		</dependency>
+		</dependency> -->
 		
 		<dependency>
 			<groupId>com.alibaba</groupId>

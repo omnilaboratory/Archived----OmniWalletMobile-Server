@@ -142,7 +142,7 @@ public class WalletServcieImpl implements WalletServcie {
 					if (btcNode==null) {
 						btcNode = new HashMap<>();
 						btcNode.put("propertyid", 0);
-						btcNode.put("name", "Btc");
+						btcNode.put("name", "BTC");
 						btcNode.put("balance", item.get("amount")==null?"0":item.get("amount").toString());
 						btcNode.put("reserved", 0);
 						btcNode.put("address", item.get("address"));
@@ -158,7 +158,7 @@ public class WalletServcieImpl implements WalletServcie {
 		}else{
 			btcNode = new HashMap<>();
 			btcNode.put("propertyid", 0);
-			btcNode.put("name", "Btc");
+			btcNode.put("name", "BTC");
 			btcNode.put("balance", balance);
 			btcNode.put("reserved", 0);
 			btcNode.put("address", address);
@@ -200,7 +200,7 @@ public class WalletServcieImpl implements WalletServcie {
 		if (btcNode==null) {
 			btcNode = new HashMap<>();
 			btcNode.put("propertyid", 0);
-			btcNode.put("name", "Btc");
+			btcNode.put("name", "BTC");
 			btcNode.put("address", address);
 			btcNode.put("account", "");
 			btcNode.put("balance", 0);

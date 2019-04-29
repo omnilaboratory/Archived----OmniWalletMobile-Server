@@ -28,6 +28,9 @@
 	<logger name="com.lx.server.admin.controller" level="ALL">
 		<appender-ref ref="rollingAppender" />
 	</logger>
+	<logger name="com.lx.server.walletapi.controller" level="ALL">
+		<appender-ref ref="rollingAppender" />
+	</logger>
 	<logger name="com.lx.server.service.impl" level="ALL">
 		<appender-ref ref="rollingAppender" />
 	</logger>
