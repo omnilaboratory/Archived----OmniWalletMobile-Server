@@ -16,4 +16,6 @@ public interface CommonService {
 	Map<String, Object> getOmniTransactions(String address, Integer assetId) throws Exception;
 
 	JSONObject getRateFromBlockChain();
+
+	Integer getNewestAddressIndex(String userId);
 }

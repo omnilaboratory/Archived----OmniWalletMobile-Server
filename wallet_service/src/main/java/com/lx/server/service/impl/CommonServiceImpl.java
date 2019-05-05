@@ -21,6 +21,7 @@ import org.springframework.web.client.RestTemplate;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.lx.server.dao.CommonDao;
 import com.lx.server.service.CommonService;
 import com.lx.server.service.WalletServcie;
 
@@ -29,6 +30,9 @@ public class CommonServiceImpl implements CommonService{
 
 	@Autowired
 	private WalletServcie walletServcie;
+	
+	@Autowired
+	private CommonDao commonDao;
 	
 	private final Log logger = LogFactory.getLog(getClass());
 	/**
@@ -268,6 +272,15 @@ public class CommonServiceImpl implements CommonService{
 		}
 		retData.put("list", list);
 		return retData;
+	}
+
+	@Override
+	public Integer getNewestAddressIndex(String userId) {
+		Integer index = commonDao.getNewestAddressIndex(userId);
+		if (index==null) {
+			index = 0;
+		}
+		return index;
 	}
 	
 }

@@ -103,6 +103,8 @@ public interface WalletServcie{
 	List<Map<String, Object>> listTransactions(Integer pageIndex,Integer pageSize) throws Exception;
 
 	List<Map<String, Object>> getOmniTransactions(String address) throws Exception;
+
+	void sycBlockTransactions();
 	
 
 }

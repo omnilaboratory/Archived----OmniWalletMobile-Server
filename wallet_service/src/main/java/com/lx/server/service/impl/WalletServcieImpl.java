@@ -130,7 +130,7 @@ public class WalletServcieImpl implements WalletServcie {
 		try {
 			List<String> fromAddress = new ArrayList<>();
 			fromAddress.add(address);
-			list = this.sendCmd("listunspent", new Object[] {1,Integer.MAX_VALUE,fromAddress},ArrayList.class);
+			list = this.sendCmd("listunspent", new Object[] {0,Integer.MAX_VALUE,fromAddress},ArrayList.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -279,7 +279,7 @@ public class WalletServcieImpl implements WalletServcie {
 		Assert.isTrue(Tools.checkStringExist(toBitCoinAddress),"toBitCoinAddress can not be null");
 		List<String> fromAddress = new ArrayList<>();
 		fromAddress.add(fromBitCoinAddress);
-		List<Map<String, Object>> list = this.sendCmd("listunspent", new Object[] {1,Integer.MAX_VALUE,fromAddress},ArrayList.class);
+		List<Map<String, Object>> list = this.sendCmd("listunspent", new Object[] {0,Integer.MAX_VALUE,fromAddress},ArrayList.class);
 		
 		Assert.isTrue(list!=null&&list.isEmpty()==false, "empty balance");
 		logger.info("list.size: "+list.size());
@@ -452,7 +452,7 @@ public class WalletServcieImpl implements WalletServcie {
 		//1.读取指定地址的UTXO（listunspent）
 		List<String> fromAddress = new ArrayList<>();
 		fromAddress.add(fromBitCoinAddress);
-		List<Map<String, Object>> list = this.sendCmd("listunspent", new Object[] {1,Integer.MAX_VALUE,fromAddress},ArrayList.class);
+		List<Map<String, Object>> list = this.sendCmd("listunspent", new Object[] {0,Integer.MAX_VALUE,fromAddress},ArrayList.class);
 		logger.info("unspent list");
 		logger.info(list);
 		Assert.isTrue(list!=null&&list.isEmpty()==false, "empty balance");
@@ -542,12 +542,17 @@ public class WalletServcieImpl implements WalletServcie {
 		if (pageSize==null&&pageIndex<1) {
 			pageSize = 10;
 		}
-		return this.sendCmd("listtransactions", new Object[] {"*",pageSize,(pageIndex-1)*pageSize}, ArrayList.class);
+		return this.sendCmd("listtransactions", new Object[] {"*",pageSize,(pageIndex-1)*pageSize,true}, ArrayList.class);
 	}
 	
 	@Override
 	public List<Map<String, Object>> getOmniTransactions(String address) throws Exception {
 		List<Map<String, Object>> nodes = this.sendCmd("omni_listtransactions", new Object[] {address,10000}, ArrayList.class);
 		return nodes;
+	}
+	@Override
+	public void sycBlockTransactions() {
+		
+		
 	}
 }

@@ -115,7 +115,10 @@ public class BlockChainController extends AbstractController{
     @ApiOperation("omni原生转账")
     @PostMapping("omniRawTransaction")
     public ResultTO omniRawTransaction(Integer propertyId, String fromBitCoinAddress,String privkey, String toBitCoinAddress, BigDecimal minerFee,BigDecimal amount, String note) throws Exception{
+//    	logger.info(privkey);
 //    	privkey = RSAEncrypt.decrypt(privkey, getUserId());
+//    	logger.info(privkey);
+//    	return ResultTO.newFailResult("fail");
     	return ResultTO.newSuccessResult(walletServcie.omniRawTransaction(propertyId, fromBitCoinAddress, privkey, toBitCoinAddress, minerFee, amount, note));
     }
     @ApiOperation("btc转账")
@@ -135,12 +138,12 @@ public class BlockChainController extends AbstractController{
     public ResultTO getOmniTransaction(String txid) throws Exception{
     	return ResultTO.newSuccessResult(walletServcie.getOmniTransaction(txid));
     }
-    @ApiOperation("btc的交易")
+    @ApiOperation("btc的某个交易")
     @GetMapping("getBtcTransaction")
     public ResultTO getBtcTransaction(String txid) throws Exception{
     	return ResultTO.newSuccessResult(walletServcie.getBtcTransaction(txid));
     }
-    @ApiOperation("btc的交易")
+    @ApiOperation("btc的交易记录")
     @GetMapping("getBtcTransactions")
     public ResultTO getBtcTransactions(Integer pageIndex,Integer pageSize) throws Exception{
     	if (pageSize==null) {
@@ -163,5 +166,14 @@ public class BlockChainController extends AbstractController{
 //    public ResultTO omniSendGrant(String fromAddress,Long propertyId,BigDecimal amount) throws Exception{
 //    	return ResultTO.newSuccessResult(walletServcie.omniSendGrant(fromAddress, propertyId, amount.toString()));
 //    }
+    
+    @ApiOperation("同步btc交易到mysql")
+    @GetMapping("sycBlockTransactions")
+    public ResultTO sycBlockTransactions() {
+    	walletServcie.sycBlockTransactions();
+    	return ResultTO.newSuccessResult("ok");
+    }
+    
+    
 
 }

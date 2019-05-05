@@ -63,6 +63,14 @@ public class AddressController extends AbstractController{
 		return ResultTO.newFailResult("fail");
 	}
 	
+	@GetMapping("getNewestAddressIndex")
+	@ApiOperation("获取用户最新的地址索引")
+	public ResultTO getNewestAddressIndex() {
+		Integer index = commonService.getNewestAddressIndex(getUserId());
+		return ResultTO.newSuccessResult("success",index);
+	}
+	
+	
 	@PostMapping("create")
 	@ApiOperation("创建新地址")
 	public ResultTO createAddress(WalletAddress walletAddress) {
