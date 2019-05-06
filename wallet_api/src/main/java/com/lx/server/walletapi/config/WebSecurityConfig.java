@@ -10,6 +10,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
+import com.lx.server.config.GlobalConfig;
+
 
 @Configuration
 @EnableWebSecurity
@@ -56,9 +58,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 ;
         httpSecurity.headers().cacheControl();
         
-//        GlobalConfig.expiration = expiration;
-//        GlobalConfig.secret = secret;
-//        
-//        GlobalConfig.BASE_IMAGE_ADDRESS = uploadPath;
+        GlobalConfig.expiration = expiration;
+        GlobalConfig.secret = secret;
+        GlobalConfig.BASE_IMAGE_ADDRESS = uploadPath;
     }
 }
