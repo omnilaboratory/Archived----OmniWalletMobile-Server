@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <!-- prod文件路径 -->
-    <property name="PRO_FILE_PATH" value="/opt/tomcat/logs" />
+    <property name="PRO_FILE_PATH" value="/opt/tomcat/logs/walletAdmin" />
 
 	<include resource="org/springframework/boot/logging/logback/base.xml" />
 	<appender name="rollingAppender"

@@ -19,9 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSONObject;
+import com.lx.server.bean.Page;
 import com.lx.server.bean.ResultTO;
 import com.lx.server.enums.EnumFolderURI;
 import com.lx.server.pojo.UserClient;
+import com.lx.server.service.AppVersionService;
 import com.lx.server.service.CommonService;
 import com.lx.server.service.UserClientService;
 import com.lx.server.utils.RSAEncrypt;
@@ -166,8 +168,22 @@ public class CommonController extends AbstractController{
 //		node.put("name", "EUR");
 //		node.put("rate", BigDecimal.ONE.divide(rate, 4, RoundingMode.FLOOR));
 //		data.add(4,node);
-		
-		
+	}
+	
+	 @Autowired
+	 private AppVersionService appVersionService;
+	
+	@GetMapping("getNewestVersion")
+	@ApiOperation("获取最新的版本信息")
+	public ResultTO validateVersion() throws Exception {
+		Page page = appVersionService.page(new HashMap<String, Object>(), 1, 1);
+        if (page!=null) {
+			List<Object> datas = page.getData();
+			if (datas!=null&&datas.size()==1) {
+				return ResultTO.newSuccessResult(datas.get(0));	
+			}
+		}
+		return ResultTO.newFailResult("no version");
 	}
 	
 }
