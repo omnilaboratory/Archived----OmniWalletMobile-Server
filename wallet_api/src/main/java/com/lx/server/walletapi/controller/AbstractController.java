@@ -19,6 +19,8 @@ import com.lx.server.pojo.UserClient;
 import com.lx.server.service.UserClientService;
 import com.lx.server.utils.Tools;
 
+import io.jsonwebtoken.Claims;
+
 /**
  * 控制器抽象类 手机接口控制器 和 web控制器需继承此类
  */
@@ -39,9 +41,9 @@ public abstract class AbstractController {
     	if (request==null) {
 			return null;
 		}
-        String claims = (String) request.getAttribute("claims");
+    	Claims claims = (Claims) request.getAttribute("claims");
         Assert.notNull(claims, "用户不存在");
-        return claims;
+        return (String) claims.get("userId");
     }
     
 	protected UserClient getUser() {

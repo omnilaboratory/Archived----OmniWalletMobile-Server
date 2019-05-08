@@ -11,8 +11,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.lx.server.config.CustomAuthException;
+import com.lx.server.config.JwtTokenUtil;
 import com.lx.server.pojo.UserClient;
 import com.lx.server.service.UserClientService;
+
+import io.jsonwebtoken.Claims;
 
 
 @Component
@@ -26,6 +29,9 @@ public class GlobalJwtInterceptor extends HandlerInterceptorAdapter {
 	
 	@Value("${jwt.tokenHead}")
 	private String tokenHead;
+	
+	@Autowired
+	private JwtTokenUtil jwtTokenUtil;
 	
 	@Autowired
     private SimpleHandlerExceptionResolver resolver;
@@ -44,19 +50,33 @@ public class GlobalJwtInterceptor extends HandlerInterceptorAdapter {
 		}else{
 			if (authHeader != null && authHeader.startsWith(tokenHead)) {
 				final String token = oldToken.substring(tokenHead.length());
-				UserClient user = userClientService.selectObject(token);
-				if (user==null) {
-					this.resolver.resolveException(request, response, 1, new CustomAuthException("用户无效，请重新登录"));
+				
+				String userId = jwtTokenUtil.getClientUserIdFromToken(token);
+				if (userId==null) {
+					this.resolver.resolveException(request, response, 1, new CustomAuthException("用户认证失效，请重新登录"));
 					return false;
 				}
-				request.setAttribute("claims", token);
+				
+				UserClient user = userClientService.selectObject(userId);
+				
+				if (jwtTokenUtil.validateClientToken(token, user)==false) {
+					this.resolver.resolveException(request, response, 1, new CustomAuthException("用户认证失效，请重新登录"));
+					return false;
+				}
+				
+				Claims claims = jwtTokenUtil.getClaimsFromToken(token);
+				request.setAttribute("claims", claims);
 				request.setAttribute("user", user);
+				
 				return super.preHandle(request, response, handler);
 			} else {
 				super.preHandle(request, response, handler);
 				this.resolver.resolveException(request, response, 1, new CustomAuthException("用户无效，请重新登录"));
 				return false;
 			}
+			
+			
+			
 		}
 	}
 }

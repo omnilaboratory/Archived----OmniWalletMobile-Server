@@ -1,11 +1,15 @@
 package com.lx.server.service.impl;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import com.lx.server.config.JwtTokenUtil;
 import com.lx.server.dao.MyBatisBaseDao;
 import com.lx.server.dao.UserClientDao;
 import com.lx.server.pojo.UserClient;
@@ -24,6 +28,9 @@ public class UserClientServiceImpl extends MybatisBaseServiceImpl implements Use
 
     @Autowired
     private UserClientDao userClientDao;
+    
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
 
     @Override
     public MyBatisBaseDao getDao() {
@@ -31,7 +38,7 @@ public class UserClientServiceImpl extends MybatisBaseServiceImpl implements Use
     }
 
 	@Override
-	public UserClient createNewUser(String userId,String nickname) {
+	public Map<String, Object> createNewUser(String userId,String nickname) throws InvocationTargetException, IllegalAccessException {
 		UserClient userClient =  userClientDao.selectObject(userId);
 		Assert.isNull(userClient, "用户已经存在");
 		userClient = new UserClient();
@@ -45,9 +52,21 @@ public class UserClientServiceImpl extends MybatisBaseServiceImpl implements Use
 		userClient.setCreateTime(new Date());
 		userClient.setLastLoginTime(new Date());
 		if (userClientDao.insert(userClient)>0) {
-			return userClient;
+			Map<String, Object> userMap = Tools.getClassMaps(userClient);
+			userMap.put("token", this.generateToken(userClient));
+			return userMap;
 		}
 		return null;
 	}
+	
+	 @Override
+	public String generateToken(UserClient user) {
+		Map<String, Object> map = new HashMap<>();
+        map.put("userId", user.getId());
+        map.put(JwtTokenUtil.LastLoginTime, user.getLastLoginTime());
+        return jwtTokenUtil.generateClientToken(user, map);
+	}
+	
+	
 
 }

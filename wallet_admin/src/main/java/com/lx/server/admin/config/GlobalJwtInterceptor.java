@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import com.lx.server.config.CustomAuthException;
 import com.lx.server.config.JwtTokenUtil;
 import com.lx.server.pojo.UserAdmin;
 import com.lx.server.service.UserAdminService;

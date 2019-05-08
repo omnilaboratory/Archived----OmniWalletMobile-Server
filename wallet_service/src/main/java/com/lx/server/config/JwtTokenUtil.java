@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.stereotype.Component;
 
 import com.lx.server.pojo.UserAdmin;
+import com.lx.server.pojo.UserClient;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -33,6 +34,22 @@ public class JwtTokenUtil implements Serializable {
 				}
 			}
 			id = (Integer) claims.get("userId");
+		} catch (Exception e) {
+			id = null;
+		}
+		return id;
+	}
+	
+	public String getClientUserIdFromToken(String token) {
+		String id;
+		try {
+			final Claims claims = getClaimsFromToken(token);
+			if (claims == null) {
+				if (claims == null) {
+					throw new Exception("无效令牌，请重新登录");
+				}
+			}
+			id = (String) claims.get("userId");
 		} catch (Exception e) {
 			id = null;
 		}
@@ -109,6 +126,16 @@ public class JwtTokenUtil implements Serializable {
 		claims.put("exp",generateExpirationDate());
 		return generateToken(claims);
 	}
+	
+	public String generateClientToken(UserClient userDetails, Map<String, Object> claims) {
+		if (claims == null) {
+			claims = new HashMap<>();
+		}
+		claims.put(CLAIM_KEY_USERNAME, userDetails.getNickname());
+		claims.put(CLAIM_KEY_CREATED, new Date());
+		claims.put("exp",generateExpirationDate());
+		return generateToken(claims);
+	}
 
 	public String generateToken(Map<String, Object> claims) {
 		return Jwts.builder().setClaims(claims).setExpiration(generateExpirationDate()).signWith(SignatureAlgorithm.HS256, GlobalConfig.secret).compact();
@@ -145,6 +172,14 @@ public class JwtTokenUtil implements Serializable {
 				&&username.equals(user.getUsername())
 				&&!isTokenExpired(token)
 				&&!isCreatedBeforeLastPasswordReset(created, user.getLastPasswordResetDate())
+				);
+	}
+	public Boolean validateClientToken(String token, UserClient user) {
+		final String username = getUsernameFromToken(token);
+		final Date lastLoginTime = getLastLoginTimeFromToken(token);
+		return (lastLoginTime.equals(user.getLastLoginTime())
+				&& username.equals(user.getNickname())
+				&&!isTokenExpired(token)
 				);
 	}
 }

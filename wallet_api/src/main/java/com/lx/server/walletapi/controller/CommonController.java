@@ -1,8 +1,10 @@
 package com.lx.server.walletapi.controller;
 
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,16 +56,17 @@ public class CommonController extends AbstractController{
 	@SuppressWarnings("serial")
 	@PostMapping("createUser")
 	@ApiOperation("创建新用户")
-	public ResultTO createUser(String userId,String nickname) throws NoSuchAlgorithmException {
+	public ResultTO createUser(String userId,String nickname) throws NoSuchAlgorithmException, InvocationTargetException, IllegalAccessException {
 		this.logger.info("createUser");
 		Assert.isTrue(Tools.isValidMessageAudio(userId), "userId is not md5 type");
-		UserClient userClient = userClientService.createNewUser(userId,nickname);
+		Map<String, Object> userClient = userClientService.createNewUser(userId,nickname);
 		if (userClient==null) {
 			return ResultTO.newFailResult("create user fail");
 		}
 		
 		return ResultTO.newSuccessResult(new HashMap<String,Object>() {{
-			put("userId", userClient.getId());
+			put("userId", userClient.get("id"));
+			put("token", userClient.get("token"));
 		}});
 	}
 	
@@ -78,10 +81,18 @@ public class CommonController extends AbstractController{
 		if (userClient==null) {
 			return ResultTO.newFailResult("your mnemonic is wrong");
 		}
+		
+		userClient.setLastLoginTime(new Date());
+		userClientService.update(new HashMap<String,Object>() {{
+			put("lastLoginTime", userClient.getLastLoginTime());
+			put("id", userClient.getId());
+		}});
+		
 		return ResultTO.newSuccessResult(new HashMap<String,Object>() {{
 			put("userId", userClient.getId());
 			put("nickname", userClient.getNickname());
 			put("faceUrl", userClient.getFaceUrl());
+			put("token", userClientService.generateToken(userClient));
 		}});
 	}
 	

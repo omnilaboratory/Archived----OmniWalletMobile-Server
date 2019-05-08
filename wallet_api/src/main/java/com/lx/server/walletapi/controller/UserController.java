@@ -33,6 +33,7 @@ public class UserController extends AbstractController{
 		UserClient userClient = getUser();
 		return ResultTO.newSuccessResult(userClient);
 	}
+	
 	@GetMapping("getUserRSAEncrypt")
 	@ApiOperation("获取用户公钥")
 	public ResultTO getUserRSAEncrypt() throws NoSuchAlgorithmException, NoSuchPaddingException {
