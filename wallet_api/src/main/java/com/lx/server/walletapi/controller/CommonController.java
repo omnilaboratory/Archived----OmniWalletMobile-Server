@@ -28,6 +28,7 @@ import com.lx.server.pojo.UserClient;
 import com.lx.server.service.AppVersionService;
 import com.lx.server.service.CommonService;
 import com.lx.server.service.UserClientService;
+import com.lx.server.utils.AESUtil;
 import com.lx.server.utils.RSAEncrypt;
 import com.lx.server.utils.Tools;
 
@@ -201,6 +202,23 @@ public class CommonController extends AbstractController{
 			}
 		}
 		return ResultTO.newFailResult("");
+	}
+	
+	@GetMapping("testAES")
+	@ApiOperation("testAES")
+	public ResultTO testAES() throws Exception {
+		String cIv = "e9cc3f037e8ed880";
+        String s = "L5i7jigYHYLyZbAsf9QUAc8BWtXq7YD6U7b7m8717Jg4xuxk5mAx";
+//        String s = "++Vbcs3XporPFdLiZMdKlqgH2GSQc1aG86RSqo+kucg5dGlEPJ5GxQjiS0p4JL4jkwfZG6bTuZDzErSsQTCywQ==";
+        String key = "e9cc3f037e8ed88090a7ed47d304b129";
+        System.out.println("s:" + s);
+
+        String s1 = AESUtil.encrypt(s, key,cIv);
+        
+        System.out.println("s1:" + s1);
+        System.out.println("s2:"+AESUtil.decrypt(s1, key,cIv));
+        
+		return ResultTO.newSuccessResult(AESUtil.decrypt(s1, key,cIv));
 	}
 	
 }
