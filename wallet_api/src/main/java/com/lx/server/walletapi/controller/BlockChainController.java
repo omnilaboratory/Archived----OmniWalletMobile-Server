@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.lx.server.bean.ResultTO;
+import com.lx.server.pojo.UserClient;
 import com.lx.server.service.WalletServcie;
+import com.lx.server.utils.AESUtil;
+import com.lx.server.utils.Tools;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -115,16 +119,20 @@ public class BlockChainController extends AbstractController{
     @ApiOperation("omni原生转账")
     @PostMapping("omniRawTransaction")
     public ResultTO omniRawTransaction(Integer propertyId, String fromBitCoinAddress,String privkey, String toBitCoinAddress, BigDecimal minerFee,BigDecimal amount, String note) throws Exception{
-//    	logger.info(privkey);
-//    	privkey = RSAEncrypt.decrypt(privkey, getUserId());
-//    	logger.info(privkey);
-//    	return ResultTO.newFailResult("fail");
+    	logger.info("omni原生转账");
+    	UserClient userClient = getUser();
+    	Assert.isTrue(Tools.checkStringExist(userClient.getPassword()), "pin is wrong");
+    	privkey = AESUtil.decrypt(privkey, userClient.getPassword(), userClient.getPassword().substring(0, 16));
     	return ResultTO.newSuccessResult(walletServcie.omniRawTransaction(propertyId, fromBitCoinAddress, privkey, toBitCoinAddress, minerFee, amount, note));
     }
+    
     @ApiOperation("btc转账")
     @PostMapping("btcSend")
     public ResultTO btcSend(String fromBitCoinAddress,String privkey,String toBitCoinAddress,BigDecimal amount,BigDecimal minerFee) throws Exception{
-//    	privkey = RSAEncrypt.decrypt(privkey, getUserId());
+    	logger.info("btc转账");
+    	UserClient userClient = getUser();
+    	Assert.isTrue(Tools.checkStringExist(userClient.getPassword()), "pin is wrong");
+    	privkey = AESUtil.decrypt(privkey, userClient.getPassword(), userClient.getPassword().substring(0, 16));
     	String ret =walletServcie.btcRawTransaction(fromBitCoinAddress, privkey, toBitCoinAddress, amount, minerFee,"");
     	if (ret!=null) {
     		return ResultTO.newSuccessResult("success",ret);

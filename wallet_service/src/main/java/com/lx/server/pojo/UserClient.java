@@ -19,6 +19,8 @@ public class UserClient extends AbstractObject {
     private String nickname;
     // 头像
     private String faceUrl;
+    // pin密码
+    private String password;
     // 谷歌认证code
     private String googleAuthCode;
     // 启动谷歌认证
@@ -47,8 +49,16 @@ public class UserClient extends AbstractObject {
     public void setId(String id) {
         this.id = id;
     }
+    
+    public String getPassword() {
+		return password;
+	}
 
-    /** 获取 昵称 属性 */
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	/** 获取 昵称 属性 */
     public String getNickname() {
         return nickname;
     }

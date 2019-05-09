@@ -38,7 +38,7 @@ public class UserClientServiceImpl extends MybatisBaseServiceImpl implements Use
     }
 
 	@Override
-	public Map<String, Object> createNewUser(String userId,String nickname) throws InvocationTargetException, IllegalAccessException {
+	public Map<String, Object> createNewUser(String userId,String nickname,String password) throws InvocationTargetException, IllegalAccessException {
 		UserClient userClient =  userClientDao.selectObject(userId);
 		Assert.isNull(userClient, "用户已经存在");
 		userClient = new UserClient();
@@ -48,6 +48,7 @@ public class UserClientServiceImpl extends MybatisBaseServiceImpl implements Use
 		}
 		userClient.setNickname(nickname);
 		userClient.setGoogleAuthCode("");
+		userClient.setPassword(password);
 		userClient.setGoogleAuthEnable(false);
 		userClient.setCreateTime(new Date());
 		userClient.setLastLoginTime(new Date());

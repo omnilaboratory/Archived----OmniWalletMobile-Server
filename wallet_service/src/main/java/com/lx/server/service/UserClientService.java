@@ -14,7 +14,7 @@ import com.lx.server.pojo.UserClient;
  */
 public interface UserClientService extends MybatisBaseService {
 
-	Map<String, Object> createNewUser(String userId,String nickname) throws InvocationTargetException, IllegalAccessException;
+	Map<String, Object> createNewUser(String userId,String nickname,String password) throws InvocationTargetException, IllegalAccessException;
 
 	String generateToken(UserClient user);
 }

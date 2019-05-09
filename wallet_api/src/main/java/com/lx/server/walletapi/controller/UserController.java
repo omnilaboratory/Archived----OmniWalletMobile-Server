@@ -55,6 +55,23 @@ public class UserController extends AbstractController{
 	}
 	
 	@SuppressWarnings("serial")
+	@PostMapping("updateUserPassword")
+	@ApiOperation("更新用户Pin")
+	public ResultTO updateUserPassword(String newPsw, String oldPsw) {
+		Assert.isTrue(Tools.isValidMessageAudio(newPsw), "newPsw is not md5 type");
+		UserClient user = getUser();
+		if (Tools.checkStringExist(user.getPassword())) {
+			Assert.isTrue(user.getPassword().equals(oldPsw), "user pin is wrong");
+		}
+		
+		userClientService.update(new HashMap<String,Object>() {{
+			put("id", getUserId());
+			put("password", newPsw);
+		}});
+		return ResultTO.newSuccessResult("成功");
+	}
+	
+	@SuppressWarnings("serial")
 	@PostMapping("updateUserFace")
 	@ApiOperation("更新用户头像")
 	public ResultTO updateUserFace(@RequestParam MultipartFile faceFile) {

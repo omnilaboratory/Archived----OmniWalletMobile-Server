@@ -56,10 +56,11 @@ public class CommonController extends AbstractController{
 	@SuppressWarnings("serial")
 	@PostMapping("createUser")
 	@ApiOperation("创建新用户")
-	public ResultTO createUser(String userId,String nickname) throws NoSuchAlgorithmException, InvocationTargetException, IllegalAccessException {
+	public ResultTO createUser(String userId,String nickname,String password) throws NoSuchAlgorithmException, InvocationTargetException, IllegalAccessException {
 		this.logger.info("createUser");
 		Assert.isTrue(Tools.isValidMessageAudio(userId), "userId is not md5 type");
-		Map<String, Object> userClient = userClientService.createNewUser(userId,nickname);
+		Assert.isTrue(Tools.isValidMessageAudio(password), "password is wrong");
+		Map<String, Object> userClient = userClientService.createNewUser(userId,nickname,password);
 		if (userClient==null) {
 			return ResultTO.newFailResult("create user fail");
 		}
@@ -74,17 +75,22 @@ public class CommonController extends AbstractController{
 	@SuppressWarnings("serial")
 	@PostMapping("restoreUser")
 	@ApiOperation("根据助记词恢复用户")
-	public ResultTO restoreUser(String userId) {
+	public ResultTO restoreUser(String userId,String password,String newPsw) {
 		this.logger.info("restoreUser");
 		Assert.isTrue(Tools.isValidMessageAudio(userId), "userId is not md5 type");
+		Assert.isTrue(Tools.isValidMessageAudio(newPsw), "pinPsw is not md5 type");
 		UserClient userClient = userClientService.selectObject(userId);
 		if (userClient==null) {
 			return ResultTO.newFailResult("your mnemonic is wrong");
+		}
+		if (Tools.checkStringExist(userClient.getPassword())) {
+			Assert.isTrue(userClient.getPassword().equals(password), "user pin is wrong");
 		}
 		
 		userClient.setLastLoginTime(new Date());
 		userClientService.update(new HashMap<String,Object>() {{
 			put("lastLoginTime", userClient.getLastLoginTime());
+			put("password", newPsw);
 			put("id", userClient.getId());
 		}});
 		
@@ -194,7 +200,7 @@ public class CommonController extends AbstractController{
 				return ResultTO.newSuccessResult(datas.get(0));	
 			}
 		}
-		return ResultTO.newFailResult("no version");
+		return ResultTO.newFailResult("");
 	}
 	
 }
