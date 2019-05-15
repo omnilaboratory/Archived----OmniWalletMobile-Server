@@ -8,7 +8,7 @@ import com.lx.server.pojo.AbstractObject;
  * 【用户反馈】持久化对象 数据库表：t_user_feedback
  *
  * @author AutoCode 309444359@qq.com
- * @date 2019-04-13 23:59:45
+ * @date 2019-05-14 10:11:44
  *
  */
 public class UserFeedback extends AbstractObject {
@@ -19,10 +19,14 @@ public class UserFeedback extends AbstractObject {
     private Integer id;
     // t_user_client的id
     private String userId;
+    // 标题
+    private String title;
     // 文字描述
     private String content;
     // 图片地址
     private String imageUrls;
+    // 邮箱
+    private String email;
     // 创建时间
     private Date createTime;
     // 后台处理人员
@@ -54,6 +58,16 @@ public class UserFeedback extends AbstractObject {
         this.userId = userId;
     }
 
+    /** 获取 标题 属性 */
+    public String getTitle() {
+        return title;
+    }
+
+    /** 设置 标题 属性 */
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     /** 获取 文字描述 属性 */
     public String getContent() {
         return content;
@@ -72,6 +86,16 @@ public class UserFeedback extends AbstractObject {
     /** 设置 图片地址 属性 */
     public void setImageUrls(String imageUrls) {
         this.imageUrls = imageUrls;
+    }
+
+    /** 获取 邮箱 属性 */
+    public String getEmail() {
+        return email;
+    }
+
+    /** 设置 邮箱 属性 */
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     /** 获取 创建时间 属性 */
@@ -130,8 +154,10 @@ public class UserFeedback extends AbstractObject {
         sb.append("UserFeedback");
         sb.append("{id=").append(id);
         sb.append(", userId=").append(userId);
+        sb.append(", title=").append(title);
         sb.append(", content=").append(content);
         sb.append(", imageUrls=").append(imageUrls);
+        sb.append(", email=").append(email);
         sb.append(", createTime=").append(createTime);
         sb.append(", dealBy=").append(dealBy);
         sb.append(", dealResult=").append(dealResult);

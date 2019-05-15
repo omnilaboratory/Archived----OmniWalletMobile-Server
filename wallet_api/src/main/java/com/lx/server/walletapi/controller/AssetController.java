@@ -16,7 +16,7 @@ import com.lx.server.bean.ResultTO;
 import com.lx.server.pojo.WalletAsset;
 import com.lx.server.service.PopularAssetService;
 import com.lx.server.service.WalletAssetService;
-import com.lx.server.service.WalletServcie;
+import com.lx.server.service.WalletService;
 import com.lx.server.utils.Tools;
 
 import io.swagger.annotations.Api;
@@ -35,7 +35,7 @@ public class AssetController extends AbstractController{
 	private WalletAssetService walletAssetService;
 	
 	@Autowired
-	private WalletServcie walletServcie ;
+	private WalletService walletServcie ;
 	
 	@Autowired
 	private PopularAssetService popularAssetService;
@@ -74,18 +74,23 @@ public class AssetController extends AbstractController{
 		}});
 		
 		if (count==0) {
-			Map<String, Object> node = (Map<String, Object>) walletServcie.getOmniProperty(Long.parseLong(assetId.toString()));
-			if (node!=null) {
-				WalletAsset asset = new WalletAsset();
-				asset.setUserId(getUserId());
-				asset.setAddress(address);
-				asset.setAssetName(node.get("name")!=null?node.get("name").toString():"");
-				asset.setAssetType((byte) (assetId==0?0:1));
-				asset.setAssetId(assetId);
-				asset.setCreateTime(new Date());
-				if (walletAssetService.insert(asset)>0) {
-					return ResultTO.newSuccessResult("success");
-				}
+			Map<String, Object> node;
+			if (assetId>0) {
+				node = (Map<String, Object>) walletServcie.getOmniProperty(Long.parseLong(assetId.toString()));
+			}else {
+				node = new HashMap<>();
+				node.put("name", "BTC");
+			}
+			WalletAsset asset = new WalletAsset();
+			asset.setUserId(getUserId());
+			asset.setVisible(visible);
+			asset.setAddress(address);
+			asset.setAssetName(node.get("name")!=null?node.get("name").toString():"");
+			asset.setAssetType((byte) (assetId==0?0:1));
+			asset.setAssetId(assetId);
+			asset.setCreateTime(new Date());
+			if (walletAssetService.insert(asset)>0) {
+				return ResultTO.newSuccessResult("success");
 			}
 		}else {
 			if (walletAssetService.update(new HashMap<String,Object>() {{

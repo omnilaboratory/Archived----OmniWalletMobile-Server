@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
-public interface WalletServcie{
+public interface WalletService{
 
 	String createNewAddress(String account) throws Exception;
 
@@ -104,7 +104,7 @@ public interface WalletServcie{
 
 	List<Map<String, Object>> getOmniTransactions(String address) throws Exception;
 
-	void sycBlockTransactions();
+	void sycBlockTransactions() throws Exception;
 	
 
 }

@@ -33,8 +33,9 @@ public class UserFeedbackController extends AbstractController{
 	@ApiImplicitParams({ 
 	})
 	public ResultTO feedback(UserFeedback feedback) {
-		Assert.isTrue(Tools.checkEmail(feedback.getContent()), "empty content");
-		Assert.notNull(feedback.getContent(), "content can not be null");
+		Assert.isTrue(Tools.checkStringExist(feedback.getTitle()), "title content");
+		Assert.isTrue(Tools.checkStringExist(feedback.getContent()), "empty content");
+		Assert.isTrue(Tools.checkEmail(feedback.getEmail()), "wrong email");
 		feedback.setCreateTime(new Date());
 		feedback.setUserId(getUserId());
 		feedback.setState((byte) 0);

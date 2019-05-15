@@ -13,7 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import com.googlecode.jsonrpc4j.JsonRpcHttpClient;
-import com.lx.server.service.WalletServcie;
+import com.lx.server.service.BtcTransactionService;
+import com.lx.server.service.BtcTransactionUpdateLogService;
+import com.lx.server.service.WalletService;
 import com.lx.server.utils.Tools;
 
 /**
@@ -24,7 +26,7 @@ import com.lx.server.utils.Tools;
  *
  */
 @Service(value = "walletServcie")
-public class WalletServcieImpl implements WalletServcie {
+public class WalletServiceImpl implements WalletService {
 
 	@Autowired
 	private JsonRpcHttpClient jsonRpcHttpClient;
@@ -550,8 +552,49 @@ public class WalletServcieImpl implements WalletServcie {
 		List<Map<String, Object>> nodes = this.sendCmd("omni_listtransactions", new Object[] {address,10000}, ArrayList.class);
 		return nodes;
 	}
+	
+	@Autowired
+	private BtcTransactionUpdateLogService btcLogService;
+	@Autowired
+	private BtcTransactionService btcTransactionService;
+	
 	@Override
-	public void sycBlockTransactions() {
+	public void sycBlockTransactions() throws Exception {
+		
+		Integer pageSize = 100;
+		//获取更新日志
+		Integer pageIndex = 1;
+		//抓取新的数据
+		List<String> txids = new ArrayList<>();
+		boolean goToNext =true;
+		while (true) {
+			goToNext =true;
+			List<Map<String, Object>> nodes = this.sendCmd("listtransactions", new Object[] {"*",pageSize,(pageIndex-1)*pageSize,true}, ArrayList.class);
+			for (Map<String, Object> node : nodes) {
+				String txid = node.get("txid").toString();
+				if (txids.contains(txid)==false) {
+					int count = btcTransactionService.pageCount(new HashMap<String,Object>() {{
+						put("id", txid);
+					}});
+					if(count>0) {
+						goToNext =false;
+					}
+					txids.add(txid);
+				}
+			}
+			if (goToNext==false) {
+				break;
+			}
+			pageIndex++;
+		}
+		//分析数据 插入到交易表去
+		for (String txid : txids) {
+			
+			
+			
+		}
+		
+		
 		
 		
 	}

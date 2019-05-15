@@ -8,7 +8,7 @@ import com.lx.server.pojo.AbstractObject;
  * 【App版本号管理】持久化对象 数据库表：t_app_version
  *
  * @author AutoCode 309444359@qq.com
- * @date 2019-05-07 11:08:46
+ * @date 2019-05-15 11:27:21
  *
  */
 public class AppVersion extends AbstractObject {
@@ -29,6 +29,8 @@ public class AppVersion extends AbstractObject {
     private String path;
     // 版本说明
     private String note;
+    // 版本说明英文
+    private String noteEn;
     // 上传时间
     private Date createTime;
     // 上传用户
@@ -104,6 +106,16 @@ public class AppVersion extends AbstractObject {
         this.note = note;
     }
 
+    /** 获取 版本说明英文 属性 */
+    public String getNoteEn() {
+        return noteEn;
+    }
+
+    /** 设置 版本说明英文 属性 */
+    public void setNoteEn(String noteEn) {
+        this.noteEn = noteEn;
+    }
+
     /** 获取 上传时间 属性 */
     public Date getCreateTime() {
         return createTime;
@@ -135,6 +147,7 @@ public class AppVersion extends AbstractObject {
         sb.append(", isForce=").append(isForce);
         sb.append(", path=").append(path);
         sb.append(", note=").append(note);
+        sb.append(", noteEn=").append(noteEn);
         sb.append(", createTime=").append(createTime);
         sb.append(", createBy=").append(createBy);
         sb.append('}');

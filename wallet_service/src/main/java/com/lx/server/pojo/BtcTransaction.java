@@ -9,7 +9,7 @@ import com.lx.server.pojo.AbstractObject;
  * 【btc的交易记录】持久化对象 数据库表：t_btc_transaction
  *
  * @author AutoCode 309444359@qq.com
- * @date 2019-04-30 15:39:57
+ * @date 2019-05-10 10:12:11
  *
  */
 public class BtcTransaction extends AbstractObject {
@@ -27,7 +27,7 @@ public class BtcTransaction extends AbstractObject {
     // 矿工费用
     private BigDecimal fee;
     // 区块高度
-    private Integer blockHeigt;
+    private Integer blockHeight;
     // 上链时间
     private Date blockTime;
     // 区块高度
@@ -88,13 +88,13 @@ public class BtcTransaction extends AbstractObject {
     }
 
     /** 获取 区块高度 属性 */
-    public Integer getBlockHeigt() {
-        return blockHeigt;
+    public Integer getBlockHeight() {
+        return blockHeight;
     }
 
     /** 设置 区块高度 属性 */
-    public void setBlockHeigt(Integer blockHeigt) {
-        this.blockHeigt = blockHeigt;
+    public void setBlockHeight(Integer blockHeight) {
+        this.blockHeight = blockHeight;
     }
 
     /** 获取 上链时间 属性 */
@@ -146,7 +146,7 @@ public class BtcTransaction extends AbstractObject {
         sb.append(", toAddress=").append(toAddress);
         sb.append(", amount=").append(amount);
         sb.append(", fee=").append(fee);
-        sb.append(", blockHeigt=").append(blockHeigt);
+        sb.append(", blockHeight=").append(blockHeight);
         sb.append(", blockTime=").append(blockTime);
         sb.append(", blockIndex=").append(blockIndex);
         sb.append(", blockHash=").append(blockHash);

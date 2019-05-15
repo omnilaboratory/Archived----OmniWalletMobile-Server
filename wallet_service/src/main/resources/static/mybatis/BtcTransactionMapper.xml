@@ -4,7 +4,7 @@
 <!--
 【btc的交易记录】对象关系映射 配置
  @author AutoCode 309444359@qq.com
- @date 2019-04-30 15:39:57
+ @date 2019-05-10 10:12:11
  -->
 <!-- namespace必须指向Dao接口 -->
 <mapper namespace="com.lx.server.dao.BtcTransactionDao">
@@ -15,7 +15,7 @@
 				<result property="toAddress" column="to_address" />
 				<result property="amount" column="amount" />
 				<result property="fee" column="fee" />
-				<result property="blockHeigt" column="block_heigt" />
+				<result property="blockHeight" column="block_height" />
 				<result property="blockTime" column="block_time" />
 				<result property="blockIndex" column="block_index" />
 				<result property="blockHash" column="block_hash" />
@@ -34,7 +34,7 @@
 	     #{toAddress},
 	     #{amount},
 	     #{fee},
-	     #{blockHeigt},
+	     #{blockHeight},
 	     #{blockTime},
 	     #{blockIndex},
 	     #{blockHash},
@@ -57,8 +57,8 @@
 		<if test="fee != null">
 			fee=#{fee},
 		</if>
-		<if test="blockHeigt != null">
-			block_heigt=#{blockHeigt},
+		<if test="blockHeight != null">
+			block_height=#{blockHeight},
 		</if>
 		<if test="blockTime != null">
 			block_time=#{blockTime},
@@ -90,8 +90,8 @@
 			<if test="n_fee != null">
 				and fee=#{n_fee}
 			</if>
-			<if test="n_blockHeigt != null">
-				and block_heigt=#{n_blockHeigt}
+			<if test="n_blockHeight != null">
+				and block_height=#{n_blockHeight}
 			</if>
 			<if test="n_blockTime != null">
 				and block_time=#{n_blockTime}
@@ -192,8 +192,8 @@
 		<if test="fee != null">
 			and fee=#{fee}
 		</if>
-		<if test="blockHeigt != null">
-			and block_heigt=#{blockHeigt}
+		<if test="blockHeight != null">
+			and block_height=#{blockHeight}
 		</if>
 		<if test="blockTime != null">
 			and block_time=#{blockTime}
@@ -218,7 +218,7 @@
 			to_address,
 			amount,
 			fee,
-			block_heigt,
+			block_height,
 			block_time,
 			block_index,
 			block_hash,

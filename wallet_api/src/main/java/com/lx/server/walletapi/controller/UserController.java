@@ -61,7 +61,7 @@ public class UserController extends AbstractController{
 		Assert.isTrue(Tools.isValidMessageAudio(newPsw), "newPsw is not md5 type");
 		UserClient user = getUser();
 		if (Tools.checkStringExist(user.getPassword())) {
-			Assert.isTrue(user.getPassword().equals(oldPsw), "user pin is wrong");
+			Assert.isTrue(user.getPassword().equals(oldPsw), "old pin is wrong");
 		}
 		
 		userClientService.update(new HashMap<String,Object>() {{

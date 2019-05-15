@@ -4,7 +4,7 @@
 <!--
 【App版本号管理】对象关系映射 配置
  @author AutoCode 309444359@qq.com
- @date 2019-05-07 11:08:46
+ @date 2019-05-15 11:27:21
  -->
 <!-- namespace必须指向Dao接口 -->
 <mapper namespace="com.lx.server.dao.AppVersionDao">
@@ -17,6 +17,7 @@
 				<result property="isForce" column="is_force" />
 				<result property="path" column="path" />
 				<result property="note" column="note" />
+				<result property="noteEn" column="note_en" />
 				<result property="createTime" column="create_time" />
 				<result property="createBy" column="create_by" />
 	</resultMap>
@@ -35,6 +36,7 @@
 	     #{isForce},
 	     #{path},
 	     #{note},
+	     #{noteEn},
 	     #{createTime},
 	     #{createBy}
 	   )
@@ -60,6 +62,9 @@
 		</if>
 		<if test="note != null">
 			note=#{note},
+		</if>
+		<if test="noteEn != null">
+			note_en=#{noteEn},
 		</if>
 		<if test="createTime != null">
 			create_time=#{createTime},
@@ -90,6 +95,9 @@
 			</if>
 			<if test="n_note != null">
 				and note=#{n_note}
+			</if>
+			<if test="n_noteEn != null">
+				and note_en=#{n_noteEn}
 			</if>
 			<if test="n_createTime != null">
 				and create_time=#{n_createTime}
@@ -190,6 +198,9 @@
 		<if test="note != null">
 			and note=#{note}
 		</if>
+		<if test="noteEn != null">
+			and note_en=#{noteEn}
+		</if>
 		<if test="createTime != null">
 			and create_time=#{createTime}
 		</if>
@@ -209,6 +220,7 @@
 			is_force,
 			path,
 			note,
+			note_en,
 			create_time,
 			create_by
 	</sql>

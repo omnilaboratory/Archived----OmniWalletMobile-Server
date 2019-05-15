@@ -188,7 +188,7 @@
 		<if test="keyword != null">
 			and (name LIKE CONCAT("%", #{keyword}, "%") )
 		</if>
-		order by  id  desc 
+		order by asset_id 
 	</sql>
 	<sql id="columns">
 			id,

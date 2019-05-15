@@ -23,13 +23,13 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.lx.server.dao.CommonDao;
 import com.lx.server.service.CommonService;
-import com.lx.server.service.WalletServcie;
+import com.lx.server.service.WalletService;
 
 @Service(value = "commonService")
 public class CommonServiceImpl implements CommonService{
 
 	@Autowired
-	private WalletServcie walletServcie;
+	private WalletService walletServcie;
 	
 	@Autowired
 	private CommonDao commonDao;

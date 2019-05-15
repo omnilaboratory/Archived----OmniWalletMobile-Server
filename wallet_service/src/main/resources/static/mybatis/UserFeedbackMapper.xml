@@ -4,7 +4,7 @@
 <!--
 【用户反馈】对象关系映射 配置
  @author AutoCode 309444359@qq.com
- @date 2019-04-13 23:59:45
+ @date 2019-05-14 10:11:44
  -->
 <!-- namespace必须指向Dao接口 -->
 <mapper namespace="com.lx.server.dao.UserFeedbackDao">
@@ -12,8 +12,10 @@
 	<resultMap id="userFeedbackResultMap" type="com.lx.server.pojo.UserFeedback">
 		<id property="id" column="id" />
 				<result property="userId" column="user_id" />
+				<result property="title" column="title" />
 				<result property="content" column="content" />
 				<result property="imageUrls" column="image_urls" />
+				<result property="email" column="email" />
 				<result property="createTime" column="create_time" />
 				<result property="dealBy" column="deal_by" />
 				<result property="dealResult" column="deal_result" />
@@ -30,8 +32,10 @@
 	   )values (
 	     #{id},
 	     #{userId},
+	     #{title},
 	     #{content},
 	     #{imageUrls},
+	     #{email},
 	     #{createTime},
 	     #{dealBy},
 	     #{dealResult},
@@ -46,11 +50,17 @@
 		<if test="userId != null">
 			user_id=#{userId},
 		</if>
+		<if test="title != null">
+			title=#{title},
+		</if>
 		<if test="content != null">
 			content=#{content},
 		</if>
 		<if test="imageUrls != null">
 			image_urls=#{imageUrls},
+		</if>
+		<if test="email != null">
+			email=#{email},
 		</if>
 		<if test="createTime != null">
 			create_time=#{createTime},
@@ -76,11 +86,17 @@
 			<if test="n_userId != null">
 				and user_id=#{n_userId}
 			</if>
+			<if test="n_title != null">
+				and title=#{n_title}
+			</if>
 			<if test="n_content != null">
 				and content=#{n_content}
 			</if>
 			<if test="n_imageUrls != null">
 				and image_urls=#{n_imageUrls}
+			</if>
+			<if test="n_email != null">
+				and email=#{n_email}
 			</if>
 			<if test="n_createTime != null">
 				and create_time=#{n_createTime}
@@ -175,11 +191,17 @@
 		<if test="userId != null">
 			and user_id=#{userId}
 		</if>
+		<if test="title != null">
+			and title=#{title}
+		</if>
 		<if test="content != null">
 			and content=#{content}
 		</if>
 		<if test="imageUrls != null">
 			and image_urls=#{imageUrls}
+		</if>
+		<if test="email != null">
+			and email=#{email}
 		</if>
 		<if test="createTime != null">
 			and create_time=#{createTime}
@@ -197,15 +219,20 @@
 			and state=#{state}
 		</if>
 		<if test="keyword != null">
-			and (name LIKE CONCAT("%", #{keyword}, "%") )
+			and (title LIKE CONCAT("%", #{keyword}, "%") 
+			or content LIKE CONCAT("%", #{keyword}, "%")
+			or email LIKE CONCAT("%", #{keyword}, "%")
+			 )
 		</if>
 		order by  id  desc 
 	</sql>
 	<sql id="columns">
 			id,
 			user_id,
+			title,
 			content,
 			image_urls,
+			email,
 			create_time,
 			deal_by,
 			deal_result,

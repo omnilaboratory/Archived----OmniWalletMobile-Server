@@ -24,9 +24,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.lx.server.bean.Page;
 import com.lx.server.bean.ResultTO;
 import com.lx.server.enums.EnumFolderURI;
+import com.lx.server.pojo.DefaultAsset;
 import com.lx.server.pojo.UserClient;
 import com.lx.server.service.AppVersionService;
 import com.lx.server.service.CommonService;
+import com.lx.server.service.DefaultAssetService;
 import com.lx.server.service.UserClientService;
 import com.lx.server.utils.AESUtil;
 import com.lx.server.utils.RSAEncrypt;
@@ -85,7 +87,7 @@ public class CommonController extends AbstractController{
 			return ResultTO.newFailResult("your mnemonic is wrong");
 		}
 		if (Tools.checkStringExist(userClient.getPassword())) {
-			Assert.isTrue(userClient.getPassword().equals(password), "user pin is wrong");
+			Assert.isTrue(userClient.getPassword().equals(password), "old pin is wrong");
 		}
 		
 		userClient.setLastLoginTime(new Date());
@@ -116,6 +118,23 @@ public class CommonController extends AbstractController{
 	public ResultTO uploadFile(MultipartFile file){
 		Assert.isTrue(file!=null, "图片不存在");
 		String url = this.uploadImage(EnumFolderURI.getEnumByType(0).value,file);
+		if (url!=null) {
+			return ResultTO.newSuccessResult("上传成功",url);
+		}
+		return ResultTO.newFailResult("上传失败");
+	}
+	/**
+	 * 多图片上传
+	 * @param file
+	 * @return
+	 */
+	@PostMapping("uploadImages")
+	@ApiOperation("多图片上传")
+	@ApiImplicitParams({
+	})
+	public ResultTO uploadFile(MultipartFile files[]){
+		Assert.isTrue(files!=null, "图片不存在");
+		String url = Tools.uploadImages(EnumFolderURI.getEnumByType(0).value,files);
 		if (url!=null) {
 			return ResultTO.newSuccessResult("上传成功",url);
 		}
@@ -200,6 +219,29 @@ public class CommonController extends AbstractController{
 			if (datas!=null&&datas.size()==1) {
 				return ResultTO.newSuccessResult(datas.get(0));	
 			}
+		}
+		return ResultTO.newFailResult("");
+	}
+	
+	@GetMapping("getVersionList")
+	@ApiOperation("获取历史版本信息")
+	public ResultTO getVersionList() throws Exception {
+		Page page = appVersionService.page(new HashMap<String, Object>(), 1, 10);
+		if (page!=null) {
+			return ResultTO.newSuccessResult(page);
+		}
+		return ResultTO.newFailResult("");
+	}
+	
+	@Autowired
+	private DefaultAssetService defaultAssetService;
+	
+	@GetMapping("getDefautAssetList")
+	@ApiOperation("默认资产列表")
+	public ResultTO getDefautAssetList() throws Exception {
+		List<DefaultAsset> assets = defaultAssetService.selectObjectList(null);
+		if (assets!=null) {
+			return ResultTO.newSuccessResult(assets);
 		}
 		return ResultTO.newFailResult("");
 	}

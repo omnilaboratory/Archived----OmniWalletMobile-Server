@@ -19,7 +19,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.lx.server.bean.ResultTO;
 import com.lx.server.pojo.UserClient;
-import com.lx.server.service.WalletServcie;
+import com.lx.server.service.WalletService;
 import com.lx.server.utils.AESUtil;
 import com.lx.server.utils.Tools;
 
@@ -33,7 +33,7 @@ import io.swagger.annotations.ApiOperation;
 public class BlockChainController extends AbstractController{
 	
 	@Autowired
-    private WalletServcie walletServcie;
+    private WalletService walletServcie;
     
     //	@GetMapping("go")
 	public String client() {
@@ -177,7 +177,7 @@ public class BlockChainController extends AbstractController{
     
     @ApiOperation("同步btc交易到mysql")
     @GetMapping("sycBlockTransactions")
-    public ResultTO sycBlockTransactions() {
+    public ResultTO sycBlockTransactions() throws Exception {
     	walletServcie.sycBlockTransactions();
     	return ResultTO.newSuccessResult("ok");
     }

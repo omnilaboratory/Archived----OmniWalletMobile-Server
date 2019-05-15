@@ -25,6 +25,6 @@ public class BeanConfig {
         String cred = Base64.encodeBase64String(("uprets" + ":" + "pass").getBytes());
         Map<String, String>  headers = new HashMap <>(1);
         headers.put("Authorization", "Basic " + cred);
-        return new JsonRpcHttpClient(new URL("http://" + omniIp + ":" + "18332"), headers);
+        return new JsonRpcHttpClient(new URL("http://" + omniIp + ":" + "8332"), headers);
     }
 }

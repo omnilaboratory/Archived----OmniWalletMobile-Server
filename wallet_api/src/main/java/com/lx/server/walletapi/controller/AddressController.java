@@ -14,12 +14,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.lx.server.bean.Page;
 import com.lx.server.bean.ResultTO;
+import com.lx.server.pojo.DefaultAsset;
 import com.lx.server.pojo.WalletAddress;
 import com.lx.server.pojo.WalletAsset;
 import com.lx.server.service.CommonService;
+import com.lx.server.service.DefaultAssetService;
 import com.lx.server.service.WalletAddressService;
 import com.lx.server.service.WalletAssetService;
-import com.lx.server.service.WalletServcie;
+import com.lx.server.service.WalletService;
 import com.lx.server.utils.Tools;
 
 import io.swagger.annotations.Api;
@@ -38,10 +40,13 @@ public class AddressController extends AbstractController{
 	private WalletAddressService walletAddressService;
 	
 	@Autowired
+	private DefaultAssetService defaultAssetService;
+	
+	@Autowired
 	private WalletAssetService assetService;
 	
 	@Autowired
-	private WalletServcie walletServcie;
+	private WalletService walletServcie;
 	
 	@Autowired
 	private CommonService commonService;
@@ -102,35 +107,19 @@ public class AddressController extends AbstractController{
 			address.setVisible(true);
 			walletAddressService.insert(address);
 			
-			WalletAsset asset = new WalletAsset();
-			asset.setUserId(getUserId());
-			asset.setAssetName("BTC");
-			asset.setAddress(address.getAddress());
-			asset.setVisible(true);
-			asset.setAssetType((byte) 0);
-			asset.setAssetId(0);
-			asset.setCreateTime(new Date());
-			assetService.insert(asset);
+			List<DefaultAsset> defaultAssets = defaultAssetService.selectObjectList(null);
+			for (DefaultAsset defaultAsset : defaultAssets) {
+				WalletAsset asset = new WalletAsset();
+				asset.setUserId(getUserId());
+				asset.setAssetName(defaultAsset.getAssetName());
+				asset.setAddress(address.getAddress());
+				asset.setVisible(true);
+				asset.setAssetType((byte) (defaultAsset.getAssetId()==0?0:1));
+				asset.setAssetId(defaultAsset.getAssetId());
+				asset.setCreateTime(new Date());
+				assetService.insert(asset);
+			}
 			
-			asset = new WalletAsset();
-			asset.setUserId(getUserId());
-			asset.setAssetName("OMNI");
-			asset.setAddress(address.getAddress());
-			asset.setVisible(true);
-			asset.setAssetType((byte) 1);
-			asset.setAssetId(1);
-			asset.setCreateTime(new Date());
-			assetService.insert(asset);
-			
-			asset = new WalletAsset();
-			asset.setUserId(getUserId());
-			asset.setAssetName("LunarX");
-			asset.setAddress(address.getAddress());
-			asset.setVisible(true);
-			asset.setAssetType((byte) 1);
-			asset.setAssetId(361);
-			asset.setCreateTime(new Date());
-			assetService.insert(asset);
 		}
 	}
 	
@@ -159,6 +148,11 @@ public class AddressController extends AbstractController{
 			put("assetId", asset.getAssetId());
 		}});
 		if (count>0) {
+			assetService.update(new HashMap<String,Object>() {{
+				put("address", asset.getAddress());
+				put("assetId", asset.getAssetId());
+				put("visible", true);
+			}});
 			return ResultTO.newSuccessResult("success");
 		}
 		

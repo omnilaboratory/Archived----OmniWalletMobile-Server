@@ -17,6 +17,10 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
 	
 	@Autowired
 	private GlobalJwtInterceptor globalJwtInterceptor;
+	
+	
+	@Autowired
+	private InputDataInterceptor inputDataInterceptor;
 
 	@Override
 	protected void addInterceptors(InterceptorRegistry registry) {
@@ -25,6 +29,7 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
 		.addPathPatterns("/api/**")
 		.excludePathPatterns("/api/common/*")
 		;
+		registry.addInterceptor(inputDataInterceptor).addPathPatterns("/api/**");
 		super.addInterceptors(registry);
 	}
 

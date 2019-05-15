@@ -245,7 +245,7 @@ public class Tools {
             return urls;
         }
         for (int i = 0; i < files.length; i++) {
-            String url = Tools.uploadMultimedia(files[0], imageUrl);
+            String url = Tools.uploadMultimedia(files[i], imageUrl);
             if (url != null && urls == null) {
                 urls = url + ",";
             } else if (url != null && urls != null) {
