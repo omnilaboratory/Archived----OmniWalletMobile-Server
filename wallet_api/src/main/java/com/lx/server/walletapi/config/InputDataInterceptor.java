@@ -2,6 +2,7 @@ package com.lx.server.walletapi.config;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,6 +34,8 @@ public class InputDataInterceptor extends HandlerInterceptorAdapter {
 	@Value("${config.debug}")
     private Boolean debug; 
 	
+    public static Pattern pattern = Pattern.compile("[0-9]*(\\.?)[0-9]*");
+	
 	
 	@Autowired
 	UserClientService userClientService;
@@ -59,17 +62,28 @@ public class InputDataInterceptor extends HandlerInterceptorAdapter {
 			return true;
 		}
 		JSONObject jsonObject2 =JSONObject.parseObject(request.getParameter("dataStr"));
+		for (String key : jsonObject2.keySet()) {
+			jsonObject2.put(key, jsonObject2.get(key)!=null?jsonObject2.get(key).toString():"");
+		}
+		boolean flag = false;
 		if (jsonObject2.equals(jsonObject)) {
 			String dataMD5 = request.getParameter("dataMD5");
 			String dataMD5Locale = Tools.MD5Encode(Tools.MD5Encode(request.getParameter("dataStr")+this.secret));
 			if (dataMD5Locale.equals(dataMD5)==false) {
-				response.setCharacterEncoding("UTF-8");
-				response.setContentType("text/html;charset=utf-8");
-				response.setHeader("Cache-Control", "no-cache, must-revalidate");
-				response.getWriter().write(JSON.toJSONString(ResultTO.newFailResult("error data")));
-				return false;
+				flag = true;
 			}
+		}else {
+			flag = true;
 		}
+		
+		if (flag) {
+			response.setCharacterEncoding("UTF-8");
+			response.setContentType("text/html;charset=utf-8");
+			response.setHeader("Cache-Control", "no-cache, must-revalidate");
+			response.getWriter().write(JSON.toJSONString(ResultTO.newFailResult("error data")));
+			return false;
+		}
+		
 		return super.preHandle(request, response, handler);
 	}
 }

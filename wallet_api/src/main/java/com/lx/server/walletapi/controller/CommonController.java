@@ -13,6 +13,7 @@ import javax.annotation.PostConstruct;
 import javax.crypto.NoSuchPaddingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,12 +21,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.lx.server.bean.Page;
 import com.lx.server.bean.ResultTO;
 import com.lx.server.enums.EnumFolderURI;
+import com.lx.server.enums.EnumKafkaTopic;
+import com.lx.server.kafka.bean.KafkaMessage;
 import com.lx.server.pojo.DefaultAsset;
 import com.lx.server.pojo.UserClient;
+import com.lx.server.pojo.UserFeedback;
 import com.lx.server.service.AppVersionService;
 import com.lx.server.service.CommonService;
 import com.lx.server.service.DefaultAssetService;
@@ -261,6 +266,28 @@ public class CommonController extends AbstractController{
         System.out.println("s2:"+AESUtil.decrypt(s1, key,cIv));
         
 		return ResultTO.newSuccessResult(AESUtil.decrypt(s1, key,cIv));
+	}
+	
+	@Autowired
+    private KafkaTemplate<String, Object> kafkaTemplate;
+	
+	@PostMapping("testKafka")
+	public ResultTO testKafka(UserFeedback feedback) {
+		KafkaMessage message = new KafkaMessage(1,"ef8c6d919538a26f4065989597a652aa", null, feedback);
+		this.kafkaTemplate.send(EnumKafkaTopic.UserFeedback.value, JSON.toJSONString(message));
+		return ResultTO.newSuccessResult("success");
+	}
+	
+	private Integer index = 0;
+//	@Scheduled(fixedRate=100)
+	private void schedule() {
+		index++;
+		UserFeedback feedback = new UserFeedback();
+		feedback.setTitle("title"+index);
+		feedback.setContent("content"+index);
+		feedback.setEmail("email"+index);
+		feedback.setImageUrls("imageUrls"+index);
+		this.testKafka(feedback);
 	}
 	
 }

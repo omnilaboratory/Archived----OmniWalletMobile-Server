@@ -24,15 +24,15 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
 
 	@Override
 	protected void addInterceptors(InterceptorRegistry registry) {
-		registry
-		.addInterceptor(globalJwtInterceptor)
-		.addPathPatterns("/api/**")
-		.excludePathPatterns("/api/common/*")
-		;
 		registry.addInterceptor(inputDataInterceptor)
 		.addPathPatterns("/api/**")
 		.excludePathPatterns("/api/common/uploadImage")
 		.excludePathPatterns("/api/user/updateUserFace")
+		;
+		registry
+		.addInterceptor(globalJwtInterceptor)
+		.addPathPatterns("/api/**")
+		.excludePathPatterns("/api/common/*")
 		;
 		super.addInterceptors(registry);
 	}

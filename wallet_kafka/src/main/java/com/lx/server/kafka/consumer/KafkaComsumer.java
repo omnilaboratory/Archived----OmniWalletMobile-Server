@@ -1,10 +1,20 @@
 package com.lx.server.kafka.consumer;
 
+import java.util.Date;
+import java.util.Optional;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.lx.server.kafka.bean.KafkaMessage;
+import com.lx.server.pojo.UserFeedback;
+import com.lx.server.service.UserFeedbackService;
 import com.lx.server.service.WalletAddressService;
 import com.lx.server.service.WalletAssetService;
 
@@ -23,7 +33,27 @@ public class KafkaComsumer {
 	@Autowired
 	private WalletAssetService walletAssetService;
 	
+	@Autowired
+	private UserFeedbackService userFeedbackService;
+	
 	private final Log logger = LogFactory.getLog(getClass());
+	
+	
+	@KafkaListener(topics = { "user.feedback" })
+	public void userFeedback(ConsumerRecord<?, ?> record) {
+		logger.info("user.feedback");
+		KafkaMessage info = getKafkaMsg(record);
+		JSONObject jsonObject = (JSONObject) info.getData();
+		UserFeedback feedback = new UserFeedback();
+		feedback.setTitle(jsonObject.getString("title"));
+		feedback.setContent(jsonObject.getString("content"));
+		feedback.setEmail(jsonObject.getString("email"));
+		feedback.setImageUrls(jsonObject.getString("imageUrls"));
+		feedback.setCreateTime(new Date());
+		feedback.setUserId(info.getUserId());
+		feedback.setState((byte) 0);
+		userFeedbackService.insert(feedback);
+	}
 	
 //	@KafkaListener(topics = {"wallet.userTopic"})
 //    public void userTopicListen(ConsumerRecord<?,?> record){
@@ -114,20 +144,17 @@ public class KafkaComsumer {
 //			walletAssetService.insert(asset);
 //		}
 //	}
-//	
-//	
-//	
-//	
-//	private KafkaMessage getKafkaMsg(ConsumerRecord<?, ?> record) {
-//		Optional<Object> kafkaMessage = (Optional<Object>) Optional.ofNullable(record.value());
-//		Object message = kafkaMessage.get();
-//		JSONObject jsonObject = JSON.parseObject(message.toString());
-//		KafkaMessage info = new KafkaMessage(
-//				jsonObject.getInteger("type"), 
-//				jsonObject.getString("userId"),
-//				jsonObject.getString("title"),
-//				jsonObject.getJSONObject("data")
-//				);
-//		return info;
-//	}
+	
+	private KafkaMessage getKafkaMsg(ConsumerRecord<?, ?> record) {
+		Optional<Object> kafkaMessage = (Optional<Object>) Optional.ofNullable(record.value());
+		Object message = kafkaMessage.get();
+		JSONObject jsonObject = JSON.parseObject(message.toString());
+		KafkaMessage info = new KafkaMessage(
+				jsonObject.getInteger("type"), 
+				jsonObject.getString("userId"),
+				jsonObject.getString("title"),
+				jsonObject.getJSONObject("data")
+				);
+		return info;
+	}
 }
