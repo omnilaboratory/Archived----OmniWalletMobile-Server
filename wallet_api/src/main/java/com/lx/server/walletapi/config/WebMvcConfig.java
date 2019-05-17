@@ -29,7 +29,11 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
 		.addPathPatterns("/api/**")
 		.excludePathPatterns("/api/common/*")
 		;
-		registry.addInterceptor(inputDataInterceptor).addPathPatterns("/api/**");
+		registry.addInterceptor(inputDataInterceptor)
+		.addPathPatterns("/api/**")
+		.excludePathPatterns("/api/common/uploadImage")
+		.excludePathPatterns("/api/user/updateUserFace")
+		;
 		super.addInterceptors(registry);
 	}
 

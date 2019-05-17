@@ -4,6 +4,7 @@ import static com.google.common.collect.Lists.newArrayList;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -28,11 +29,16 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 @ComponentScan("com.lx.server.walletapi.controller")
 public class SwaggerConfig {
+	
+	
+	@Value("${config.debug}")
+    private Boolean debug; 
 
 	// swagger2的配置文件，这里可以配置swagger2的一些基本的内容，比如扫描的包等等
 	@Bean
     public Docket createRestApi() {
 		 return new Docket(DocumentationType.SWAGGER_2)
+				 	.enable(debug)
 	                .select()
 	                .apis(RequestHandlerSelectors.basePackage("com.lx.server.walletapi.controller"))
 	                .paths(PathSelectors.any())

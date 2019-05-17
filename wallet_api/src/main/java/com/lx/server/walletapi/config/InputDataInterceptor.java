@@ -1,5 +1,8 @@
 package com.lx.server.walletapi.config;
 
+import java.util.Iterator;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.lx.server.bean.ResultTO;
 import com.lx.server.service.UserClientService;
 import com.lx.server.utils.Tools;
@@ -26,6 +30,9 @@ public class InputDataInterceptor extends HandlerInterceptorAdapter {
 	@Value("${jwt.secret}")
 	private String secret;
 	
+	@Value("${config.debug}")
+    private Boolean debug; 
+	
 	
 	@Autowired
 	UserClientService userClientService;
@@ -35,16 +42,33 @@ public class InputDataInterceptor extends HandlerInterceptorAdapter {
 		
 		if (!(HttpMethod.POST.name().equals(request.getMethod()))) {
             return true;
-        }
-		String dataStr = request.getParameter("dataStr");
-		String dataMD5 = request.getParameter("dataMD5");
-		String dataMD5Locale = Tools.MD5Encode(Tools.MD5Encode(dataStr+this.secret));
-		if (dataMD5Locale.equals(dataMD5)==false) {
-			response.setCharacterEncoding("UTF-8");
-            response.setContentType("text/html;charset=utf-8");
-            response.setHeader("Cache-Control", "no-cache, must-revalidate");
-            response.getWriter().write(JSON.toJSONString(ResultTO.newFailResult("error data")));
-			return false;
+		}
+		
+		JSONObject jsonObject = new JSONObject();
+		Map<String, String[]> map = request.getParameterMap();
+		Iterator<?> it = map.keySet().iterator();
+		while(it.hasNext()){
+			String key = (String)it.next();
+			String[] values = (String[])map.get(key);
+			jsonObject.put(key, values[0]);
+		}
+		jsonObject.remove("dataMD5");
+		jsonObject.remove("dataStr");
+		//为了解决swagger的验证 swagger 不需要验证数据，上线后， debug为false
+		if (debug&&request.getParameter("dataStr")==null) {
+			return true;
+		}
+		JSONObject jsonObject2 =JSONObject.parseObject(request.getParameter("dataStr"));
+		if (jsonObject2.equals(jsonObject)) {
+			String dataMD5 = request.getParameter("dataMD5");
+			String dataMD5Locale = Tools.MD5Encode(Tools.MD5Encode(request.getParameter("dataStr")+this.secret));
+			if (dataMD5Locale.equals(dataMD5)==false) {
+				response.setCharacterEncoding("UTF-8");
+				response.setContentType("text/html;charset=utf-8");
+				response.setHeader("Cache-Control", "no-cache, must-revalidate");
+				response.getWriter().write(JSON.toJSONString(ResultTO.newFailResult("error data")));
+				return false;
+			}
 		}
 		return super.preHandle(request, response, handler);
 	}

@@ -37,6 +37,9 @@
 	<logger name="com.lx.server.kafka" level="ALL">
 		<appender-ref ref="rollingAppender" />
 	</logger>
+	<logger name="com.lx.server.walletapi.config" level="ALL">
+		<appender-ref ref="rollingAppender" />
+	</logger>
 	
 
 </configuration>

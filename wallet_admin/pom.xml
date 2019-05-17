@@ -28,7 +28,7 @@
   </dependencies>
   
   <build>
-		<finalName>walletAdminTest</finalName>
+		<finalName>walletAdmin</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
