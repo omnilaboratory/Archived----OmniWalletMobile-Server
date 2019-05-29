@@ -58,7 +58,7 @@ public class InputDataInterceptor extends HandlerInterceptorAdapter {
 		jsonObject.remove("dataMD5");
 		jsonObject.remove("dataStr");
 		//为了解决swagger的验证 swagger 不需要验证数据，上线后， debug为false
-		if (debug&&request.getParameter("dataStr")==null) {
+		if (debug&&request.getParameter("dataMD5")==null) {
 			return true;
 		}
 		JSONObject jsonObject2 =JSONObject.parseObject(request.getParameter("dataStr"));
