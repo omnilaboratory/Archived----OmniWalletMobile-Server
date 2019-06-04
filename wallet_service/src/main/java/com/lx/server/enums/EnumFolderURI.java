@@ -10,6 +10,7 @@ public enum EnumFolderURI {
 	Default_Folder("/image/wallet/default/"),
 	Image_userface("/image/wallet/userface/"),
 	appPack("/image/wallet/appPack/"),
+	coinImage("/image/wallet/coinImage/"),
 	;
 	
 	public String value;
