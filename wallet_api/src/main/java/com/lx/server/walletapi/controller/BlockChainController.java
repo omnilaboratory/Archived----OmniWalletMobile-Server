@@ -123,6 +123,7 @@ public class BlockChainController extends AbstractController{
     	UserClient userClient = getUser();
     	Assert.isTrue(Tools.checkStringExist(userClient.getPassword()), "pin is wrong");
     	privkey = AESUtil.decrypt(privkey, userClient.getPassword(), userClient.getId().substring(0, 16));
+    	Assert.notNull(privkey, "privkey is wrong");
     	return ResultTO.newSuccessResult(walletServcie.omniRawTransaction(propertyId, fromBitCoinAddress, privkey, toBitCoinAddress, minerFee, amount, note));
     }
     
@@ -133,6 +134,7 @@ public class BlockChainController extends AbstractController{
     	UserClient userClient = getUser();
     	Assert.isTrue(Tools.checkStringExist(userClient.getPassword()), "pin is wrong");
     	privkey = AESUtil.decrypt(privkey, userClient.getPassword(), userClient.getId().substring(0, 16));
+    	Assert.notNull(privkey, "privkey is wrong");
     	String ret =walletServcie.btcRawTransaction(fromBitCoinAddress, privkey, toBitCoinAddress, amount, minerFee,"");
     	if (ret!=null) {
     		return ResultTO.newSuccessResult("success",ret);

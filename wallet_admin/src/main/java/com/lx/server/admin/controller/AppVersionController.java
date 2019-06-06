@@ -11,7 +11,6 @@ import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -53,12 +52,13 @@ public class AppVersionController extends AbstractController {
     @SuppressWarnings("unchecked")
 	@PostMapping("add")
     @ApiOperation("新增")
-    public Object edit(AppVersion record, @RequestParam MultipartFile pathFile){
+    public Object edit(AppVersion record, MultipartFile pathFile){
     	
     	record.setCode(null);
-        if (pathFile!=null &&  !pathFile.isEmpty()){
-           record.setPath(this.uploadImage(EnumFolderURI.appPack.value,pathFile));
-        }
+    	
+    	if (pathFile!=null &&!pathFile.isEmpty()&&Tools.checkStringExist(record.getPath())==false){
+	        record.setPath(this.uploadImage(EnumFolderURI.appPack.value,pathFile));
+	    }
         
         Page page = appVersionService.page(new HashMap<String, Object>(), 1, 1);
         Integer code = 1;

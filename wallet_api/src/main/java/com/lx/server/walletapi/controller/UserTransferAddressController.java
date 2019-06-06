@@ -32,8 +32,8 @@ public class UserTransferAddressController extends AbstractController {
 	@PostMapping("edit")
 	@ApiOperation("创建或者编辑地址")
 	public ResultTO createAddress(UserTransferAddress transferAddress) throws InvocationTargetException, IllegalAccessException {
-		Assert.isTrue(Tools.checkStringExist(transferAddress.getAddress()), "address is empty");
-		Assert.isTrue(Tools.checkStringExist(transferAddress.getNickname()), "name is empty");
+		Assert.isTrue(Tools.checkStringExist(transferAddress.getAddress())&&transferAddress.getAddress().trim().length()<40, "address is error");
+		Assert.isTrue(Tools.checkStringExist(transferAddress.getNickname())&&transferAddress.getNickname().trim().length()<20, "name is error");
 		
 		int count =  userTransferAddressService.pageCount(new HashMap<String,Object>() {{
 			put("userId", getUserId());

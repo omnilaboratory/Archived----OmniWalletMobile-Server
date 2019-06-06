@@ -45,7 +45,7 @@ public class UserController extends AbstractController{
 	@PostMapping("updateUserNickname")
 	@ApiOperation("更新用户昵称")
 	public ResultTO updateUserNickname(@RequestParam String nickname) {
-		Assert.isTrue(Tools.checkStringExist(nickname), "empty nickname");
+		Assert.isTrue(Tools.checkStringExist(nickname)&&nickname.trim().length()<13, "error nickname");
 		userClientService.update(new HashMap<String,Object>() {{
 			put("id", getUserId());
 			put("nickname", nickname);

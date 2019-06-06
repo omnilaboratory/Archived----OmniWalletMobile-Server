@@ -102,6 +102,10 @@ public class AddressController extends AbstractController{
 	private void createWalletAddress(WalletAddress address) {
 		logger.info("createWalletAddress");
 		if (address!=null) {
+			
+			Assert.isTrue(Tools.checkStringExist(address.getAddressName())&&address.getAddressName().trim().length()<11, "error address name");
+			Assert.isTrue(Tools.checkStringExist(address.getAddress()), "address can not be empty");
+			
 			address.setCreateTime(new Date());
 			address.setIsEnable(true);
 			address.setVisible(true);
@@ -210,8 +214,8 @@ public class AddressController extends AbstractController{
 				//获取数据库的某个地址的资产列表  有可能里面有的资产没有交易，就不在list里面   如果在list里面有的，assetllist没有，在设置asset显隐的地方处理
 				List<Map<String, Object>> assetList = assetService.selectMapList(new HashMap<String,Object>() {{
 					put("address", address);
+					put("sortByCreate", true);
 				}});
-				
 				
 				boolean flag = false;
 				for (Map<String, Object> map : assetList) {

@@ -552,6 +552,11 @@ public class WalletServiceImpl implements WalletService {
 		List<Map<String, Object>> nodes = this.sendCmd("omni_listtransactions", new Object[] {address,10000}, ArrayList.class);
 		return nodes;
 	}
+	@Override
+	public List<Map<String, Object>> getOmniPendingTransactions(String address) throws Exception {
+		List<Map<String, Object>> nodes = this.sendCmd("omni_listpendingtransactions", new Object[] {address}, ArrayList.class);
+		return nodes;
+	}
 	
 	@Autowired
 	private BtcTransactionUpdateLogService btcLogService;

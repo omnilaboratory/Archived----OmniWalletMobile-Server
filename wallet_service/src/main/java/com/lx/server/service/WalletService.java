@@ -105,6 +105,8 @@ public interface WalletService{
 	List<Map<String, Object>> getOmniTransactions(String address) throws Exception;
 
 	void sycBlockTransactions() throws Exception;
+
+	List<Map<String, Object>> getOmniPendingTransactions(String address) throws Exception;
 	
 
 }

@@ -188,7 +188,13 @@
 		<if test="keyword != null">
 			and (name LIKE CONCAT("%", #{keyword}, "%") )
 		</if>
-		order by asset_id 
+		
+		<if test="sortByCreate != null">
+			order by create_time
+		</if>
+		<if test="sortByCreate == null">
+			order by asset_id 
+		</if>
 	</sql>
 	<sql id="columns">
 			id,

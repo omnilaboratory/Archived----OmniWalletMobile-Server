@@ -236,13 +236,26 @@ public class CommonServiceImpl implements CommonService{
 	@Override
 	public Map<String, Object> getOmniTransactions(String address, Integer assetId) throws Exception {
 		List<Map<String, Object>> omniData = walletServcie.getOmniTransactions(address);
+		List<Map<String, Object>> omniPendingData = walletServcie.getOmniPendingTransactions(address);
 		List<Map<String, Object>> datas = new ArrayList<>();
-		for (Map<String, Object> map : omniData) {
-			Integer propertyid = (Integer) map.get("propertyid");
-			if (propertyid.compareTo(assetId)==0) {
-				datas.add(map);
+		if (omniPendingData!=null) {
+			for (Map<String, Object> map : omniPendingData) {
+				Integer propertyid = (Integer) map.get("propertyid");
+				if (propertyid.compareTo(assetId)==0) {
+					datas.add(0,map);
+				}
 			}
 		}
+		
+		if (omniData!=null) {
+			for (Map<String, Object> map : omniData) {
+				Integer propertyid = (Integer) map.get("propertyid");
+				if (propertyid.compareTo(assetId)==0) {
+					datas.add(map);
+				}
+			}
+		}
+		
 		
 		Map<String, Object> retData = new HashMap<>();
 		
@@ -256,7 +269,7 @@ public class CommonServiceImpl implements CommonService{
 			node.put("txId", dateNode.get("txid"));
 			node.put("result", dateNode.get("amount"));
 			node.put("confirmAmount",dateNode.get("confirmations"));
-			node.put("blockHeight", dateNode.get("block"));
+			node.put("blockHeight", dateNode.get("block")!=null?dateNode.get("block"):0);
 			String sendingaddress = (String) dateNode.get("sendingaddress");
 			String referenceaddress = (String) dateNode.get("referenceaddress");
 			boolean isSend = false;
