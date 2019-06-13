@@ -178,7 +178,7 @@ public class JwtTokenUtil implements Serializable {
 		final Date lastLoginTime = getLastLoginTimeFromToken(token);
 		return (lastLoginTime.equals(user.getLastLoginTime())
 //				&& username.equals(user.getNickname())
-				&&!isTokenExpired(token)
+//				&&!isTokenExpired(token)
 				);
 	}
 }
