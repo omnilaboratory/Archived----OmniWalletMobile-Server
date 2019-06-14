@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-
 	<!-- test文件路径 -->
     <property name="TEST_FILE_PATH" value="./logs"/>
     <!-- prod文件路径 -->
@@ -10,9 +9,9 @@
 	<include resource="org/springframework/boot/logging/logback/base.xml" />
 	<appender name="rollingAppender"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${PRO_FILE_PATH}/application.log</file>
+		<file>${PRO_FILE_PATH}/applicationWalletApi.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>${PRO_FILE_PATH}//application-%d{yyyy-MM-dd}.log</fileNamePattern>
+			<fileNamePattern>${PRO_FILE_PATH}//applicationWalletApi-%d{yyyy-MM-dd}.log</fileNamePattern>
 			<maxHistory>60</maxHistory>
 		</rollingPolicy>
 		<encoder>

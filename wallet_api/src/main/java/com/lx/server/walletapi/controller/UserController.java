@@ -2,6 +2,7 @@ package com.lx.server.walletapi.controller;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.crypto.NoSuchPaddingException;
 
@@ -30,9 +31,10 @@ public class UserController extends AbstractController{
 	@GetMapping("getUserInfo")
 	@ApiOperation("获取用户信息")
 	public ResultTO getUserInfo() throws NoSuchAlgorithmException {
-		UserClient userClient = getUser();
-		return ResultTO.newSuccessResult(userClient);
+		Map<String, Object> userInfo = getFpUserInfo(getUser());
+		return ResultTO.newSuccessResult(userInfo);
 	}
+
 	
 	@GetMapping("getUserRSAEncrypt")
 	@ApiOperation("获取用户公钥")

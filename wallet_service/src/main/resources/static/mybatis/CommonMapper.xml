@@ -19,4 +19,14 @@
 		LIMIT 0, 1
 	</select>
 	
+	<select id="getConfigParamValueByKey" parameterType="map" resultType="int">
+		SELECT
+			param_value value
+		FROM
+			t_fp_config_base_parameter
+		WHERE
+			type_name = #{typeName}
+		LIMIT 0, 1
+	</select>
+	
 </mapper>

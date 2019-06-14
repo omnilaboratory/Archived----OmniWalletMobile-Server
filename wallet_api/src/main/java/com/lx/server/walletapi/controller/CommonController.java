@@ -102,12 +102,10 @@ public class CommonController extends AbstractController{
 			put("id", userClient.getId());
 		}});
 		
-		return ResultTO.newSuccessResult(new HashMap<String,Object>() {{
-			put("userId", userClient.getId());
-			put("nickname", userClient.getNickname());
-			put("faceUrl", userClient.getFaceUrl());
-			put("token", userClientService.generateToken(userClient));
-		}});
+		Map<String, Object> info =  getFpUserInfo(userClient);
+		info.put("userId", userClient.getId());
+		info.put("token", userClientService.generateToken(userClient));
+		return ResultTO.newSuccessResult(info);
 	}
 	
 	/**
