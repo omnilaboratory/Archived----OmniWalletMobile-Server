@@ -85,7 +85,7 @@ public abstract class AbstractController {
 			List<FpUserOmniAddress> addresses = userOmniAddressService.selectObjectList(new HashMap<String,Object>() {{
 				put("fpUserId", fpUser.getId());
 			}});
-			fpUserInfo.put("fpUsername", fpUser.getHpyerUsername());
+			fpUserInfo.put("username", fpUser.getHpyerUsername());
 			List<String> addrs = new ArrayList<>();
 			
 			for (FpUserOmniAddress fpUserOmniAddress : addresses) {

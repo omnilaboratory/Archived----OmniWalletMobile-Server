@@ -75,7 +75,8 @@ public class FpUserServiceImpl extends MybatisBaseServiceImpl implements FpUserS
 			addresses.add(walletService.createNewAddress(email));
 		}
 		
-		JSONObject js = hyperledgerService.createAccount(email);
+//		JSONObject js = hyperledgerService.createAccount(email);
+		JSONObject js = new JSONObject();
 		if (js!=null) {
 			FpUser user = new FpUser();
 			user.setUserId(userId);

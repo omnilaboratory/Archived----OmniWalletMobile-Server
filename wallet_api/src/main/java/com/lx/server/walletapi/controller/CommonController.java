@@ -14,6 +14,7 @@ import javax.crypto.NoSuchPaddingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -277,7 +278,7 @@ public class CommonController extends AbstractController{
 	}
 	
 	private Integer index = 0;
-//	@Scheduled(fixedRate=10000)
+	@Scheduled(fixedRate=1000)
 	private void schedule() {
 		index++;
 		UserFeedback feedback = new UserFeedback();

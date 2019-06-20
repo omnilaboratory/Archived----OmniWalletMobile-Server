@@ -37,7 +37,7 @@
   </dependencies>
 	
 	<build>
- 		<finalName>walletClientTest</finalName>
+ 		<finalName>walletClientDev</finalName>
  		<!-- <finalName>walletClient</finalName>  -->
         <plugins>
             <plugin>
