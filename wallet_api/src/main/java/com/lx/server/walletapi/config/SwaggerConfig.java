@@ -9,6 +9,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
+import com.lx.server.config.GlobalConfig;
+import com.lx.server.enums.EnumRunMode;
+
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -33,16 +36,21 @@ public class SwaggerConfig {
 	
 	@Value("${config.debug}")
     private Boolean debug; 
+	
+	@Value("${config.runMode}")
+	private String runMode;
 
 	// swagger2的配置文件，这里可以配置swagger2的一些基本的内容，比如扫描的包等等
 	@Bean
     public Docket createRestApi() {
-		 return new Docket(DocumentationType.SWAGGER_2)
-				 	.enable(debug)
+		
+		GlobalConfig.runMode = runMode;
+		
+		return new Docket(DocumentationType.SWAGGER_2)
+				 	.enable(!GlobalConfig.runMode.equals(EnumRunMode.pro.value))
 	                .select()
 	                .apis(RequestHandlerSelectors.basePackage("com.lx.server.walletapi.controller"))
 	                .paths(PathSelectors.any())
-//	                .paths(PathSelectors.regex("^(?!//user//).*$"))
 	                .build()
 	                .pathMapping("/")
 	                .apiInfo(apiInfo())

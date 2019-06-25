@@ -1,5 +1,7 @@
 package com.lx.server.enums;
 
+import com.lx.server.config.GlobalConfig;
+
 /**
  * 文件保存的路径
  * @author ZhuGuojun
@@ -7,10 +9,10 @@ package com.lx.server.enums;
  */
 public enum EnumFolderURI {
 
-	Default_Folder("/image/wallet/default/"),
-	Image_userface("/image/wallet/userface/"),
-	appPack("/image/wallet/appPack/"),
-	coinImage("/image/wallet/coinImage/"),
+	Default_Folder("/image/wallet/"+GlobalConfig.runMode+"/default/"),
+	Image_userface("/image/wallet/"+GlobalConfig.runMode+"/userface/"),
+	appPack("/image/wallet/"+GlobalConfig.runMode+"/appPack/"),
+	coinImage("/image/wallet/"+GlobalConfig.runMode+"/coinImage/"),
 	;
 	
 	public String value;

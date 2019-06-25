@@ -30,6 +30,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Value("${site.upload.path}")
     String uploadPath;
     
+    
+    
 	
 	@Override
     public void configure(WebSecurity webSecurity) {

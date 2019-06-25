@@ -8,6 +8,10 @@ public class GlobalConfig {
 	 */
 	public static String name;
 	/**
+	 * 运行模式 pro test dev
+	 */
+	public static String runMode = "pro";
+	/**
 	 * 密码加密用的密钥
 	 */
 	public static String secret;

@@ -7,9 +7,9 @@
 	<include resource="org/springframework/boot/logging/logback/base.xml" />
 	<appender name="rollingAppender"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${PRO_FILE_PATH}/applicationWalletAdmin.log</file>
+		<file>${PRO_FILE_PATH}/applicationWalletAdminTest.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>${PRO_FILE_PATH}//applicationWalletAdmin-%d{yyyy-MM-dd}.log</fileNamePattern>
+			<fileNamePattern>${PRO_FILE_PATH}//applicationWalletAdminTest-%d{yyyy-MM-dd}.log</fileNamePattern>
 			<maxHistory>60</maxHistory>
 		</rollingPolicy>
 		<encoder><!-- 必须指定，否则不会往文件输出内容 -->

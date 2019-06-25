@@ -31,6 +31,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Value("${site.upload.path}")
     String uploadPath;
     
+    @Value("${config.runMode}")
+    String runMode;
+    
 	
 	@Override
     public void configure(WebSecurity webSecurity) {
@@ -61,5 +64,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         GlobalConfig.expiration = expiration;
         GlobalConfig.secret = secret;
         GlobalConfig.BASE_IMAGE_ADDRESS = uploadPath;
+        GlobalConfig.runMode = runMode;
     }
 }
