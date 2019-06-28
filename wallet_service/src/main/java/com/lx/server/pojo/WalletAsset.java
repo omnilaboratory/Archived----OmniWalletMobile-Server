@@ -2,8 +2,6 @@ package com.lx.server.pojo;
 
 import java.util.Date;
 
-import com.lx.server.pojo.AbstractObject;
-
 /**
  * 【用户钱包地址的资产】持久化对象 数据库表：t_wallet_asset
  *
@@ -22,7 +20,7 @@ public class WalletAsset extends AbstractObject {
     // 支持类型 0 btc币，1omni资产
     private Byte assetType;
     // 对应的omni的支持id
-    private Integer assetId;
+    private Long assetId;
     // 资产名称
     private String assetName;
     // 创建时间
@@ -63,12 +61,12 @@ public class WalletAsset extends AbstractObject {
     }
 
     /** 获取 对应的omni的支持id 属性 */
-    public Integer getAssetId() {
+    public Long getAssetId() {
         return assetId;
     }
 
     /** 设置 对应的omni的支持id 属性 */
-    public void setAssetId(Integer assetId) {
+    public void setAssetId(Long assetId) {
         this.assetId = assetId;
     }
 

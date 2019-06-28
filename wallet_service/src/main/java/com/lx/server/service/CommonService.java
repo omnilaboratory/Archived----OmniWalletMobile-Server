@@ -13,7 +13,7 @@ public interface CommonService {
 
 	Map<String, Object> getTransactionsByAddress(String address) throws Exception;
 
-	Map<String, Object> getOmniTransactions(String address, Integer assetId) throws Exception;
+	Map<String, Object> getOmniTransactions(String address, Long assetId) throws Exception;
 
 	JSONObject getRateFromBlockChain();
 

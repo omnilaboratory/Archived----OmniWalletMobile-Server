@@ -2,8 +2,6 @@ package com.lx.server.pojo;
 
 import java.util.Date;
 
-import com.lx.server.pojo.AbstractObject;
-
 /**
  * 【平台默认创建资产列表】持久化对象 数据库表：t_default_asset
  *
@@ -18,7 +16,7 @@ public class DefaultAsset extends AbstractObject {
     // 
     private Integer id;
     // 推广资产id
-    private Integer assetId;
+    private Long assetId;
     // 资产名称
     private String assetName;
     // 图标
@@ -43,12 +41,12 @@ public class DefaultAsset extends AbstractObject {
     }
 
     /** 获取 推广资产id 属性 */
-    public Integer getAssetId() {
+    public Long getAssetId() {
         return assetId;
     }
 
     /** 设置 推广资产id 属性 */
-    public void setAssetId(Integer assetId) {
+    public void setAssetId(Long assetId) {
         this.assetId = assetId;
     }
 

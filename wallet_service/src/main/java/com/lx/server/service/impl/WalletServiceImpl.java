@@ -217,16 +217,6 @@ public class WalletServiceImpl implements WalletService {
 		}
 		omniList.add(btcNode);
 		
-//		for (Map<String, Object> map : omniList) {
-//			Long propertyid = Long.parseLong(map.get("propertyid").toString());
-//			map.put("logoUrl", "");
-//			if (propertyid!=0) {
-//				DigitalHouseToken node = commonDao.selectHouseTokenByPropertyId(map.get("propertyid"));
-//				if (node!=null) {
-//					map.put("logoUrl", node.getLogoUrl());
-//				}
-//			}
-//		}
 		return omniList;
 	}
 	

@@ -63,7 +63,7 @@ public class AssetController extends AbstractController{
 	@SuppressWarnings({ "serial", "unchecked" })
 	@PostMapping("setAssetVisible")
 	@ApiOperation("设置asset是否显示")
-	public ResultTO setAssetVisible(String address,Integer assetId, Boolean visible) throws NumberFormatException, Exception {
+	public ResultTO setAssetVisible(String address,Long assetId, Boolean visible) throws NumberFormatException, Exception {
 		Assert.isTrue(Tools.checkStringExist(address), "address is null");
 		Assert.isTrue(assetId!=null, "assetId is wrong");
 		Assert.notNull(visible, "visible is null");

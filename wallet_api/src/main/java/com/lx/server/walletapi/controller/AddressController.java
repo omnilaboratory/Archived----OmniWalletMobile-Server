@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.lx.server.bean.Page;
 import com.lx.server.bean.ResultTO;
+import com.lx.server.config.GlobalConfig;
+import com.lx.server.enums.EnumRunMode;
 import com.lx.server.pojo.DefaultAsset;
 import com.lx.server.pojo.WalletAddress;
 import com.lx.server.pojo.WalletAsset;
@@ -134,7 +136,7 @@ public class AddressController extends AbstractController{
 	@SuppressWarnings("serial")
 	@PostMapping("addAsset")
 	@ApiOperation("添加资产")
-	public ResultTO setVisible(String address, Integer assetId,String assetName) {
+	public ResultTO setVisible(String address, Long assetId,String assetName) {
 		Assert.isTrue(Tools.checkStringExist(address), "address is null");
 		Assert.notNull(assetId, "assetId is null");
 		
@@ -219,11 +221,14 @@ public class AddressController extends AbstractController{
 				
 				boolean flag = false;
 				for (Map<String, Object> map : assetList) {
-					Integer assetId = (Integer) map.get("assetId");
+					Long assetId = Long.parseLong(map.get("assetId").toString());
 					flag =true;
 					for (Map<String, Object> btcNode : list) {
-						Integer tempId = (Integer) btcNode.get("propertyid");
+						Long tempId =Long.parseLong(btcNode.get("propertyid").toString());
 						if (assetId.compareTo(tempId)==0) {
+							if (GlobalConfig.runMode.equals(EnumRunMode.test.value)) {
+								btcNode.put("name", map.get("assetName"));
+							}
 							btcNode.put("visible", map.get("visible"));
 							flag = false;//数据库数据找到了与omni的数据的对应
 							break;
@@ -272,7 +277,7 @@ public class AddressController extends AbstractController{
 	 */
 	@GetMapping("getOmniTransactionsByAddress")
 	@ApiOperation("根据address获取omni交易记录")
-	public ResultTO getOmniTransactionsByAddress(String address,Integer assetId) throws Exception{
+	public ResultTO getOmniTransactionsByAddress(String address,Long assetId) throws Exception{
 		Assert.isTrue(Tools.checkStringExist(address), "address is empty");
 		Assert.isTrue(assetId!=null&&assetId>0, "assetId is empty");
 		Map<String, Object> data = commonService.getOmniTransactions(address,assetId);

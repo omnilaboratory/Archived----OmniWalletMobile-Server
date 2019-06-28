@@ -21,7 +21,9 @@ import org.springframework.web.client.RestTemplate;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.lx.server.config.GlobalConfig;
 import com.lx.server.dao.CommonDao;
+import com.lx.server.enums.EnumRunMode;
 import com.lx.server.service.CommonService;
 import com.lx.server.service.WalletService;
 
@@ -132,10 +134,14 @@ public class CommonServiceImpl implements CommonService{
 	
 	private BigDecimal divider = new BigDecimal("100000000");
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Map<String, Object> getTransactionsByAddress(String address) throws Exception {
-//		14rihN27NqVTtBfQVq6KrccQSWeWGKK46H
-		String url = "https://blockchain.info/address/"+address+"?format=json";
+		String network = "";
+		if (GlobalConfig.runMode.equals(EnumRunMode.test.value)) {
+			network = "testnet.";
+		}
+		String url = "https://"+network+"blockchain.info/address/"+address+"?format=json";
 		RestTemplate client = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -157,11 +163,15 @@ public class CommonServiceImpl implements CommonService{
 			Map<String, Object> node = new HashMap<>();
 			JSONObject jsonObject = dataArray.getJSONObject(i);
 			String txId = jsonObject.getString("hash");
-			Object transObj = walletServcie.getBtcTransaction(txId);
 			Integer confirmAmount = 0;
-			if (transObj != null) {
-				Map<String, Object> transaction = (Map<String, Object>) transObj;
-				confirmAmount = (Integer) transaction.get("confirmations");
+			try {
+				Object transObj = walletServcie.getBtcTransaction(txId);
+				if (transObj != null) {
+					Map<String, Object> transaction = (Map<String, Object>) transObj;
+					confirmAmount = (Integer) transaction.get("confirmations");
+				}
+			} catch (Exception e) {
+				
 			}
 			node.put("time", jsonObject.getDate("time"));
 			node.put("txId", txId);
@@ -234,13 +244,13 @@ public class CommonServiceImpl implements CommonService{
 	}
 
 	@Override
-	public Map<String, Object> getOmniTransactions(String address, Integer assetId) throws Exception {
+	public Map<String, Object> getOmniTransactions(String address, Long assetId) throws Exception {
 		List<Map<String, Object>> omniData = walletServcie.getOmniTransactions(address);
 		List<Map<String, Object>> omniPendingData = walletServcie.getOmniPendingTransactions(address);
 		List<Map<String, Object>> datas = new ArrayList<>();
 		if (omniPendingData!=null) {
 			for (Map<String, Object> map : omniPendingData) {
-				Integer propertyid = (Integer) map.get("propertyid");
+				Long propertyid = Long.parseLong(map.get("propertyid").toString());
 				if (propertyid.compareTo(assetId)==0) {
 					datas.add(0,map);
 				}
@@ -249,7 +259,7 @@ public class CommonServiceImpl implements CommonService{
 		
 		if (omniData!=null) {
 			for (Map<String, Object> map : omniData) {
-				Integer propertyid = (Integer) map.get("propertyid");
+				Long propertyid = Long.parseLong(map.get("propertyid").toString());
 				if (propertyid.compareTo(assetId)==0) {
 					datas.add(map);
 				}
@@ -291,7 +301,7 @@ public class CommonServiceImpl implements CommonService{
 	public Integer getNewestAddressIndex(String userId) {
 		Integer index = commonDao.getNewestAddressIndex(userId);
 		if (index==null) {
-			index = 0;
+			index = 12345;
 		}
 		return index;
 	}
