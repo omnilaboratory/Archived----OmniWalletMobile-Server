@@ -273,8 +273,8 @@ public class WalletServiceImpl implements WalletService {
 		fromAddress.add(fromBitCoinAddress);
 		List<Map<String, Object>> list = this.sendCmd("listunspent", new Object[] {0,Integer.MAX_VALUE,fromAddress},ArrayList.class);
 		
-		Assert.isTrue(list!=null&&list.isEmpty()==false, "empty balance");
 		logger.info("list.size: "+list.size());
+		Assert.isTrue(list!=null&&list.isEmpty()==false, "empty balance");
 		logger.info(list);
 		//矿工费
 		BigDecimal fee = mineFee;
