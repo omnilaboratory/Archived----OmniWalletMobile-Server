@@ -1,3 +1,3 @@
-# wallet_server
+# OmniWalletMobile Server
 
-钱包服务器
+Backend services (Server side). Provide the API services for OmniWallet.
