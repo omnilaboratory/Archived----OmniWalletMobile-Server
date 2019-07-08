@@ -60,6 +60,7 @@ public class AddressController extends AbstractController{
 	public ResultTO changeAddressName(String address,String addressName) {
 		Assert.isTrue(Tools.checkStringExist(address), "address is empty");
 		Assert.isTrue(Tools.checkStringExist(addressName), "addressName is empty");
+		Assert.isTrue(Tools.checkStringExist(addressName)&&addressName.trim().length()<21, "error addressName length");
 		if (walletAddressService.update(new HashMap<String,Object>() {{
 			put("n_address", address);
 			put("n_userId", getUserId());
@@ -83,6 +84,7 @@ public class AddressController extends AbstractController{
 	public ResultTO createAddress(WalletAddress walletAddress) {
 		Assert.isTrue(Tools.checkStringExist(walletAddress.getAddress()), "address is empty");
 		Assert.isTrue(Tools.checkStringExist(walletAddress.getAddressName()), "addressName is empty");
+		Assert.isTrue(Tools.checkStringExist(walletAddress.getAddressName())&&walletAddress.getAddressName().trim().length()<21, "error addressName length");
 		Assert.isTrue(walletAddress.getAddressIndex()!=null&&walletAddress.getAddressIndex()>-1, "error  index ");
 		
 		walletAddress.setCreateTime(new Date());
