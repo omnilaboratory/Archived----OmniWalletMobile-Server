@@ -1,6 +1,7 @@
 package com.lx.server.walletapi.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +15,8 @@ import com.lx.server.WalletApiApplication;
 @ComponentScan(basePackageClasses = WalletApiApplication.class, useDefaultFilters = true)
 public class WebMvcConfig extends WebMvcConfigurationSupport {
 
+	@Value("${config.runMode}")
+	private String runMode;
 	
 	@Autowired
 	private GlobalJwtInterceptor globalJwtInterceptor;
@@ -29,11 +32,22 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
 		.excludePathPatterns("/api/common/uploadImage")
 		.excludePathPatterns("/api/user/updateUserFace")
 		;
-		registry
-		.addInterceptor(globalJwtInterceptor)
-		.addPathPatterns("/api/**")
-		.excludePathPatterns("/api/common/**")
-		;
+		
+		if (runMode.equalsIgnoreCase("pro")==false) {
+			registry
+			.addInterceptor(globalJwtInterceptor)
+			.addPathPatterns("/api/**")
+			.excludePathPatterns("/api/common/**")
+			.excludePathPatterns("/api/blockChain/**")
+			;
+		}else{
+			registry
+			.addInterceptor(globalJwtInterceptor)
+			.addPathPatterns("/api/**")
+			.excludePathPatterns("/api/common/**")
+			;
+		}
+		
 		super.addInterceptors(registry);
 	}
 

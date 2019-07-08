@@ -132,7 +132,7 @@ public class WalletServiceImpl implements WalletService {
 		try {
 			List<String> fromAddress = new ArrayList<>();
 			fromAddress.add(address);
-			list = this.sendCmd("listunspent", new Object[] {0,Integer.MAX_VALUE,fromAddress},ArrayList.class);
+			list = this.sendCmd("listunspent", new Object[] {1,Integer.MAX_VALUE,fromAddress},ArrayList.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -271,7 +271,7 @@ public class WalletServiceImpl implements WalletService {
 		Assert.isTrue(Tools.checkStringExist(toBitCoinAddress),"toBitCoinAddress can not be null");
 		List<String> fromAddress = new ArrayList<>();
 		fromAddress.add(fromBitCoinAddress);
-		List<Map<String, Object>> list = this.sendCmd("listunspent", new Object[] {0,Integer.MAX_VALUE,fromAddress},ArrayList.class);
+		List<Map<String, Object>> list = this.sendCmd("listunspent", new Object[] {1,Integer.MAX_VALUE,fromAddress},ArrayList.class);
 		
 		logger.info("list.size: "+list.size());
 		Assert.isTrue(list!=null&&list.isEmpty()==false, "empty balance");
@@ -444,7 +444,7 @@ public class WalletServiceImpl implements WalletService {
 		//1.读取指定地址的UTXO（listunspent）
 		List<String> fromAddress = new ArrayList<>();
 		fromAddress.add(fromBitCoinAddress);
-		List<Map<String, Object>> list = this.sendCmd("listunspent", new Object[] {0,Integer.MAX_VALUE,fromAddress},ArrayList.class);
+		List<Map<String, Object>> list = this.sendCmd("listunspent", new Object[] {1,Integer.MAX_VALUE,fromAddress},ArrayList.class);
 		logger.info("unspent list");
 		logger.info(list);
 		Assert.isTrue(list!=null&&list.isEmpty()==false, "empty balance");
