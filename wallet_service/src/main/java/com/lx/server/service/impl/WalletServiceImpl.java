@@ -265,6 +265,20 @@ public class WalletServiceImpl implements WalletService {
 	@SuppressWarnings({ "unchecked", "unused" })
 	@Override
 	public String btcRawTransaction(String fromBitCoinAddress,String privkey,String toBitCoinAddress,BigDecimal amount,BigDecimal mineFee,String note) throws Exception {
+		List<String> privkeys = null;
+		if (Tools.checkStringExist(privkey)) {
+			privkeys = new ArrayList<>();
+			privkeys.add(privkey);
+		}
+		return this.btcRawTransactionMultiSign(fromBitCoinAddress, privkeys, toBitCoinAddress, amount, mineFee, note);
+	}
+	
+	/**
+	 * btc的转账多签
+	 */
+	@SuppressWarnings({ "unchecked", "unused" })
+	@Override
+	public String btcRawTransactionMultiSign(String fromBitCoinAddress,List<String> privkeys,String toBitCoinAddress,BigDecimal amount,BigDecimal mineFee,String note) throws Exception {
 		Assert.isTrue(amount!=null&&amount.compareTo(BigDecimal.ZERO)==1,"amount must greater 0");
 		Assert.isTrue(mineFee!=null&&mineFee.compareTo(BigDecimal.ZERO)==1,"mineFee must greater 0");
 		Assert.isTrue(Tools.checkStringExist(fromBitCoinAddress),"fromBitCoinAddress can not be null");
@@ -283,11 +297,14 @@ public class WalletServiceImpl implements WalletService {
 		Map<String, Object> node = new HashMap<>();
 		BigDecimal balance = BigDecimal.ZERO;
 		String scriptPubKey = "";
- 		for (Map<String, Object> item : list) {
+		for (Map<String, Object> item : list) {
 			if (item.containsKey("address")&&item.get("address").equals(fromBitCoinAddress)) {
 				node = new HashMap<>();
 				node.put("txid", item.get("txid"));
 				node.put("vout", item.get("vout"));
+				if (privkeys!=null&&privkeys.size()>0) {
+					node.put("redeemScript", item.get("redeemScript"));
+				}
 				if (scriptPubKey.length()==0) {
 					scriptPubKey = item.get("scriptPubKey").toString();
 				}
@@ -299,18 +316,18 @@ public class WalletServiceImpl implements WalletService {
 				}
 			}
 		}
- 		logger.info("balance "+balance);
- 		logger.info("myList "+myList.size());
- 		Assert.isTrue(myList.size()>0&&balance.compareTo(out)>-1, "not enough balance");
- 		
- 		if (myList.size()>0&&balance.compareTo(out)>-1) {
- 			logger.info("begin ");
- 			BigDecimal back= balance.subtract(out);
- 			Map<String, Object> address= new HashMap<>();
- 			address.put(toBitCoinAddress, amount);
- 			address.put(fromBitCoinAddress, back);
- 			
- 			logger.info("createrawtransaction ");
+		logger.info("balance "+balance);
+		logger.info("myList "+myList.size());
+		Assert.isTrue(myList.size()>0&&balance.compareTo(out)>-1, "not enough balance");
+		
+		if (myList.size()>0&&balance.compareTo(out)>-1) {
+			logger.info("begin ");
+			BigDecimal back= balance.subtract(out);
+			Map<String, Object> address= new HashMap<>();
+			address.put(toBitCoinAddress, amount);
+			address.put(fromBitCoinAddress, back);
+			
+			logger.info("createrawtransaction ");
 			String hexstring =  this.sendCmd("createrawtransaction", new Object[] {myList,address}, String.class);
 			
 //			Map<String, Object> hexMap =  this.sendCmd("decoderawtransaction", new Object[] {hexstring}, Map.class);
@@ -318,11 +335,8 @@ public class WalletServiceImpl implements WalletService {
 				map.put("scriptPubKey", scriptPubKey);
 			}
 			
-			List<String> privkeys = null;
 			Map<String, Object> hex;
-			if (privkey!=null&&privkey.trim().length()>0) {
-				privkeys = new ArrayList<>();
-				privkeys.add(privkey);
+			if (privkeys!=null&&privkeys.size()>0) {
 				hex =  this.sendCmd("signrawtransaction", new Object[] {hexstring,myList,privkeys,"ALL"}, Map.class);
 			}else {
 				hex =  this.sendCmd("signrawtransaction", new Object[] {hexstring,myList,null,"ALL"}, Map.class);

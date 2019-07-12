@@ -95,6 +95,7 @@ public interface WalletService{
 	 * @throws Exception
 	 */
 	String btcRawTransaction(String fromBitCoinAddress,String privkey, String toBitCoinAddress, BigDecimal amount,BigDecimal mineFee, String note) throws Exception;
+	String btcRawTransactionMultiSign(String fromBitCoinAddress, List<String> privkeys, String toBitCoinAddress,BigDecimal amount, BigDecimal mineFee, String note) throws Exception;
 	
 	Object omniRawTransaction(Integer propertyId, String fromBitCoinAddress,String privkey, String toBitCoinAddress, BigDecimal minerFee,BigDecimal amount, String note) throws Exception;
 
@@ -107,6 +108,7 @@ public interface WalletService{
 	void sycBlockTransactions() throws Exception;
 
 	List<Map<String, Object>> getOmniPendingTransactions(String address) throws Exception;
+
 	
 
 }

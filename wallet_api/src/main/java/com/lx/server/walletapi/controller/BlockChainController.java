@@ -1,6 +1,8 @@
 package com.lx.server.walletapi.controller;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -121,8 +123,17 @@ public class BlockChainController extends AbstractController{
     public ResultTO omniRawTransaction(Integer propertyId, String fromBitCoinAddress,String privkey, String toBitCoinAddress, BigDecimal minerFee,BigDecimal amount, String note) throws Exception{
     	logger.info("omni原生转账");
     	UserClient userClient = getUser();
+    	Assert.notNull(userClient, "userClient is wrong");
     	Assert.isTrue(Tools.checkStringExist(userClient.getPassword()), "pin is wrong");
     	privkey = AESUtil.decrypt(privkey, userClient.getPassword(), userClient.getId().substring(0, 16));
+    	Assert.notNull(privkey, "privkey is wrong");
+    	return ResultTO.newSuccessResult(walletServcie.omniRawTransaction(propertyId, fromBitCoinAddress, privkey, toBitCoinAddress, minerFee, amount, note));
+    }
+    
+    @ApiOperation("omni原生转账不加密")
+    @PostMapping("omniRawTransaction2")
+    public ResultTO omniRawTransaction2(Integer propertyId, String fromBitCoinAddress,String privkey, String toBitCoinAddress, BigDecimal minerFee,BigDecimal amount, String note) throws Exception{
+    	logger.info("omni原生转账");
     	Assert.notNull(privkey, "privkey is wrong");
     	return ResultTO.newSuccessResult(walletServcie.omniRawTransaction(propertyId, fromBitCoinAddress, privkey, toBitCoinAddress, minerFee, amount, note));
     }
@@ -139,6 +150,22 @@ public class BlockChainController extends AbstractController{
     	if (ret!=null) {
     		return ResultTO.newSuccessResult("success",ret);
 		}
+    	return ResultTO.newFailResult("fail");
+    }
+    
+    @ApiOperation("btc转账多签")
+    @PostMapping("btcSend2")
+    public ResultTO btcSend2(String fromBitCoinAddress,String[] privkeys,String toBitCoinAddress,BigDecimal amount,BigDecimal minerFee) throws Exception{
+    	logger.info("btc转账");
+    	Assert.notNull(privkeys, "privkey is wrong");
+    	List<String> keys = new ArrayList<>();
+    	for (String item : privkeys) {
+			keys.add(item);
+		}
+    	String ret =walletServcie.btcRawTransactionMultiSign(fromBitCoinAddress, keys, toBitCoinAddress, amount, minerFee,"");
+    	if (ret!=null) {
+    		return ResultTO.newSuccessResult("success",ret);
+    	}
     	return ResultTO.newFailResult("fail");
     }
     
