@@ -7,9 +7,9 @@
  @date 2019-06-14 10:53:55
  -->
 <!-- namespace必须指向Dao接口 -->
-<mapper namespace="com.lx.server.dao.FpPlatformOmniImcomeDao">
+<mapper namespace="com.lx.server.dao.FpPlatformOmniIncomeDao">
 
-	<resultMap id="fpPlatformOmniImcomeResultMap" type="com.lx.server.pojo.FpPlatformOmniImcome">
+	<resultMap id="fpPlatformOmniIncomeResultMap" type="com.lx.server.pojo.FpPlatformOmniIncome">
 		<id property="id" column="id" />
 				<result property="propertyId" column="property_id" />
 				<result property="fromAddress" column="from_address" />
@@ -22,12 +22,12 @@
 				<result property="mintTime" column="mint_time" />
 				<result property="mintTxid" column="mint_txid" />
 	</resultMap>
-	<resultMap id="mapResultMap"  type="java.util.HashMap" extends="fpPlatformOmniImcomeResultMap"></resultMap>
-	<resultMap id="pageResultMap"  type="java.util.HashMap" extends="fpPlatformOmniImcomeResultMap"></resultMap>
+	<resultMap id="mapResultMap"  type="java.util.HashMap" extends="fpPlatformOmniIncomeResultMap"></resultMap>
+	<resultMap id="pageResultMap"  type="java.util.HashMap" extends="fpPlatformOmniIncomeResultMap"></resultMap>
 
 
-	<insert id="insert" parameterType="com.lx.server.pojo.FpPlatformOmniImcome" useGeneratedKeys="true" keyProperty="id" >
-	   insert into t_fp_platform_omni_imcome (
+	<insert id="insert" parameterType="com.lx.server.pojo.FpPlatformOmniIncome" useGeneratedKeys="true" keyProperty="id" >
+	   insert into t_fp_platform_omni_income (
 	    <include refid="columns" />
 	   )values (
 	     #{id},
@@ -44,8 +44,8 @@
 	   )
 	</insert>
 
-	<update id="update" parameterType="com.lx.server.pojo.FpPlatformOmniImcome">
-		update t_fp_platform_omni_imcome
+	<update id="update" parameterType="com.lx.server.pojo.FpPlatformOmniIncome">
+		update t_fp_platform_omni_income
 		<set>
 		<if test="propertyId != null">
 			property_id=#{propertyId},
@@ -118,23 +118,23 @@
 
 	<delete id="delete" parameterType="map">
 	   delete from
-	     t_fp_platform_omni_imcome
+	     t_fp_platform_omni_income
 	   	where 
 	    id=#{id}
 	</delete>
 
-	<select id="selectObject" parameterType="map" resultMap="fpPlatformOmniImcomeResultMap">
+	<select id="selectObject" parameterType="map" resultMap="fpPlatformOmniIncomeResultMap">
 	   select
 	<include refid="columns" />
-	   from t_fp_platform_omni_imcome
+	   from t_fp_platform_omni_income
 	   where
 	    id=#{id}
 	</select>
 
-	<select id="selectObjectList" parameterType="map" resultMap="fpPlatformOmniImcomeResultMap">
+	<select id="selectObjectList" parameterType="map" resultMap="fpPlatformOmniIncomeResultMap">
 	   select
 	<include refid="columns" />
-	   from t_fp_platform_omni_imcome
+	   from t_fp_platform_omni_income
 	   <where>
 	 <include refid="normalCondition"/>
 	   </where>
@@ -143,7 +143,7 @@
 	<select id="selectMap" parameterType="map" resultMap="mapResultMap">
 	   select
 	<include refid="columns" />
-	   from t_fp_platform_omni_imcome
+	   from t_fp_platform_omni_income
 	   where
 	    id=#{id}
 	</select>
@@ -151,7 +151,7 @@
 	<select id="selectMapList" parameterType="map" resultMap="mapResultMap">
 	   select
 	<include refid="columns" />
-	   from t_fp_platform_omni_imcome
+	   from t_fp_platform_omni_income
 	   <where>
 	   <include refid="normalCondition"/>
 	   </where>
@@ -164,7 +164,7 @@
 	limit #{offset},#{rows}
 	</select>
 
-	<select id="pageBean" parameterType="map" resultMap="fpPlatformOmniImcomeResultMap">
+	<select id="pageBean" parameterType="map" resultMap="fpPlatformOmniIncomeResultMap">
 	   select
 	<include refid="columns" />
 	<include refid="pageCondition" />
@@ -177,7 +177,7 @@
 	</select>
 
 	<sql id="pageCondition">
-	   from t_fp_platform_omni_imcome
+	   from t_fp_platform_omni_income
 	   <where>
 			<include refid="normalCondition"/>
 	   </where>

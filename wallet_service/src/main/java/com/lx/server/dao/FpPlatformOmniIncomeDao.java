@@ -9,6 +9,6 @@ import com.lx.server.dao.MyBatisBaseDao;
  * @date 2019-06-14 10:53:55
  *
  */
-public interface FpPlatformOmniImcomeDao extends MyBatisBaseDao {
+public interface FpPlatformOmniIncomeDao extends MyBatisBaseDao {
 
 }

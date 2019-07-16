@@ -9,6 +9,6 @@ import com.lx.server.service.MybatisBaseService;
  * @date 2019-06-14 10:53:55
  *
  */
-public interface FpPlatformOmniImcomeService extends MybatisBaseService {
+public interface FpPlatformOmniIncomeService extends MybatisBaseService {
 
 }

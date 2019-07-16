@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 
 import com.lx.server.dao.MyBatisBaseDao;
 import com.lx.server.service.impl.MybatisBaseServiceImpl;
-import com.lx.server.dao.FpPlatformOmniImcomeDao;
-import com.lx.server.service.FpPlatformOmniImcomeService;
+import com.lx.server.dao.FpPlatformOmniIncomeDao;
+import com.lx.server.service.FpPlatformOmniIncomeService;
 
 /**
  * 【快速支付的平台公链的收入】 服务类 实现类
@@ -16,10 +16,10 @@ import com.lx.server.service.FpPlatformOmniImcomeService;
  *
  */
 @Service(value = "fpPlatformOmniImcomeService")
-public class FpPlatformOmniImcomeServiceImpl extends MybatisBaseServiceImpl implements FpPlatformOmniImcomeService {
+public class FpPlatformOmniIncomeServiceImpl extends MybatisBaseServiceImpl implements FpPlatformOmniIncomeService {
 
     @Autowired
-    private FpPlatformOmniImcomeDao fpPlatformOmniImcomeDao;
+    private FpPlatformOmniIncomeDao fpPlatformOmniImcomeDao;
 
     @Override
     public MyBatisBaseDao getDao() {

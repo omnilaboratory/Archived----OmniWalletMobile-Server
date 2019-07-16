@@ -12,7 +12,7 @@ import com.lx.server.pojo.AbstractObject;
  * @date 2019-06-14 10:53:55
  *
  */
-public class FpPlatformOmniImcome extends AbstractObject {
+public class FpPlatformOmniIncome extends AbstractObject {
 
     public static final long serialVersionUID = 1L;
 
@@ -172,8 +172,8 @@ public class FpPlatformOmniImcome extends AbstractObject {
         if (this == obj) {
             return true;
         }
-        if (obj instanceof FpPlatformOmniImcome) {
-            FpPlatformOmniImcome fpPlatformOmniImcome = (FpPlatformOmniImcome) obj;
+        if (obj instanceof FpPlatformOmniIncome) {
+            FpPlatformOmniIncome fpPlatformOmniImcome = (FpPlatformOmniIncome) obj;
             if (this.getId().equals(fpPlatformOmniImcome.getId())) {
                 return true;
             }
