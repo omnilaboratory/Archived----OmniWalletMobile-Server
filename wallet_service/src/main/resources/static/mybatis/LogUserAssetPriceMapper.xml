@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+【某个时刻的价格信息】对象关系映射 配置
+ @author AutoCode 309444359@qq.com
+ @date 2019-07-16 16:01:30
+ -->
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.lx.server.dao.LogUserAssetPriceDao">
+
+	<resultMap id="logUserAssetPriceResultMap" type="com.lx.server.pojo.LogUserAssetPrice">
+		<id property="id" column="id" />
+				<result property="assetId" column="asset_id" />
+				<result property="priceCny" column="price_cny" />
+				<result property="priceUsd" column="price_usd" />
+				<result property="priceEur" column="price_eur" />
+				<result property="priceInfo" column="price_info" />
+				<result property="createTime" column="create_time" />
+	</resultMap>
+	<resultMap id="mapResultMap"  type="java.util.HashMap" extends="logUserAssetPriceResultMap"></resultMap>
+	<resultMap id="pageResultMap"  type="java.util.HashMap" extends="logUserAssetPriceResultMap"></resultMap>
+
+
+	<insert id="insert" parameterType="com.lx.server.pojo.LogUserAssetPrice" useGeneratedKeys="true" keyProperty="id" >
+	   insert into t_log_user_asset_price (
+	    <include refid="columns" />
+	   )values (
+	     #{id},
+	     #{assetId},
+	     #{priceCny},
+	     #{priceUsd},
+	     #{priceEur},
+	     #{priceInfo},
+	     #{createTime}
+	   )
+	</insert>
+
+	<update id="update" parameterType="com.lx.server.pojo.LogUserAssetPrice">
+		update t_log_user_asset_price
+		<set>
+		<if test="assetId != null">
+			asset_id=#{assetId},
+		</if>
+		<if test="priceCny != null">
+			price_cny=#{priceCny},
+		</if>
+		<if test="priceUsd != null">
+			price_usd=#{priceUsd},
+		</if>
+		<if test="priceEur != null">
+			price_eur=#{priceEur},
+		</if>
+		<if test="priceInfo != null">
+			price_info=#{priceInfo},
+		</if>
+		<if test="createTime != null">
+			create_time=#{createTime},
+		</if>
+		</set>
+		<where>
+			1=1
+			<if test="id != null">
+				and id=#{id}
+			</if>
+			<if test="n_assetId != null">
+				and asset_id=#{n_assetId}
+			</if>
+			<if test="n_priceCny != null">
+				and price_cny=#{n_priceCny}
+			</if>
+			<if test="n_priceUsd != null">
+				and price_usd=#{n_priceUsd}
+			</if>
+			<if test="n_priceEur != null">
+				and price_eur=#{n_priceEur}
+			</if>
+			<if test="n_priceInfo != null">
+				and price_info=#{n_priceInfo}
+			</if>
+			<if test="n_createTime != null">
+				and create_time=#{n_createTime}
+			</if>
+		</where>
+	</update>
+
+	<delete id="delete" parameterType="map">
+	   delete from
+	     t_log_user_asset_price
+	   	where 
+	    id=#{id}
+	</delete>
+
+	<select id="selectObject" parameterType="map" resultMap="logUserAssetPriceResultMap">
+	   select
+	<include refid="columns" />
+	   from t_log_user_asset_price
+	   where
+	    id=#{id}
+	</select>
+
+	<select id="selectObjectList" parameterType="map" resultMap="logUserAssetPriceResultMap">
+	   select
+	<include refid="columns" />
+	   from t_log_user_asset_price
+	   <where>
+	 <include refid="normalCondition"/>
+	   </where>
+	</select>
+
+	<select id="selectMap" parameterType="map" resultMap="mapResultMap">
+	   select
+	<include refid="columns" />
+	   from t_log_user_asset_price
+	   where
+	    id=#{id}
+	</select>
+
+	<select id="selectMapList" parameterType="map" resultMap="mapResultMap">
+	   select
+	<include refid="columns" />
+	   from t_log_user_asset_price
+	   <where>
+	   <include refid="normalCondition"/>
+	   </where>
+	</select>
+
+	<select id="page" parameterType="map" resultMap="pageResultMap">
+	   select
+	<include refid="columns" />
+	<include refid="pageCondition" />
+	limit #{offset},#{rows}
+	</select>
+
+	<select id="pageBean" parameterType="map" resultMap="logUserAssetPriceResultMap">
+	   select
+	<include refid="columns" />
+	<include refid="pageCondition" />
+	limit #{offset},#{rows}
+	</select>
+	
+	<select id="pageCount" parameterType="map" resultType="int">
+	   select count(1)
+	   <include refid="pageCondition" />
+	</select>
+
+	<sql id="pageCondition">
+	   from t_log_user_asset_price
+	   <where>
+			<include refid="normalCondition"/>
+	   </where>
+	</sql>
+
+	<sql id="normalCondition">
+		1=1
+		<if test="id != null">
+			and id=#{id}
+		</if>
+		<if test="assetId != null">
+			and asset_id=#{assetId}
+		</if>
+		<if test="priceCny != null">
+			and price_cny=#{priceCny}
+		</if>
+		<if test="priceUsd != null">
+			and price_usd=#{priceUsd}
+		</if>
+		<if test="priceEur != null">
+			and price_eur=#{priceEur}
+		</if>
+		<if test="priceInfo != null">
+			and price_info=#{priceInfo}
+		</if>
+		<if test="createTime != null">
+			and create_time=#{createTime}
+		</if>
+		<if test="keyword != null">
+			and (name LIKE CONCAT("%", #{keyword}, "%") )
+		</if>
+		order by  id  desc 
+	</sql>
+	<sql id="columns">
+			id,
+			asset_id,
+			price_cny,
+			price_usd,
+			price_eur,
+			price_info,
+			create_time
+	</sql>
+</mapper>

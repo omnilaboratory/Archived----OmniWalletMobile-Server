@@ -3,8 +3,6 @@ package com.lx.server.pojo;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import com.lx.server.pojo.AbstractObject;
-
 /**
  * 【某人在某个地址的某个资产在什么时候发起了一笔转出到某个地址的操作日志】持久化对象 数据库表：t_log_transaction
  *
@@ -25,7 +23,7 @@ public class LogTransaction extends AbstractObject {
     // 目标地址
     private String toAddr;
     // 资产id
-    private Integer assetId;
+    private Long assetId;
     // 金额
     private BigDecimal amount;
     // 矿工费
@@ -76,12 +74,12 @@ public class LogTransaction extends AbstractObject {
     }
 
     /** 获取 资产id 属性 */
-    public Integer getAssetId() {
+    public Long getAssetId() {
         return assetId;
     }
 
     /** 设置 资产id 属性 */
-    public void setAssetId(Integer assetId) {
+    public void setAssetId(Long assetId) {
         this.assetId = assetId;
     }
 

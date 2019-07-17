@@ -13,7 +13,11 @@ import org.springframework.stereotype.Component;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.lx.server.kafka.bean.KafkaMessage;
+import com.lx.server.pojo.LogTransaction;
+import com.lx.server.pojo.LogUserAsset;
 import com.lx.server.pojo.UserFeedback;
+import com.lx.server.service.LogTransactionService;
+import com.lx.server.service.LogUserAssetService;
 import com.lx.server.service.UserFeedbackService;
 import com.lx.server.service.WalletAddressService;
 import com.lx.server.service.WalletAssetService;
@@ -36,6 +40,9 @@ public class KafkaComsumer {
 	@Autowired
 	private UserFeedbackService userFeedbackService;
 	
+	@Autowired
+	private LogTransactionService logTransactionService;
+	
 	private final Log logger = LogFactory.getLog(getClass());
 	
 	
@@ -53,6 +60,41 @@ public class KafkaComsumer {
 		feedback.setUserId(info.getUserId());
 		feedback.setState((byte) 0);
 		userFeedbackService.insert(feedback);
+	}
+	
+	@KafkaListener(topics = { "wallet.LogTransaction" })
+	public void walletLogTransaction(ConsumerRecord<?, ?> record) {
+		logger.info("wallet.LogTransaction");
+		KafkaMessage info = getKafkaMsg(record);
+		JSONObject jsonObject = (JSONObject) info.getData();
+		LogTransaction logTransaction = new LogTransaction();
+		logTransaction.setUserId(jsonObject.getString("userId"));
+		logTransaction.setFromAddr(jsonObject.getString("fromAddr"));
+		logTransaction.setToAddr(jsonObject.getString("toAddr"));
+		logTransaction.setAssetId(jsonObject.getLong("assetId"));
+    	logTransaction.setAmount(jsonObject.getBigDecimal("amount"));
+    	logTransaction.setFee(jsonObject.getBigDecimal("fee"));
+    	logTransaction.setTxid(jsonObject.getString("txid"));
+    	logTransaction.setCreateTime(jsonObject.getDate("createTime"));
+    	logTransactionService.insert(logTransaction);
+	}
+	
+	
+	@Autowired
+	private LogUserAssetService logUserAssetService;
+	
+	@KafkaListener(topics = { "wallet.LogUserAsset" })
+	public void userAssetLog(ConsumerRecord<?, ?> record) {
+		logger.info("wallet.LogUserAsset");
+		KafkaMessage info = getKafkaMsg(record);
+		JSONObject jsonObject = (JSONObject) info.getData();
+		LogUserAsset  log = new LogUserAsset();
+		log.setAddr(jsonObject.getString("addr"));
+		log.setAssetId(jsonObject.getLong("assetId"));
+		log.setAmount(jsonObject.getBigDecimal("amount"));
+		log.setCreateTime(jsonObject.getDate("createTime"));
+		log.setUserId(jsonObject.getString("userId"));
+		logUserAssetService.insert(log);
 	}
 	
 //	@KafkaListener(topics = {"wallet.userTopic"})
@@ -150,7 +192,7 @@ public class KafkaComsumer {
 		Object message = kafkaMessage.get();
 		JSONObject jsonObject = JSON.parseObject(message.toString());
 		KafkaMessage info = new KafkaMessage(
-				jsonObject.getInteger("type"), 
+				jsonObject.getString("type"), 
 				jsonObject.getString("userId"),
 				jsonObject.getString("title"),
 				jsonObject.getJSONObject("data")

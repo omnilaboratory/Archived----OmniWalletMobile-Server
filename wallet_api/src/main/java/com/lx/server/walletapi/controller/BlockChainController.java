@@ -2,6 +2,7 @@ package com.lx.server.walletapi.controller;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -19,7 +21,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import com.alibaba.fastjson.JSON;
 import com.lx.server.bean.ResultTO;
+import com.lx.server.enums.EnumKafkaTopic;
+import com.lx.server.kafka.bean.KafkaMessage;
+import com.lx.server.pojo.LogTransaction;
 import com.lx.server.pojo.UserClient;
 import com.lx.server.service.WalletService;
 import com.lx.server.utils.AESUtil;
@@ -36,6 +42,9 @@ public class BlockChainController extends AbstractController{
 	
 	@Autowired
     private WalletService walletServcie;
+	
+	@Autowired
+    private KafkaTemplate<String, Object> kafkaTemplate;
     
     //	@GetMapping("go")
 	public String client() {
@@ -120,19 +129,37 @@ public class BlockChainController extends AbstractController{
     
     @ApiOperation("omni原生转账")
     @PostMapping("omniRawTransaction")
-    public ResultTO omniRawTransaction(Integer propertyId, String fromBitCoinAddress,String privkey, String toBitCoinAddress, BigDecimal minerFee,BigDecimal amount, String note) throws Exception{
+    public ResultTO omniRawTransaction(Long propertyId, String fromBitCoinAddress,String privkey, String toBitCoinAddress, BigDecimal minerFee,BigDecimal amount, String note) throws Exception{
     	logger.info("omni原生转账");
     	UserClient userClient = getUser();
     	Assert.notNull(userClient, "userClient is wrong");
     	Assert.isTrue(Tools.checkStringExist(userClient.getPassword()), "pin is wrong");
     	privkey = AESUtil.decrypt(privkey, userClient.getPassword(), userClient.getId().substring(0, 16));
     	Assert.notNull(privkey, "privkey is wrong");
-    	return ResultTO.newSuccessResult(walletServcie.omniRawTransaction(propertyId, fromBitCoinAddress, privkey, toBitCoinAddress, minerFee, amount, note));
+    	String txid = (String) walletServcie.omniRawTransaction(propertyId, fromBitCoinAddress, privkey, toBitCoinAddress, minerFee, amount, note);
+    	//发送kafka信息，写入交易记录
+    	sendLogTransactionToKafka(propertyId, fromBitCoinAddress, toBitCoinAddress, minerFee, amount, userClient, txid);
+		
+    	return ResultTO.newSuccessResult(txid);
     }
+
+	private void sendLogTransactionToKafka(Long propertyId, String fromBitCoinAddress, String toBitCoinAddress,BigDecimal minerFee, BigDecimal amount, UserClient userClient, String txid) {
+		LogTransaction logTransaction = new LogTransaction();
+    	logTransaction.setAmount(amount);
+    	logTransaction.setAssetId(propertyId);
+    	logTransaction.setFee(minerFee);
+    	logTransaction.setFromAddr(fromBitCoinAddress);
+    	logTransaction.setToAddr(toBitCoinAddress);
+    	logTransaction.setUserId(userClient.getId());
+    	logTransaction.setTxid(txid);
+    	logTransaction.setCreateTime(new Date());
+    	KafkaMessage message = new KafkaMessage(EnumKafkaTopic.LogTransaction.value,userClient.getId(), null, logTransaction);
+		this.kafkaTemplate.send(EnumKafkaTopic.LogTransaction.value, JSON.toJSONString(message));
+	}
     
-    @ApiOperation("omni原生转账不加密")
+    @ApiOperation("omni原生转账不加密 test用")
     @PostMapping("omniRawTransaction2")
-    public ResultTO omniRawTransaction2(Integer propertyId, String fromBitCoinAddress,String privkey, String toBitCoinAddress, BigDecimal minerFee,BigDecimal amount, String note) throws Exception{
+    public ResultTO omniRawTransaction2(Long propertyId, String fromBitCoinAddress,String privkey, String toBitCoinAddress, BigDecimal minerFee,BigDecimal amount, String note) throws Exception{
     	logger.info("omni原生转账");
     	Assert.notNull(privkey, "privkey is wrong");
     	return ResultTO.newSuccessResult(walletServcie.omniRawTransaction(propertyId, fromBitCoinAddress, privkey, toBitCoinAddress, minerFee, amount, note));
@@ -147,6 +174,7 @@ public class BlockChainController extends AbstractController{
     	privkey = AESUtil.decrypt(privkey, userClient.getPassword(), userClient.getId().substring(0, 16));
     	Assert.notNull(privkey, "privkey is wrong");
     	String ret =walletServcie.btcRawTransaction(fromBitCoinAddress, privkey, toBitCoinAddress, amount, minerFee,"");
+    	sendLogTransactionToKafka((long) 0, fromBitCoinAddress, toBitCoinAddress, minerFee, amount, userClient, ret);
     	if (ret!=null) {
     		return ResultTO.newSuccessResult("success",ret);
 		}
@@ -156,7 +184,7 @@ public class BlockChainController extends AbstractController{
     @ApiOperation("btc转账多签")
     @PostMapping("btcSend2")
     public ResultTO btcSend2(String fromBitCoinAddress,String[] privkeys,String toBitCoinAddress,BigDecimal amount,BigDecimal minerFee) throws Exception{
-    	logger.info("btc转账");
+    	logger.info("btc多签转账");
     	Assert.notNull(privkeys, "privkey is wrong");
     	List<String> keys = new ArrayList<>();
     	for (String item : privkeys) {

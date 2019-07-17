@@ -9,6 +9,8 @@ public enum EnumKafkaTopic {
 
 	DefaultTopic("wallet.defaultTopic"),
 	UserTopic("wallet.userTopic"),
+	LogTransaction("wallet.LogTransaction"),
+	LogUserAsset("wallet.LogUserAsset"),
 	UserFeedback("user.feedback"),
 	WalletAddressTopic("wallet.addressTopic"),
 	;

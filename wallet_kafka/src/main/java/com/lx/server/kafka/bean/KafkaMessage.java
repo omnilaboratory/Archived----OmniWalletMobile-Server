@@ -4,12 +4,12 @@ import lombok.Data;
 
 @Data
 public class KafkaMessage{
-    private Integer type;
+    private String type;
     private String userId;
     private String title;
     private Object data;
 
-    public KafkaMessage(Integer type,String userId, String title,Object data){
+    public KafkaMessage(String type,String userId, String title,Object data){
         this.type = type;
         this.userId = userId;
         this.title = title;

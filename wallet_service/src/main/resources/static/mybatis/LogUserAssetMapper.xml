@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+【某人某个时刻的某个地址某个资产的价值记录】对象关系映射 配置
+ @author AutoCode 309444359@qq.com
+ @date 2019-07-16 16:01:28
+ -->
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.lx.server.dao.LogUserAssetDao">
+
+	<resultMap id="logUserAssetResultMap" type="com.lx.server.pojo.LogUserAsset">
+		<id property="id" column="id" />
+				<result property="userId" column="user_id" />
+				<result property="addr" column="addr" />
+				<result property="assetId" column="asset_id" />
+				<result property="amount" column="amount" />
+				<result property="createTime" column="create_time" />
+	</resultMap>
+	<resultMap id="mapResultMap"  type="java.util.HashMap" extends="logUserAssetResultMap"></resultMap>
+	<resultMap id="pageResultMap"  type="java.util.HashMap" extends="logUserAssetResultMap"></resultMap>
+
+
+	<insert id="insert" parameterType="com.lx.server.pojo.LogUserAsset" useGeneratedKeys="true" keyProperty="id" >
+	   insert into t_log_user_asset (
+	    <include refid="columns" />
+	   )values (
+	     #{id},
+	     #{userId},
+	     #{addr},
+	     #{assetId},
+	     #{amount},
+	     #{createTime}
+	   )
+	</insert>
+
+	<update id="update" parameterType="com.lx.server.pojo.LogUserAsset">
+		update t_log_user_asset
+		<set>
+		<if test="userId != null">
+			user_id=#{userId},
+		</if>
+		<if test="addr != null">
+			addr=#{addr},
+		</if>
+		<if test="assetId != null">
+			asset_id=#{assetId},
+		</if>
+		<if test="amount != null">
+			amount=#{amount},
+		</if>
+		<if test="createTime != null">
+			create_time=#{createTime},
+		</if>
+		</set>
+		<where>
+			1=1
+			<if test="id != null">
+				and id=#{id}
+			</if>
+			<if test="n_userId != null">
+				and user_id=#{n_userId}
+			</if>
+			<if test="n_addr != null">
+				and addr=#{n_addr}
+			</if>
+			<if test="n_assetId != null">
+				and asset_id=#{n_assetId}
+			</if>
+			<if test="n_amount != null">
+				and amount=#{n_amount}
+			</if>
+			<if test="n_createTime != null">
+				and create_time=#{n_createTime}
+			</if>
+		</where>
+	</update>
+
+	<delete id="delete" parameterType="map">
+	   delete from
+	     t_log_user_asset
+	   	where 
+	    id=#{id}
+	</delete>
+
+	<select id="selectObject" parameterType="map" resultMap="logUserAssetResultMap">
+	   select
+	<include refid="columns" />
+	   from t_log_user_asset
+	   where
+	    id=#{id}
+	</select>
+
+	<select id="selectObjectList" parameterType="map" resultMap="logUserAssetResultMap">
+	   select
+	<include refid="columns" />
+	   from t_log_user_asset
+	   <where>
+	 <include refid="normalCondition"/>
+	   </where>
+	</select>
+
+	<select id="selectMap" parameterType="map" resultMap="mapResultMap">
+	   select
+	<include refid="columns" />
+	   from t_log_user_asset
+	   where
+	    id=#{id}
+	</select>
+
+	<select id="selectMapList" parameterType="map" resultMap="mapResultMap">
+	   select
+	<include refid="columns" />
+	   from t_log_user_asset
+	   <where>
+	   <include refid="normalCondition"/>
+	   </where>
+	</select>
+
+	<select id="page" parameterType="map" resultMap="pageResultMap">
+	   select
+	<include refid="columns" />
+	<include refid="pageCondition" />
+	limit #{offset},#{rows}
+	</select>
+
+	<select id="pageBean" parameterType="map" resultMap="logUserAssetResultMap">
+	   select
+	<include refid="columns" />
+	<include refid="pageCondition" />
+	limit #{offset},#{rows}
+	</select>
+	
+	<select id="pageCount" parameterType="map" resultType="int">
+	   select count(1)
+	   <include refid="pageCondition" />
+	</select>
+
+	<sql id="pageCondition">
+	   from t_log_user_asset
+	   <where>
+			<include refid="normalCondition"/>
+	   </where>
+	</sql>
+
+	<sql id="normalCondition">
+		1=1
+		<if test="id != null">
+			and id=#{id}
+		</if>
+		<if test="userId != null">
+			and user_id=#{userId}
+		</if>
+		<if test="addr != null">
+			and addr=#{addr}
+		</if>
+		<if test="assetId != null">
+			and asset_id=#{assetId}
+		</if>
+		<if test="amount != null">
+			and amount=#{amount}
+		</if>
+		<if test="createTime != null">
+			and create_time=#{createTime}
+		</if>
+		<if test="keyword != null">
+			and (name LIKE CONCAT("%", #{keyword}, "%") )
+		</if>
+		order by  id  desc 
+	</sql>
+	<sql id="columns">
+			id,
+			user_id,
+			addr,
+			asset_id,
+			amount,
+			create_time
+	</sql>
+</mapper>

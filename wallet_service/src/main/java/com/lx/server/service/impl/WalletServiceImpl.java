@@ -434,7 +434,7 @@ public class WalletServiceImpl implements WalletService {
 	}
 	@SuppressWarnings("unchecked")
 	@Override
-	public Object omniRawTransaction(Integer propertyId,
+	public Object omniRawTransaction(Long propertyId,
 			String fromBitCoinAddress, String privkey, String toBitCoinAddress,
 			BigDecimal minerFee, BigDecimal amount, String note) throws Exception {
 

@@ -271,7 +271,7 @@ public class CommonController extends AbstractController{
 	
 	@PostMapping("testKafka")
 	public ResultTO testKafka(UserFeedback feedback) {
-		KafkaMessage message = new KafkaMessage(1,"ef8c6d919538a26f4065989597a652aa", null, feedback);
+		KafkaMessage message = new KafkaMessage(EnumKafkaTopic.UserFeedback.value,"ef8c6d919538a26f4065989597a652aa", null, feedback);
 		this.kafkaTemplate.send(EnumKafkaTopic.UserFeedback.value, JSON.toJSONString(message));
 		return ResultTO.newSuccessResult("success");
 	}
