@@ -2,6 +2,9 @@ package com.lx.server.service.impl;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -134,30 +137,176 @@ public class CommonServiceImpl implements CommonService{
 	
 	private BigDecimal divider = new BigDecimal("100000000");
 
+	public Map<String, Object> getTransactionsByAddress0(String address) throws Exception {
+//		https://chain.so/api/v2/get_tx_received/BTCTEST/mxu2TxChLPhvx4Aa2dvXQmwnJLG4j6GLDR
+		String network = "BTC";
+		if (GlobalConfig.runMode.equals(EnumRunMode.test.value)) {
+			network = "BTCTEST";
+		}
+		String url = "https://chain.so/api/v2/get_tx_received/"+network+"/"+address;
+		RestTemplate client = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+		headers.add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
+		HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<MultiValueMap<String, String>>(null,headers);
+		ResponseEntity<String> response = null;
+		try {
+			response = client.exchange(url, HttpMethod.GET, requestEntity, String.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		Map<String, Object> retData = new HashMap<>();
+		List<Map<String, Object>> list = new ArrayList<>();
+		
+		if (response==null) {
+			retData.put("list", list);
+			return retData;
+		}
+		String data = response.getBody();
+		JSONObject dataJson = JSONObject.parseObject(data);
+		JSONArray dataArray = dataJson.getJSONObject("data").getJSONArray("txs");
+		
+		for(int i = 0;i<dataArray.size();i++) 
+		{
+			Map<String, Object> node = new HashMap<>();
+			JSONObject jsonObject = dataArray.getJSONObject(i);
+			String txId = jsonObject.getString("txid");
+			try {
+				Object transObj = walletServcie.getBtcTransaction(txId);
+				logger.info(transObj);
+				if (transObj != null) {
+					Map<String, Object> transaction = (Map<String, Object>) transObj;
+					node.put("blockHeight", transaction.get("blockindex"));
+					if (transaction.get("details")!=null) {
+						boolean flag = true;
+						List<Map<String, Object>> details = (List<Map<String, Object>>) transaction.get("details");
+						for (Map<String, Object> detail : details) {
+							if (detail.get("category").equals("send")&&detail.get("address").toString().length()>0) {
+								node.put("targetAddress",detail.get("address") );
+								flag = false;
+								break;
+							}
+						}
+						if (flag) {
+							continue;
+						}
+					}else{
+						continue;
+					}
+				}else{
+					continue;
+				}
+			} catch (Exception e) {
+				continue;
+			}
+			node.put("time", jsonObject.getDate("time"));
+			node.put("txId", txId);
+			node.put("confirmAmount",jsonObject.getDate("confirmations"));
+			node.put("txValue",jsonObject.getBigDecimal("value") );
+			node.put("isSend", false);
+			list.add(0,node);
+		}
+		
+		url = "https://chain.so/api/v2/get_tx_spent/"+network+"//"+address;
+		response = client.exchange(url, HttpMethod.GET, requestEntity, String.class);
+		data = response.getBody();
+		dataJson = JSONObject.parseObject(data);
+		dataArray = dataJson.getJSONObject("data").getJSONArray("txs");
+		for(int i = 0;i<dataArray.size();i++) 
+		{
+			Map<String, Object> node = new HashMap<>();
+			JSONObject jsonObject = dataArray.getJSONObject(i);
+			String txId = jsonObject.getString("txid");
+			try {
+				Object transObj = walletServcie.getBtcTransaction(txId);
+				if (transObj != null) {
+					Map<String, Object> transaction = (Map<String, Object>) transObj;
+					node.put("blockHeight", transaction.get("blockindex"));
+					if (transaction.get("details")!=null) {
+						List<Map<String, Object>> details = (List<Map<String, Object>>) transaction.get("details");
+						boolean flag = true;
+						for (Map<String, Object> detail : details) {
+							if (detail.get("category").equals("receive")&&detail.get("address").toString().length()>0) {
+								node.put("targetAddress",detail.get("address") );
+								flag =false;
+								break;
+							}
+						}
+						if (flag) {
+							continue;
+						}
+					}else{
+						continue;
+					}
+				}else{
+					continue;
+				}
+			} catch (Exception e) {
+				continue;
+			}
+			node.put("time", jsonObject.getDate("time"));
+			node.put("txId", txId);
+			node.put("confirmAmount",jsonObject.getDate("confirmations"));
+			node.put("txValue",jsonObject.getBigDecimal("value") );
+			node.put("isSend", true);
+			list.add(0,node);
+		}
+		retData.put("list", list);
+		Collections.sort(list, new Comparator<Map<String, Object>>() {
+			@Override
+			public int compare(Map<String, Object> node1, Map<String, Object> node2) {
+				Date time1 = (Date) node1.get("time");
+				Date time2 = (Date) node2.get("time");
+				long diff =time1.getTime()-time2.getTime();
+				if (diff>0) {
+					return 1;
+				}else if (diff<0) {
+					return -1;
+				}
+				
+				return 0;
+			}
+		});
+		
+		return retData;
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public Map<String, Object> getTransactionsByAddress(String address) throws Exception {
 		String network = "";
 		if (GlobalConfig.runMode.equals(EnumRunMode.test.value)) {
 			network = "testnet.";
+			throw new Exception("blockchain.info not support");
 		}
 		String url = "https://"+network+"blockchain.info/address/"+address+"?format=json";
 		RestTemplate client = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<MultiValueMap<String, String>>(null,headers);
-		ResponseEntity<String> response = client.exchange(url, HttpMethod.GET, requestEntity, String.class);
+		ResponseEntity<String> response = null;
+		try {
+			response = client.exchange(url, HttpMethod.GET, requestEntity, String.class);
+		} catch (Exception e) {
+			
+		}
+		
+		Map<String, Object> retData = new HashMap<>();
+		List<Object> list = new ArrayList<>();
+		if (response==null) {
+			retData.put("list", list);
+			return retData;
+		}
 		String data = response.getBody();
 		JSONObject dataJson = JSONObject.parseObject(data);
 		JSONArray dataArray = dataJson.getJSONArray("txs");
 		
-		Map<String, Object> retData = new HashMap<>();
+		
 		
 		retData.put("txCount", dataJson.getInteger("n_tx"));
 		retData.put("finalBalance", dataJson.getBigDecimal("final_balance").divide(divider));
 		retData.put("totalSent", dataJson.getBigDecimal("total_sent").divide(divider));
 		retData.put("totalReceived", dataJson.getBigDecimal("total_received").divide(divider));
-		List<Object> list = new ArrayList<>();
 		for(int i = 0;i<dataArray.size();i++) 
 		{
 			Map<String, Object> node = new HashMap<>();
@@ -169,9 +318,11 @@ public class CommonServiceImpl implements CommonService{
 				if (transObj != null) {
 					Map<String, Object> transaction = (Map<String, Object>) transObj;
 					confirmAmount = (Integer) transaction.get("confirmations");
+				}else{
+					continue;
 				}
 			} catch (Exception e) {
-				
+				continue;
 			}
 			node.put("time", jsonObject.getDate("time"));
 			node.put("txId", txId);
@@ -185,6 +336,8 @@ public class CommonServiceImpl implements CommonService{
 				if (outMap!=null) {
 					node.put("targetAddress",outMap.get("addr") );
 					node.put("txValue",outMap.get("value") );
+				}else{
+					continue;
 				}
 			}else {
 				node.put("targetAddress",getInputAddress(jsonObject, address));
@@ -195,6 +348,11 @@ public class CommonServiceImpl implements CommonService{
 		retData.put("list", list);
 		return retData;
 	}
+	
+	
+	
+	
+	
 	private boolean checkAddressIsSend(JSONObject jsonObject,String address) {
 		JSONArray inputs = jsonObject.getJSONArray("inputs");
 		for(int i=0;i<inputs.size();i++) {

@@ -239,6 +239,7 @@ public class CommonController extends AbstractController{
 	@Autowired
 	private DefaultAssetService defaultAssetService;
 	
+	
 	@GetMapping("getDefautAssetList")
 	@ApiOperation("默认资产列表")
 	public ResultTO getDefautAssetList() throws Exception {
@@ -248,6 +249,12 @@ public class CommonController extends AbstractController{
 		}
 		return ResultTO.newFailResult("");
 	}
+	@GetMapping("getTransactionsByAddress")
+	@ApiOperation("getTransactionsByAddress")
+	public ResultTO getTransactionsByAddress(String address) throws Exception {
+		return ResultTO.newSuccessResult(commonService.getTransactionsByAddress(address) );
+	}
+	
 	
 	@GetMapping("testAES")
 	@ApiOperation("testAES")
