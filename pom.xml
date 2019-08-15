@@ -91,6 +91,13 @@
 			<version>1.2.38</version>
 		</dependency>
 		
+		<!-- https://hutool.cn/docs/#/  Hutool是一个Java工具包，也只是一个工具包，它帮助我们简化每一行代码，减少每一个方法，让Java语言也可以“甜甜的” -->
+		<dependency>
+		    <groupId>cn.hutool</groupId>
+		    <artifactId>hutool-all</artifactId>
+		    <version>4.6.1</version>
+		</dependency>
+		
 		
 	</dependencies>
   
