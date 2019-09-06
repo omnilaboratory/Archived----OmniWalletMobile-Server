@@ -31,7 +31,7 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("api/wallet/address")
-@Api(tags = {"钱包地址"})
+@Api(tags = {"wallet address"})
 public class AddressController extends AbstractController{
 	
 
@@ -56,7 +56,7 @@ public class AddressController extends AbstractController{
 	
 	@SuppressWarnings("serial")
 	@PostMapping("changeAddressName")
-	@ApiOperation("修改钱包名称")
+	@ApiOperation("Modify Wallet Name")
 	public ResultTO changeAddressName(String address,String addressName) {
 		Assert.isTrue(Tools.checkStringExist(address), "address is empty");
 		Assert.isTrue(Tools.checkStringExist(addressName), "addressName is empty");
@@ -72,7 +72,7 @@ public class AddressController extends AbstractController{
 	}
 	
 	@GetMapping("getNewestAddressIndex")
-	@ApiOperation("获取用户最新的地址索引")
+	@ApiOperation("Obtain user's latest address index")
 	public ResultTO getNewestAddressIndex() {
 		Integer index = commonService.getNewestAddressIndex(getUserId());
 		return ResultTO.newSuccessResult("success",index);
@@ -80,7 +80,7 @@ public class AddressController extends AbstractController{
 	
 	
 	@PostMapping("create")
-	@ApiOperation("创建新地址")
+	@ApiOperation("Create New Address")
 	public ResultTO createAddress(WalletAddress walletAddress) {
 		Assert.isTrue(Tools.checkStringExist(walletAddress.getAddress()), "address is empty");
 		Assert.isTrue(Tools.checkStringExist(walletAddress.getAddressName()), "addressName is empty");
