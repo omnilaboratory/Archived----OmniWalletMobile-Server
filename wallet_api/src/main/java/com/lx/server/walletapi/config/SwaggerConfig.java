@@ -80,9 +80,8 @@ public class SwaggerConfig {
 	// 构建 api文档的详细信息函数,注意这里的注解引用的是哪个
 	private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-        		.title("接口文档")
-                .description("接口文档可直接执行，点击按钮 Try it 即可</br>需要令牌的接口点击界面左上角的Authorization按钮，填入Bearer +【token】"
-                		+ "</br>Bearer ef8c6d919538a26f4065989597a652aa")
+        		.title("API Doc")
+                .description("Click button 'Try it' then run the api</br>the api of need token can click Authorization button，input:Bearer +【token】")
                 .version("2.0")
                 .build();
     }

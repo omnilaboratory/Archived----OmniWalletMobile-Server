@@ -256,8 +256,8 @@ public class CommonController extends AbstractController{
 	}
 	
 	
-	@GetMapping("testAES")
-	@ApiOperation("testAES")
+//	@GetMapping("testAES")
+//	@ApiOperation("testAES")
 	public ResultTO testAES() throws Exception {
 		String cIv = "e9cc3f037e8ed880";
         String s = "L5i7jigYHYLyZbAsf9QUAc8BWtXq7YD6U7b7m8717Jg4xuxk5mAx";
@@ -276,7 +276,7 @@ public class CommonController extends AbstractController{
 	@Autowired
     private KafkaTemplate<String, Object> kafkaTemplate;
 	
-	@PostMapping("testKafka")
+//	@PostMapping("testKafka")
 	public ResultTO testKafka(UserFeedback feedback) {
 		KafkaMessage message = new KafkaMessage(EnumKafkaTopic.UserFeedback.value,"ef8c6d919538a26f4065989597a652aa", null, feedback);
 		this.kafkaTemplate.send(EnumKafkaTopic.UserFeedback.value, JSON.toJSONString(message));
