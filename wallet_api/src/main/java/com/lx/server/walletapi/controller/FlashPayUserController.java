@@ -19,7 +19,7 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("api/fp/user")
-@Api(tags = {"fp快速支付用户接口"})
+@Api(tags = {"interfaces for instance payment"})
 public class FlashPayUserController extends AbstractController {
 	
 	@Autowired
@@ -27,7 +27,7 @@ public class FlashPayUserController extends AbstractController {
 	
 	@SuppressWarnings("serial")
 	@GetMapping("check")
-	@ApiOperation("检测email是否已经存在")
+	@ApiOperation("check if email already exists")
 	public ResultTO check(String email) {
 		Assert.isTrue(Tools.checkEmail(email), "error email");
 		
@@ -48,7 +48,7 @@ public class FlashPayUserController extends AbstractController {
 	
 	@SuppressWarnings("serial")
 	@PostMapping("create")
-	@ApiOperation("创建用户")
+	@ApiOperation("creat new user")
 	public ResultTO create(String email) throws Exception {
 		Assert.isTrue(Tools.checkEmail(email), "error email");
 		
