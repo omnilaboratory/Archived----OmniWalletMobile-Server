@@ -232,13 +232,11 @@ public class BlockChainController extends AbstractController{
 //    	return ResultTO.newSuccessResult(walletServcie.omniSendGrant(fromAddress, propertyId, amount.toString()));
 //    }
     
-    @ApiOperation("同步btc交易到mysql")
-    @GetMapping("sycBlockTransactions")
-    public ResultTO sycBlockTransactions() throws Exception {
-    	walletServcie.sycBlockTransactions();
-    	return ResultTO.newSuccessResult("ok");
-    }
-    
-    
+//    @ApiOperation("同步btc交易到mysql")
+//    @GetMapping("sycBlockTransactions")
+//    public ResultTO sycBlockTransactions() throws Exception {
+//    	walletServcie.sycBlockTransactions();
+//    	return ResultTO.newSuccessResult("ok");
+//    }
 
 }

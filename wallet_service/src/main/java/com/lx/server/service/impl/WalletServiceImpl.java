@@ -285,7 +285,7 @@ public class WalletServiceImpl implements WalletService {
 		Assert.isTrue(Tools.checkStringExist(toBitCoinAddress),"toBitCoinAddress can not be null");
 		List<String> fromAddress = new ArrayList<>();
 		fromAddress.add(fromBitCoinAddress);
-		List<Map<String, Object>> list = this.sendCmd("listunspent", new Object[] {1,Integer.MAX_VALUE,fromAddress},ArrayList.class);
+		List<Map<String, Object>> list = this.sendCmd("listunspent", new Object[] {0,Integer.MAX_VALUE,fromAddress},ArrayList.class);
 		
 		logger.info("list.size: "+list.size());
 		Assert.isTrue(list!=null&&list.isEmpty()==false, "empty balance");
@@ -308,6 +308,7 @@ public class WalletServiceImpl implements WalletService {
 				if (scriptPubKey.length()==0) {
 					scriptPubKey = item.get("scriptPubKey").toString();
 				}
+//				node.put("sequence", 4214554); 
 				myList.add(node);
 				logger.info("item.get(amount) " +item.get("amount"));
 				balance = balance.add(new BigDecimal(item.get("amount").toString()));
@@ -330,7 +331,10 @@ public class WalletServiceImpl implements WalletService {
 			logger.info("createrawtransaction ");
 			String hexstring =  this.sendCmd("createrawtransaction", new Object[] {myList,address}, String.class);
 			
-//			Map<String, Object> hexMap =  this.sendCmd("decoderawtransaction", new Object[] {hexstring}, Map.class);
+			Map<String, Object> hexMap =  this.sendCmd("decoderawtransaction", new Object[] {hexstring}, Map.class);
+			logger.info("decoderawtransaction ");
+			logger.info(hexMap);
+			
 			for (Map<String, Object> map : myList) {
 				map.put("scriptPubKey", scriptPubKey);
 			}
@@ -343,8 +347,11 @@ public class WalletServiceImpl implements WalletService {
 			}
 			String hexStr = hex.get("hex").toString();
 			logger.info("signrawtransaction "+ hexStr);
-//			hexMap =  this.sendCmd("decoderawtransaction", new Object[] {hexStr}, Map.class);
+			hexMap =  this.sendCmd("decoderawtransaction", new Object[] {hexStr}, Map.class);
+			logger.info(hexMap);
+			
 			String txId =  this.sendCmd("sendrawtransaction", new Object[] {hexStr}, String.class);
+			logger.info(txId);
 			return txId;
 		}
 		return null;
@@ -428,7 +435,7 @@ public class WalletServiceImpl implements WalletService {
 			object = this.jsonRpcHttpClient.invoke(methodName, argument, clazz);
 		} catch (Throwable e) {
 			e.printStackTrace();
-			throw new Exception(e.getMessage()+" 传入参数值有误");
+			throw new Exception(e.getMessage());
 		}
 		return object;
 	}
@@ -602,6 +609,16 @@ public class WalletServiceImpl implements WalletService {
 			
 			
 		}
+	}
+	
+	public static void main(String[] args) {
+		
+		Integer num1 = 0x400000;
+		Integer num2 = 2*365*24*60*60;
+		num2 = num2/512;
+		Integer result = num1|num2; 
+		System.out.println(result);
+		
 	}
 	
 }
