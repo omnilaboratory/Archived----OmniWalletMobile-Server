@@ -22,7 +22,7 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("api/user/transferAddress")
-@Api(tags = {"用户常用转账地址"})
+@Api(tags = {"Addresses used in daily transfer"})
 public class UserTransferAddressController extends AbstractController {
 	
 	@Autowired
@@ -30,7 +30,7 @@ public class UserTransferAddressController extends AbstractController {
 	
 	@SuppressWarnings("serial")
 	@PostMapping("edit")
-	@ApiOperation("创建或者编辑地址")
+	@ApiOperation("create or edit an address")
 	public ResultTO createAddress(UserTransferAddress transferAddress) throws InvocationTargetException, IllegalAccessException {
 		Assert.isTrue(Tools.checkStringExist(transferAddress.getAddress())&&transferAddress.getAddress().trim().length()<40, "address is error");
 		Assert.isTrue(Tools.checkStringExist(transferAddress.getNickname())&&transferAddress.getNickname().trim().length()<20, "name is error");
@@ -65,7 +65,7 @@ public class UserTransferAddressController extends AbstractController {
 	}
 	@SuppressWarnings({ "serial"})
 	@GetMapping("list")
-	@ApiOperation("获取地址列表")
+	@ApiOperation("get the list of addresses")
 	public ResultTO getAddressList() throws Exception {
 		List<UserTransferAddress> list = this.userTransferAddressService.selectObjectList(new HashMap<String,Object>() {{
 			put("userId", getUserId());
@@ -74,7 +74,7 @@ public class UserTransferAddressController extends AbstractController {
 	}
 	
 	@GetMapping("delAddress")
-	@ApiOperation("删除地址")
+	@ApiOperation("delete an address by its ID")
 	public ResultTO delAddress(Integer id) throws Exception {
 		if (userTransferAddressService.delete(id)>0) {
 			return ResultTO.newSuccessResult("success");
