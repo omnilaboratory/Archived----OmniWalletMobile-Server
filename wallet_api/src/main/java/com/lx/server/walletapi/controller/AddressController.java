@@ -137,7 +137,7 @@ public class AddressController extends AbstractController{
 	
 	@SuppressWarnings("serial")
 	@PostMapping("addAsset")
-	@ApiOperation("添加资产")
+	@ApiOperation("Add assets")
 	public ResultTO setVisible(String address, Long assetId,String assetName) {
 		Assert.isTrue(Tools.checkStringExist(address), "address is null");
 		Assert.notNull(assetId, "assetId is null");
@@ -172,7 +172,7 @@ public class AddressController extends AbstractController{
 	
 	@SuppressWarnings("serial")
 	@PostMapping("setVisible")
-	@ApiOperation("设置address是否显示")
+	@ApiOperation("Set address visibility: if an address can be displayed on screen")
 	public ResultTO setVisible(String address, Boolean visible) {
 		Assert.isTrue(Tools.checkStringExist(address), "address is null");
 		Assert.notNull(visible, "visible is null");
@@ -189,7 +189,7 @@ public class AddressController extends AbstractController{
 	
 	@SuppressWarnings({ "serial", "unchecked" })
 	@GetMapping("list")
-	@ApiOperation("获取地址列表")
+	@ApiOperation("Obtain addresses list")
 	public ResultTO getAddressList(Integer pageIndex,Integer pageSize) throws Exception {
 		if (pageIndex==null||pageIndex<1) {
 			pageIndex =1;
@@ -208,7 +208,7 @@ public class AddressController extends AbstractController{
 				Map<String, Object> node = (Map<String, Object>)object;
 				String address = node.get("address").toString();
 				
-				//有转账记录的资产列表
+				//List of Assets which have transactions
 				List<Map<String, Object>> list = walletServcie.getAllBalanceByAddress(address);
 				
 				for (Map<String, Object> btcNode : list) {
@@ -257,12 +257,12 @@ public class AddressController extends AbstractController{
 	
 	
 	/**
-	 * 根据address获取btc交易记录
+	 * Given address, get BTC transactions history 
 	 * @return
 	 * @throws Exception 
 	 */
 	@GetMapping("getTransactionsByAddress")
-	@ApiOperation("根据address获取btc交易记录")
+	@ApiOperation("Given address, get BTC transactions history")
 	public ResultTO getTransactionsByAddress(String address) throws Exception{
 		Assert.isTrue(Tools.checkStringExist(address), "address is empty");
 		Map<String, Object> data = commonService.getTransactionsByAddress(address);
@@ -273,12 +273,12 @@ public class AddressController extends AbstractController{
 	}
 	
 	/**
-	 * 根据address获取omni交易记录
+	 * Given address, get Omni assets transactions history 
 	 * @return
 	 * @throws Exception 
 	 */
 	@GetMapping("getOmniTransactionsByAddress")
-	@ApiOperation("根据address获取omni交易记录")
+	@ApiOperation("Given address, get Omni assets transactions history")
 	public ResultTO getOmniTransactionsByAddress(String address,Long assetId) throws Exception{
 		Assert.isTrue(Tools.checkStringExist(address), "address is empty");
 		Assert.isTrue(assetId!=null&&assetId>0, "assetId is empty");
