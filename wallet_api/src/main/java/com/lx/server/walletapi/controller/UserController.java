@@ -25,11 +25,11 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("api/user")
-@Api(tags = {"用户接口"})
+@Api(tags = {"interfaces for user management"})
 public class UserController extends AbstractController{
 	
 	@GetMapping("getUserInfo")
-	@ApiOperation("获取用户信息")
+	@ApiOperation("get user information")
 	public ResultTO getUserInfo() throws NoSuchAlgorithmException {
 		Map<String, Object> userInfo = getFpUserInfo(getUser());
 		return ResultTO.newSuccessResult(userInfo);
@@ -37,7 +37,7 @@ public class UserController extends AbstractController{
 
 	
 	@GetMapping("getUserRSAEncrypt")
-	@ApiOperation("获取用户公钥")
+	@ApiOperation("get user public key")
 	public ResultTO getUserRSAEncrypt() throws NoSuchAlgorithmException, NoSuchPaddingException {
 		String publicKey =  RSAEncrypt.genKeyPair(getUserId());
 		return ResultTO.newSuccessResult("success",publicKey);
@@ -45,7 +45,7 @@ public class UserController extends AbstractController{
 	
 	@SuppressWarnings("serial")
 	@PostMapping("updateUserNickname")
-	@ApiOperation("更新用户昵称")
+	@ApiOperation("update nick name")
 	public ResultTO updateUserNickname(@RequestParam String nickname) {
 		Assert.isTrue(Tools.checkStringExist(nickname)&&nickname.trim().length()<31, "error nickname");
 		userClientService.update(new HashMap<String,Object>() {{
@@ -58,7 +58,7 @@ public class UserController extends AbstractController{
 	
 	@SuppressWarnings("serial")
 	@PostMapping("updateUserPassword")
-	@ApiOperation("更新用户Pin")
+	@ApiOperation("update PIN code")
 	public ResultTO updateUserPassword(String newPsw, String oldPsw) {
 		Assert.isTrue(Tools.isValidMessageAudio(newPsw), "newPsw is not md5 type");
 		UserClient user = getUser();
@@ -75,7 +75,7 @@ public class UserController extends AbstractController{
 	
 	@SuppressWarnings("serial")
 	@PostMapping("updateUserFace")
-	@ApiOperation("更新用户头像")
+	@ApiOperation("update avatar")
 	public ResultTO updateUserFace(@RequestParam MultipartFile faceFile) {
 		Assert.notNull(faceFile, "图片不能为空");
 		String faceUrl  = this.uploadImage(EnumFolderURI.Image_userface.value, faceFile);
