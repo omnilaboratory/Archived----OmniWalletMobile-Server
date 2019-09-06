@@ -17,14 +17,14 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("api/common/hyper")
-@Api(tags = {"hyperledger接口"})
+@Api(tags = {"hyperledger interfaces"})
 public class HyperledgerController {
 
 	@Autowired
 	private HyperledgerService hyperledgerService;
 	
 	@GetMapping("getBaseAccount")
-	@ApiOperation("基础账号信息")
+	@ApiOperation("basic account information")
 	private ResultTO getBaseAccount() {
 		JSONObject js = hyperledgerService.getBaseAccount();
 		if (js!=null) {
@@ -34,7 +34,7 @@ public class HyperledgerController {
 	}
 	
 	@GetMapping("createAccount")
-	@ApiOperation("创建账号")
+	@ApiOperation("create account")
 	private ResultTO createAccount(String username) {
 		JSONObject js = hyperledgerService.createAccount(username);
 		if (js!=null) {
@@ -44,7 +44,7 @@ public class HyperledgerController {
 	}
 	
 	@GetMapping("accountInfo")
-	@ApiOperation("账号信息")
+	@ApiOperation("get account information")
 	private ResultTO accountInfo(String username) {
 		JSONObject js = hyperledgerService.accountInfo(username);
 		if (js!=null) {
@@ -53,7 +53,7 @@ public class HyperledgerController {
 		return ResultTO.newFailResult("fail");
 	}
 	@GetMapping("balances")
-	@ApiOperation("账户余额")
+	@ApiOperation("get balance given a username")
 	private ResultTO balances(String username) {
 		JSONObject js = hyperledgerService.balances(username);
 		if (js!=null) {
@@ -64,7 +64,7 @@ public class HyperledgerController {
 	
 	
 	@PostMapping("initToken")
-	@ApiOperation("发币")
+	@ApiOperation("issue tokens named by tkSymbol")
 	private ResultTO initToken(String tkSymbol) {
 		JSONObject js = hyperledgerService.initToken(tkSymbol);
 		if (js!=null) {
@@ -74,7 +74,7 @@ public class HyperledgerController {
 	}
 	
 	@PostMapping("mintToken")
-	@ApiOperation("铸币")
+	@ApiOperation("mint amount tokens ")
 	private ResultTO mintToken(String tkSymbol,BigDecimal amount) {
 		JSONObject js = hyperledgerService.mintToken(tkSymbol,amount);
 		if (js!=null) {
@@ -84,7 +84,7 @@ public class HyperledgerController {
 	}
 	
 	@PostMapping("burnToken")
-	@ApiOperation("烧币")
+	@ApiOperation("burn amount tokens")
 	private ResultTO burnToken(String tkSymbol,BigDecimal amount) {
 		JSONObject js = hyperledgerService.burnToken(tkSymbol,amount);
 		if (js!=null) {
@@ -94,7 +94,7 @@ public class HyperledgerController {
 	}
 	
 	@PostMapping("frozenAccount")
-	@ApiOperation("账户冻结")
+	@ApiOperation("freez account")
 	private ResultTO frozenAccount(String username) {
 		JSONObject js = hyperledgerService.frozenAccount(username);
 		if (js!=null) {
@@ -103,7 +103,7 @@ public class HyperledgerController {
 		return ResultTO.newFailResult("fail");
 	}
 	@PostMapping("unfrozenAccount")
-	@ApiOperation("账户解除冻结")
+	@ApiOperation("unfreez account")
 	private ResultTO unfrozenAccount(String username) {
 		JSONObject js = hyperledgerService.unfrozenAccount(username);
 		if (js!=null) {
@@ -113,7 +113,7 @@ public class HyperledgerController {
 	}
 	
 	@PostMapping("transferToken")
-	@ApiOperation("转账")
+	@ApiOperation("transfer amount tokens")
 	private ResultTO transferToken(String from,String to,String symbol,BigDecimal amount) {
 		JSONObject js = hyperledgerService.transferToken(from,to,symbol,amount);
 		if (js!=null) {
