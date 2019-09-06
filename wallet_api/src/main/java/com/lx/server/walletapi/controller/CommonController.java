@@ -46,7 +46,7 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("api/common")
-@Api(tags = {"公共接口"})
+@Api(tags = {"Common Interfaces"})
 public class CommonController extends AbstractController{
 	
 	@Autowired
@@ -63,7 +63,7 @@ public class CommonController extends AbstractController{
 	
 	@SuppressWarnings("serial")
 	@PostMapping("createUser")
-	@ApiOperation("创建新用户")
+	@ApiOperation("create new user")
 	public ResultTO createUser(String userId,String nickname,String password) throws NoSuchAlgorithmException, InvocationTargetException, IllegalAccessException {
 		this.logger.info("createUser");
 		Assert.isTrue(Tools.isValidMessageAudio(userId), "userId is not md5 type");
@@ -82,7 +82,7 @@ public class CommonController extends AbstractController{
 	
 	@SuppressWarnings("serial")
 	@PostMapping("restoreUser")
-	@ApiOperation("根据助记词恢复用户")
+	@ApiOperation("restore account according to mnemonic words")
 	public ResultTO restoreUser(String userId,String password,String newPsw) {
 		this.logger.info("restoreUser");
 		Assert.isTrue(Tools.isValidMessageAudio(userId), "userId is not md5 type");
@@ -114,17 +114,17 @@ public class CommonController extends AbstractController{
 	 * @return
 	 */
 	@PostMapping("uploadImage")
-	@ApiOperation("图片上传")
+	@ApiOperation("upload a image")
 	@ApiImplicitParams({
-		@ApiImplicitParam(name = "file", value = "图片"),
+		@ApiImplicitParam(name = "file", value = "image"),
 	})
 	public ResultTO uploadFile(MultipartFile file){
-		Assert.isTrue(file!=null, "图片不存在");
+		Assert.isTrue(file!=null, "image does not exist");
 		String url = this.uploadImage(EnumFolderURI.getEnumByType(0).value,file);
 		if (url!=null) {
-			return ResultTO.newSuccessResult("上传成功",url);
+			return ResultTO.newSuccessResult("upload succeed",url);
 		}
-		return ResultTO.newFailResult("上传失败");
+		return ResultTO.newFailResult("upload failed");
 	}
 	/**
 	 * 多图片上传
@@ -132,27 +132,27 @@ public class CommonController extends AbstractController{
 	 * @return
 	 */
 	@PostMapping("uploadImages")
-	@ApiOperation("多图片上传")
+	@ApiOperation("upload multiple images")
 	@ApiImplicitParams({
 	})
 	public ResultTO uploadFile(MultipartFile files[]){
-		Assert.isTrue(files!=null, "图片不存在");
+		Assert.isTrue(files!=null, "images do not exist");
 		String url = Tools.uploadImages(EnumFolderURI.getEnumByType(0).value,files);
 		if (url!=null) {
-			return ResultTO.newSuccessResult("上传成功",url);
+			return ResultTO.newSuccessResult("upload succeed",url);
 		}
-		return ResultTO.newFailResult("上传失败");
+		return ResultTO.newFailResult("upload failed");
 	}
 	
 //	@Autowired
 //    private KafkaTemplate<String, Object> kafkaTemplate;
 	
 	/**
-	 * 获取交易汇率
+	 * get exchange rate
 	 * @return
 	 */
 	@GetMapping("btcAndUsdtExchangeRate")
-	@ApiOperation("比特币、Usdt和欧元的实时汇率")
+	@ApiOperation("real time exchange rates for BTC, USDT and EU")
 	public ResultTO btcAndUsdtExchangeRates(){
 		List<Map<String, Object>> data = new ArrayList<>();
 		JSONObject jsonObject = commonService.getRateFromBlockChain();
@@ -214,7 +214,7 @@ public class CommonController extends AbstractController{
 	 private AppVersionService appVersionService;
 	
 	@GetMapping("getNewestVersion")
-	@ApiOperation("获取最新的版本信息")
+	@ApiOperation("get the latest version info")
 	public ResultTO validateVersion() throws Exception {
 		Page page = appVersionService.page(new HashMap<String, Object>(), 1, 1);
         if (page!=null) {
@@ -227,7 +227,7 @@ public class CommonController extends AbstractController{
 	}
 	
 	@GetMapping("getVersionList")
-	@ApiOperation("获取历史版本信息")
+	@ApiOperation("get historical versions information")
 	public ResultTO getVersionList() throws Exception {
 		Page page = appVersionService.page(new HashMap<String, Object>(), 1, 10);
 		if (page!=null) {
@@ -241,7 +241,7 @@ public class CommonController extends AbstractController{
 	
 	
 	@GetMapping("getDefautAssetList")
-	@ApiOperation("默认资产列表")
+	@ApiOperation("get default assets list")
 	public ResultTO getDefautAssetList() throws Exception {
 		List<DefaultAsset> assets = defaultAssetService.selectObjectList(null);
 		if (assets!=null) {
