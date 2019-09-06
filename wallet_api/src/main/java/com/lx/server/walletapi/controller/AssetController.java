@@ -24,7 +24,7 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("api/wallet/asset")
-@Api(tags = {"钱包资产地址"})
+@Api(tags = {"Address for assets in wallet"})
 public class AssetController extends AbstractController{
 	
 
@@ -41,7 +41,7 @@ public class AssetController extends AbstractController{
 	private PopularAssetService popularAssetService;
 	
 //	@PostMapping("create")
-//	@ApiOperation("创建新地址")
+//	@ApiOperation("create new address")
 //	public ResultTO createAddress(WalletAsset info) {
 //		KafkaMessage message = new KafkaMessage(2,getUserId(), null, info);
 //		this.kafkaTemplate.send(EnumKafkaTopic.WalletAddressTopic.value, JSON.toJSONString(message));
@@ -51,7 +51,7 @@ public class AssetController extends AbstractController{
 	
 	@SuppressWarnings("serial")
 	@GetMapping("list")
-	@ApiOperation("获取地址资产列表")
+	@ApiOperation("Get assets list")
 	public ResultTO getAddressList(String address) {
 		List<WalletAsset> list = this.walletAssetService.selectObjectList(new HashMap<String,Object>() {{
 			put("userId", getUserId());
@@ -62,7 +62,7 @@ public class AssetController extends AbstractController{
 	
 	@SuppressWarnings({ "serial", "unchecked" })
 	@PostMapping("setAssetVisible")
-	@ApiOperation("设置asset是否显示")
+	@ApiOperation("Set visibility of an asset: if an asset can be displayed on screen")
 	public ResultTO setAssetVisible(String address,Long assetId, Boolean visible) throws NumberFormatException, Exception {
 		Assert.isTrue(Tools.checkStringExist(address), "address is null");
 		Assert.isTrue(assetId!=null, "assetId is wrong");
@@ -105,7 +105,7 @@ public class AssetController extends AbstractController{
 	}
 	
 	@GetMapping("getPopularAssetList")
-	@ApiOperation("获取推广资产列表")
+	@ApiOperation("Get assets list for promotion")
 	public ResultTO getPopularAssetList() {
 		return ResultTO.newSuccessResult(popularAssetService.selectObjectList(null));
 	}
