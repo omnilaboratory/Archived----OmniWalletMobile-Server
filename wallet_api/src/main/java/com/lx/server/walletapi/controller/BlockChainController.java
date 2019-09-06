@@ -37,7 +37,7 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("api/blockChain")
-@Api(tags = { "区块链接口" })
+@Api(tags = { "Blockchain interfaces" })
 public class BlockChainController extends AbstractController{
 	
 	@Autowired
@@ -62,7 +62,7 @@ public class BlockChainController extends AbstractController{
 	}
     
     @GetMapping("createAddr")
-    @ApiOperation("创建新的地址")
+    @ApiOperation("Create new address")
     public ResultTO createAddr(String account)throws Throwable{
     	return ResultTO.newSuccessResult(walletServcie.createNewAddress(account));
     }
@@ -77,60 +77,60 @@ public class BlockChainController extends AbstractController{
     }
     
     @GetMapping("getBTCAccount")
-    @ApiOperation("获取btc的Account")
+    @ApiOperation("get BTC account")
     public ResultTO getBTCAccount(String address) throws Exception{
     	return ResultTO.newSuccessResult("",walletServcie.getBTCAccount(address));
     }
     @GetMapping("getBtcBalance")
-    @ApiOperation("获取btc的余额")
+    @ApiOperation("get BTC Balance")
     public ResultTO getBtcBalance(String address) throws Exception{
     	return ResultTO.newSuccessResult(walletServcie.getBtcBalance(address));
     }
-    @ApiOperation("omni某个地址的所有资产信息")
+    @ApiOperation("Given an address, get all omni assets information of it")
     @GetMapping("getOmniAllBalance")
     public ResultTO getOmniAllBalance(String address) throws Exception{
     	return ResultTO.newSuccessResult(walletServcie.getOmniAllBalance(address));
     }
     
-    @ApiOperation("某个地址的所有资产信息")
+    @ApiOperation("Given an address, get all balances of omni assets belonging to it")
     @GetMapping("getAllBalanceByAddress")
     public ResultTO getAllBalanceByAddress(String address) throws Exception{
     	return ResultTO.newSuccessResult(walletServcie.getAllBalanceByAddress(address));
     }
     
-    @ApiOperation("omni某个地址的某个资产的信息")
+    @ApiOperation("Given an address, get omni asset balance by its property ID")
     @GetMapping("getOmniBalanceOfPropertyId")
     public ResultTO getOmniBalanceOfPropertyId(String address,Long propertyId) throws Exception{
     	return ResultTO.newSuccessResult(walletServcie.getOmniBalanceOfPropertyId(address, propertyId));
     }
-    @ApiOperation("omni获取资产列表")
+    @ApiOperation("get the list of omni assets")
     @GetMapping("getOmniListproperties")
     public ResultTO getOmniListproperties() throws Exception{
     	return ResultTO.newSuccessResult(walletServcie.getOmniListProperties());
     }
-    @ApiOperation("omni根据资产id获取资产")
+    @ApiOperation("get omni asset information by property ID ")
     @GetMapping("getOmniProperty")
     public ResultTO getOmniProperty(Long propertyId) throws Exception{
     	return ResultTO.newSuccessResult(walletServcie.getOmniProperty(propertyId));
     }
     
-    @ApiOperation("omni冻结")
+    @ApiOperation("Freeze omni account")
     @GetMapping("omniSendFreeze")
     public ResultTO omniSendFreeze(String fromAddress,String toAddress,String name,Long propertyId,BigDecimal amount) throws Exception{
     	return ResultTO.newSuccessResult(walletServcie.omniSendFreeze(fromAddress, toAddress, propertyId, amount.toString()));
     }
     
-    @ApiOperation("omni解冻")
+    @ApiOperation("Unfreeze omni account")
     @GetMapping("omniSendUnfreeze")
     public ResultTO omniSendUnfreeze(String fromAddress,String toAddress,String name,Long propertyId,BigDecimal amount) throws Exception{
     	return ResultTO.newSuccessResult(walletServcie.omniSendUnfreeze(fromAddress, toAddress, propertyId, amount.toString()));
     }
     
     
-    @ApiOperation("omni原生转账")
+    @ApiOperation("construct omni raw transaction ")
     @PostMapping("omniRawTransaction")
     public ResultTO omniRawTransaction(Long propertyId, String fromBitCoinAddress,String privkey, String toBitCoinAddress, BigDecimal minerFee,BigDecimal amount, String note) throws Exception{
-    	logger.info("omni原生转账");
+    	logger.info("omni raw transaction");
     	UserClient userClient = getUser();
     	Assert.notNull(userClient, "userClient is wrong");
     	Assert.isTrue(Tools.checkStringExist(userClient.getPassword()), "pin is wrong");
@@ -157,18 +157,18 @@ public class BlockChainController extends AbstractController{
 		this.kafkaTemplate.send(EnumKafkaTopic.LogTransaction.value, JSON.toJSONString(message));
 	}
     
-    @ApiOperation("omni原生转账不加密 test用")
+    @ApiOperation("For testing purpose only: omni raw transaction absent encryption")
     @PostMapping("omniRawTransaction2")
     public ResultTO omniRawTransaction2(Long propertyId, String fromBitCoinAddress,String privkey, String toBitCoinAddress, BigDecimal minerFee,BigDecimal amount, String note) throws Exception{
-    	logger.info("omni原生转账");
+    	logger.info("omni raw transaction absent encryption");
     	Assert.notNull(privkey, "privkey is wrong");
     	return ResultTO.newSuccessResult(walletServcie.omniRawTransaction(propertyId, fromBitCoinAddress, privkey, toBitCoinAddress, minerFee, amount, note));
     }
     
-    @ApiOperation("btc转账")
+    @ApiOperation("send btc")
     @PostMapping("btcSend")
     public ResultTO btcSend(String fromBitCoinAddress,String privkey,String toBitCoinAddress,BigDecimal amount,BigDecimal minerFee) throws Exception{
-    	logger.info("btc转账");
+    	logger.info("send btc");
     	UserClient userClient = getUser();
     	Assert.isTrue(Tools.checkStringExist(userClient.getPassword()), "pin is wrong");
     	privkey = AESUtil.decrypt(privkey, userClient.getPassword(), userClient.getId().substring(0, 16));
@@ -181,10 +181,10 @@ public class BlockChainController extends AbstractController{
     	return ResultTO.newFailResult("fail");
     }
     
-    @ApiOperation("btc转账多签")
+    @ApiOperation("send btc by multiple signatures")
     @PostMapping("btcSend2")
     public ResultTO btcSend2(String fromBitCoinAddress,String[] privkeys,String toBitCoinAddress,BigDecimal amount,BigDecimal minerFee) throws Exception{
-    	logger.info("btc多签转账");
+    	logger.info("send btc by multiple signatures");
     	Assert.notNull(privkeys, "privkey is wrong");
     	List<String> keys = new ArrayList<>();
     	for (String item : privkeys) {
@@ -198,17 +198,17 @@ public class BlockChainController extends AbstractController{
     }
     
     
-    @ApiOperation("omni的交易")
+    @ApiOperation("get omni asset transaction by a transaction ID")
     @GetMapping("getOmniTransaction")
     public ResultTO getOmniTransaction(String txid) throws Exception{
     	return ResultTO.newSuccessResult(walletServcie.getOmniTransaction(txid));
     }
-    @ApiOperation("btc的某个交易")
+    @ApiOperation("get BTC transaction by a transaction ID")
     @GetMapping("getBtcTransaction")
     public ResultTO getBtcTransaction(String txid) throws Exception{
     	return ResultTO.newSuccessResult(walletServcie.getBtcTransaction(txid));
     }
-    @ApiOperation("btc的交易记录")
+    @ApiOperation("paginate BTC transactions")
     @GetMapping("getBtcTransactions")
     public ResultTO getBtcTransactions(Integer pageIndex,Integer pageSize) throws Exception{
     	if (pageSize==null) {
