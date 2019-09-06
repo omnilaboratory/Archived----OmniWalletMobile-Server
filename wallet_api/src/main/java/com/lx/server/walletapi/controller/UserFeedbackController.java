@@ -22,14 +22,14 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("api/feedback")
-@Api(tags = { "用户反馈"})
+@Api(tags = { "interfaces for managing user feedbacks"})
 public class UserFeedbackController extends AbstractController{
 	
 	@Autowired
 	private UserFeedbackService userFeedbackService;
 	
 	@PostMapping("submit")
-	@ApiOperation("用户反馈")
+	@ApiOperation("submit feedback")
 	@ApiImplicitParams({ 
 	})
 	public ResultTO feedback(UserFeedback feedback) {
@@ -47,7 +47,7 @@ public class UserFeedbackController extends AbstractController{
 	
 	@SuppressWarnings("serial")
 	@GetMapping("history")
-	@ApiOperation("用户反馈历史")
+	@ApiOperation("history of feedbacks")
 	public ResultTO feedbackHistory(Integer page,Integer rows) {
 		if (page==null) {
 			page =1;
