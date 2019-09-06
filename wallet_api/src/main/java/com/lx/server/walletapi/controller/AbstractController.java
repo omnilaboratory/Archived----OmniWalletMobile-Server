@@ -28,7 +28,7 @@ import com.lx.server.utils.Tools;
 import io.jsonwebtoken.Claims;
 
 /**
- * 控制器抽象类 手机接口控制器 和 web控制器需继承此类
+ * Abstract Controller, mobile controller and web controller shall derive this class
  */
 public abstract class AbstractController {
 
@@ -54,7 +54,7 @@ public abstract class AbstractController {
 			return null;
 		}
     	Claims claims = (Claims) request.getAttribute("claims");
-        Assert.notNull(claims, "用户不存在");
+        Assert.notNull(claims, "User dosn't exist");
         return (String) claims.get("userId");
     }
     
@@ -63,7 +63,7 @@ public abstract class AbstractController {
 			return null;
 		}
     	UserClient user = (UserClient) request.getAttribute("user");
-        Assert.notNull(user, "用户不存在");
+        Assert.notNull(user, "User dosn't exist");
         return user;
     }
 	
@@ -117,7 +117,7 @@ public abstract class AbstractController {
 	}
     
     /**
-     * 单图片上传
+     * Upload single image
      */
     public String uploadImage(String imageUrl,MultipartFile... files) {
         return Tools.uploadImages(imageUrl,files);
