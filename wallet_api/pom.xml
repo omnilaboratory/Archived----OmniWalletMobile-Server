@@ -37,7 +37,8 @@
   </dependencies>
 	
 	<build>
- 		<finalName>walletClientTest</finalName>
+		<!-- walletClient walletClientTest walletClientDev-->
+ 		<finalName>walletClientDev</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

@@ -10,7 +10,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 import com.lx.server.config.GlobalConfig;
-import com.lx.server.enums.EnumRunMode;
 
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
@@ -51,7 +50,6 @@ public class SwaggerConfig {
 	                .apiInfo(apiInfo())
 	                .securitySchemes(newArrayList(apiKey()))
 	                .securityContexts(securityContexts())
-	                .enable(!GlobalConfig.runMode.equals(EnumRunMode.pro.value))
 	                ;
     }
 	@Bean
@@ -76,7 +74,7 @@ public class SwaggerConfig {
 	// 构建 api文档的详细信息函数,注意这里的注解引用的是哪个
 	private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-        		.title("兰耀网络项目管理接口文档")
+        		.title("接口文档")
                 .description("接口文档可直接执行，点击按钮 Try it 即可</br>需要令牌的接口点击界面左上角的Authorization按钮，填入Bearer +【token】")
                 .version("2.0")
                 .build();
