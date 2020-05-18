@@ -12,7 +12,7 @@ public interface WalletService{
 
 	Object getOmniBalanceOfPropertyId(String address, Long propertyId) throws Exception;
 	
-	Object getOmniAllBalance(String address) throws Exception;
+	List<Map<String, Object>>  getOmniAllBalance(String address) ;
 
 	Object getOmniListProperties() throws Exception;
 
@@ -39,26 +39,6 @@ public interface WalletService{
 	 * @throws Exception 
 	 */
 	Map<String, Object> getOmniTransaction(String txid) throws Exception;
-
-	/**
-	 * 铸币
-	 * @param fromaddress
-	 * @param propertyId
-	 * @param amount
-	 * @return
-	 * @throws Exception 
-	 */
-	Object omniSendRevoke(String fromaddress, Long propertyId, String amount) throws Exception;
-
-	/**
-	 * 烧币
-	 * @param fromaddress
-	 * @param propertyId
-	 * @param amount
-	 * @return
-	 * @throws Exception 
-	 */
-	Object omniSendGrant(String fromaddress, Long propertyId, String amount) throws Exception;
 
 	/**
 	 * omni的转账操作

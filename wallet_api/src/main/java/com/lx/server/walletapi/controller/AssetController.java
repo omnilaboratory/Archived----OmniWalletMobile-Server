@@ -27,27 +27,14 @@ import io.swagger.annotations.ApiOperation;
 @Api(tags = {"Address for assets in wallet"})
 public class AssetController extends AbstractController{
 	
-
-//	@Autowired
-//    private KafkaTemplate<String, Object> kafkaTemplate;
-	
 	@Autowired
 	private WalletAssetService walletAssetService;
 	
 	@Autowired
-	private WalletService walletServcie ;
+	private WalletService walletService ;
 	
 	@Autowired
 	private PopularAssetService popularAssetService;
-	
-//	@PostMapping("create")
-//	@ApiOperation("create new address")
-//	public ResultTO createAddress(WalletAsset info) {
-//		KafkaMessage message = new KafkaMessage(2,getUserId(), null, info);
-//		this.kafkaTemplate.send(EnumKafkaTopic.WalletAddressTopic.value, JSON.toJSONString(message));
-//		return ResultTO.newSuccessResult("success");
-//	}
-	
 	
 	@SuppressWarnings("serial")
 	@GetMapping("list")
@@ -76,7 +63,7 @@ public class AssetController extends AbstractController{
 		if (count==0) {
 			Map<String, Object> node;
 			if (assetId>0) {
-				node = (Map<String, Object>) walletServcie.getOmniProperty(Long.parseLong(assetId.toString()));
+				node = (Map<String, Object>) walletService.getOmniProperty(Long.parseLong(assetId.toString()));
 			}else {
 				node = new HashMap<>();
 				node.put("name", "BTC");

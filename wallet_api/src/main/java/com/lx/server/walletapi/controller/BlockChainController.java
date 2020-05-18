@@ -41,7 +41,7 @@ import io.swagger.annotations.ApiOperation;
 public class BlockChainController extends AbstractController{
 	
 	@Autowired
-    private WalletService walletServcie;
+    private WalletService walletService;
 	
 	@Autowired
     private KafkaTemplate<String, Object> kafkaTemplate;
@@ -64,66 +64,66 @@ public class BlockChainController extends AbstractController{
     @GetMapping("createAddr")
     @ApiOperation("Create new address")
     public ResultTO createAddr(String account)throws Throwable{
-    	return ResultTO.newSuccessResult(walletServcie.createNewAddress(account));
+    	return ResultTO.newSuccessResult(walletService.createNewAddress(account));
     }
     @GetMapping("createFixedProperty")
     public ResultTO createFixedProperty(String fromaddress,Integer ecosystem,Integer divideType,String name,BigDecimal amount) throws Exception{
-    	return ResultTO.newSuccessResult(walletServcie.createFixedProperty(fromaddress,ecosystem,divideType,name,"",null, amount));
+    	return ResultTO.newSuccessResult(walletService.createFixedProperty(fromaddress,ecosystem,divideType,name,"",null, amount));
     }
     
     @GetMapping("createManageProperty")
     public ResultTO createManageProperty(String fromAddress,Integer ecosystem,Integer divideType,String name,String url) throws Exception{
-    	return ResultTO.newSuccessResult(walletServcie.createManageProperty(fromAddress, ecosystem, divideType, name, url));
+    	return ResultTO.newSuccessResult(walletService.createManageProperty(fromAddress, ecosystem, divideType, name, url));
     }
     
     @GetMapping("getBTCAccount")
     @ApiOperation("get BTC account")
     public ResultTO getBTCAccount(String address) throws Exception{
-    	return ResultTO.newSuccessResult("",walletServcie.getBTCAccount(address));
+    	return ResultTO.newSuccessResult("",walletService.getBTCAccount(address));
     }
     @GetMapping("getBtcBalance")
     @ApiOperation("get BTC Balance")
     public ResultTO getBtcBalance(String address) throws Exception{
-    	return ResultTO.newSuccessResult(walletServcie.getBtcBalance(address));
+    	return ResultTO.newSuccessResult(walletService.getBtcBalance(address));
     }
     @ApiOperation("Given an address, get all omni assets information of it")
     @GetMapping("getOmniAllBalance")
     public ResultTO getOmniAllBalance(String address) throws Exception{
-    	return ResultTO.newSuccessResult(walletServcie.getOmniAllBalance(address));
+    	return ResultTO.newSuccessResult(walletService.getOmniAllBalance(address));
     }
     
     @ApiOperation("Given an address, get all balances of omni assets belonging to it")
     @GetMapping("getAllBalanceByAddress")
     public ResultTO getAllBalanceByAddress(String address) throws Exception{
-    	return ResultTO.newSuccessResult(walletServcie.getAllBalanceByAddress(address));
+    	return ResultTO.newSuccessResult(walletService.getAllBalanceByAddress(address));
     }
     
     @ApiOperation("Given an address, get omni asset balance by its property ID")
     @GetMapping("getOmniBalanceOfPropertyId")
     public ResultTO getOmniBalanceOfPropertyId(String address,Long propertyId) throws Exception{
-    	return ResultTO.newSuccessResult(walletServcie.getOmniBalanceOfPropertyId(address, propertyId));
+    	return ResultTO.newSuccessResult(walletService.getOmniBalanceOfPropertyId(address, propertyId));
     }
     @ApiOperation("get the list of omni assets")
     @GetMapping("getOmniListproperties")
     public ResultTO getOmniListproperties() throws Exception{
-    	return ResultTO.newSuccessResult(walletServcie.getOmniListProperties());
+    	return ResultTO.newSuccessResult(walletService.getOmniListProperties());
     }
     @ApiOperation("get omni asset information by property ID ")
     @GetMapping("getOmniProperty")
     public ResultTO getOmniProperty(Long propertyId) throws Exception{
-    	return ResultTO.newSuccessResult(walletServcie.getOmniProperty(propertyId));
+    	return ResultTO.newSuccessResult(walletService.getOmniProperty(propertyId));
     }
     
     @ApiOperation("Freeze omni account")
     @GetMapping("omniSendFreeze")
     public ResultTO omniSendFreeze(String fromAddress,String toAddress,String name,Long propertyId,BigDecimal amount) throws Exception{
-    	return ResultTO.newSuccessResult(walletServcie.omniSendFreeze(fromAddress, toAddress, propertyId, amount.toString()));
+    	return ResultTO.newSuccessResult(walletService.omniSendFreeze(fromAddress, toAddress, propertyId, amount.toString()));
     }
     
     @ApiOperation("Unfreeze omni account")
     @GetMapping("omniSendUnfreeze")
     public ResultTO omniSendUnfreeze(String fromAddress,String toAddress,String name,Long propertyId,BigDecimal amount) throws Exception{
-    	return ResultTO.newSuccessResult(walletServcie.omniSendUnfreeze(fromAddress, toAddress, propertyId, amount.toString()));
+    	return ResultTO.newSuccessResult(walletService.omniSendUnfreeze(fromAddress, toAddress, propertyId, amount.toString()));
     }
     
     
@@ -136,7 +136,7 @@ public class BlockChainController extends AbstractController{
     	Assert.isTrue(Tools.checkStringExist(userClient.getPassword()), "pin is wrong");
     	privkey = AESUtil.decrypt(privkey, userClient.getPassword(), userClient.getId().substring(0, 16));
     	Assert.notNull(privkey, "privkey is wrong");
-    	String txid = (String) walletServcie.omniRawTransaction(propertyId, fromBitCoinAddress, privkey, toBitCoinAddress, minerFee, amount, note);
+    	String txid = (String) walletService.omniRawTransaction(propertyId, fromBitCoinAddress, privkey, toBitCoinAddress, minerFee, amount, note);
     	//发送kafka信息，写入交易记录
     	sendLogTransactionToKafka(propertyId, fromBitCoinAddress, toBitCoinAddress, minerFee, amount, userClient, txid);
 		
@@ -162,7 +162,7 @@ public class BlockChainController extends AbstractController{
     public ResultTO omniRawTransaction2(Long propertyId, String fromBitCoinAddress,String privkey, String toBitCoinAddress, BigDecimal minerFee,BigDecimal amount, String note) throws Exception{
     	logger.info("omni raw transaction absent encryption");
     	Assert.notNull(privkey, "privkey is wrong");
-    	return ResultTO.newSuccessResult(walletServcie.omniRawTransaction(propertyId, fromBitCoinAddress, privkey, toBitCoinAddress, minerFee, amount, note));
+    	return ResultTO.newSuccessResult(walletService.omniRawTransaction(propertyId, fromBitCoinAddress, privkey, toBitCoinAddress, minerFee, amount, note));
     }
     
     @ApiOperation("send btc")
@@ -173,7 +173,7 @@ public class BlockChainController extends AbstractController{
     	Assert.isTrue(Tools.checkStringExist(userClient.getPassword()), "pin is wrong");
     	privkey = AESUtil.decrypt(privkey, userClient.getPassword(), userClient.getId().substring(0, 16));
     	Assert.notNull(privkey, "privkey is wrong");
-    	String ret =walletServcie.btcRawTransaction(fromBitCoinAddress, privkey, toBitCoinAddress, amount, minerFee,"");
+    	String ret =walletService.btcRawTransaction(fromBitCoinAddress, privkey, toBitCoinAddress, amount, minerFee,"");
     	sendLogTransactionToKafka((long) 0, fromBitCoinAddress, toBitCoinAddress, minerFee, amount, userClient, ret);
     	if (ret!=null) {
     		return ResultTO.newSuccessResult("success",ret);
@@ -190,7 +190,7 @@ public class BlockChainController extends AbstractController{
     	for (String item : privkeys) {
 			keys.add(item);
 		}
-    	String ret =walletServcie.btcRawTransactionMultiSign(fromBitCoinAddress, keys, toBitCoinAddress, amount, minerFee,"");
+    	String ret =walletService.btcRawTransactionMultiSign(fromBitCoinAddress, keys, toBitCoinAddress, amount, minerFee,"");
     	if (ret!=null) {
     		return ResultTO.newSuccessResult("success",ret);
     	}
@@ -201,12 +201,12 @@ public class BlockChainController extends AbstractController{
     @ApiOperation("get omni asset transaction by a transaction ID")
     @GetMapping("getOmniTransaction")
     public ResultTO getOmniTransaction(String txid) throws Exception{
-    	return ResultTO.newSuccessResult(walletServcie.getOmniTransaction(txid));
+    	return ResultTO.newSuccessResult(walletService.getOmniTransaction(txid));
     }
     @ApiOperation("get BTC transaction by a transaction ID")
     @GetMapping("getBtcTransaction")
     public ResultTO getBtcTransaction(String txid) throws Exception{
-    	return ResultTO.newSuccessResult(walletServcie.getBtcTransaction(txid));
+    	return ResultTO.newSuccessResult(walletService.getBtcTransaction(txid));
     }
     @ApiOperation("paginate BTC transactions")
     @GetMapping("getBtcTransactions")
@@ -217,26 +217,7 @@ public class BlockChainController extends AbstractController{
     	if (pageIndex==null) {
     		pageIndex = 1;
     	}
-    	return ResultTO.newSuccessResult(walletServcie.listTransactions(pageIndex, pageSize));
+    	return ResultTO.newSuccessResult(walletService.listTransactions(pageIndex, pageSize));
     }
-    
-//    @ApiOperation("烧币")
-//    @GetMapping("omniSendRevoke")
-//    public ResultTO omniSendRevoke(String fromAddress,Long propertyId,BigDecimal amount) throws Exception{
-//    	return ResultTO.newSuccessResult(walletServcie.omniSendRevoke(fromAddress, propertyId, amount.toString()));
-//    }
-//    
-//    @ApiOperation("铸币")
-//    @GetMapping("omniSendGrant")
-//    public ResultTO omniSendGrant(String fromAddress,Long propertyId,BigDecimal amount) throws Exception{
-//    	return ResultTO.newSuccessResult(walletServcie.omniSendGrant(fromAddress, propertyId, amount.toString()));
-//    }
-    
-//    @ApiOperation("同步btc交易到mysql")
-//    @GetMapping("sycBlockTransactions")
-//    public ResultTO sycBlockTransactions() throws Exception {
-//    	walletServcie.sycBlockTransactions();
-//    	return ResultTO.newSuccessResult("ok");
-//    }
 
 }

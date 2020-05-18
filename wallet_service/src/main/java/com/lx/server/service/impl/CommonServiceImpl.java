@@ -34,7 +34,7 @@ import com.lx.server.service.WalletService;
 public class CommonServiceImpl implements CommonService{
 
 	@Autowired
-	private WalletService walletServcie;
+	private WalletService walletService;
 	
 	@Autowired
 	private CommonDao commonDao;
@@ -172,7 +172,7 @@ public class CommonServiceImpl implements CommonService{
 			JSONObject jsonObject = dataArray.getJSONObject(i);
 			String txId = jsonObject.getString("txid");
 			try {
-				Object transObj = walletServcie.getBtcTransaction(txId);
+				Object transObj = walletService.getBtcTransaction(txId);
 				logger.info(transObj);
 				if (transObj != null) {
 					Map<String, Object> transaction = (Map<String, Object>) transObj;
@@ -218,7 +218,7 @@ public class CommonServiceImpl implements CommonService{
 			JSONObject jsonObject = dataArray.getJSONObject(i);
 			String txId = jsonObject.getString("txid");
 			try {
-				Object transObj = walletServcie.getBtcTransaction(txId);
+				Object transObj = walletService.getBtcTransaction(txId);
 				if (transObj != null) {
 					Map<String, Object> transaction = (Map<String, Object>) transObj;
 					node.put("blockHeight", transaction.get("blockindex"));
@@ -314,7 +314,7 @@ public class CommonServiceImpl implements CommonService{
 			String txId = jsonObject.getString("hash");
 			Integer confirmAmount = 0;
 			try {
-				Object transObj = walletServcie.getBtcTransaction(txId);
+				Object transObj = walletService.getBtcTransaction(txId);
 				if (transObj != null) {
 					Map<String, Object> transaction = (Map<String, Object>) transObj;
 					confirmAmount = (Integer) transaction.get("confirmations");
@@ -348,10 +348,6 @@ public class CommonServiceImpl implements CommonService{
 		retData.put("list", list);
 		return retData;
 	}
-	
-	
-	
-	
 	
 	private boolean checkAddressIsSend(JSONObject jsonObject,String address) {
 		JSONArray inputs = jsonObject.getJSONArray("inputs");
@@ -403,8 +399,8 @@ public class CommonServiceImpl implements CommonService{
 
 	@Override
 	public Map<String, Object> getOmniTransactions(String address, Long assetId) throws Exception {
-		List<Map<String, Object>> omniData = walletServcie.getOmniTransactions(address);
-		List<Map<String, Object>> omniPendingData = walletServcie.getOmniPendingTransactions(address);
+		List<Map<String, Object>> omniData = walletService.getOmniTransactions(address);
+		List<Map<String, Object>> omniPendingData = walletService.getOmniPendingTransactions(address);
 		List<Map<String, Object>> datas = new ArrayList<>();
 		if (omniPendingData!=null) {
 			for (Map<String, Object> map : omniPendingData) {

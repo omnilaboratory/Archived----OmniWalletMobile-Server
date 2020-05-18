@@ -14,7 +14,6 @@ import org.springframework.util.Assert;
 
 import com.googlecode.jsonrpc4j.JsonRpcHttpClient;
 import com.lx.server.service.BtcTransactionService;
-import com.lx.server.service.BtcTransactionUpdateLogService;
 import com.lx.server.service.WalletService;
 import com.lx.server.utils.Tools;
 
@@ -25,13 +24,17 @@ import com.lx.server.utils.Tools;
  * btc rpc  https://bitcoin.org/en/developer-reference#bitcoin-core-apis
  *
  */
-@Service(value = "walletServcie")
+@Service(value = "walletService")
 public class WalletServiceImpl implements WalletService {
+	
+	protected final Log logger = LogFactory.getLog(getClass());
 
 	@Autowired
 	private JsonRpcHttpClient jsonRpcHttpClient;
 	
-	protected final Log logger = LogFactory.getLog(getClass());
+	@Autowired
+	private BtcTransactionService btcTransactionService;
+	
 
 	// btc 创建token omni和btc公用 getnewaddress.
 	@Override
@@ -72,33 +75,6 @@ public class WalletServiceImpl implements WalletService {
 	}
 	
 	/**
-	 * 铸币
-	 * @param fromaddress
-	 * @param propertyId
-	 * @param amount
-	 * @return hash
-	 * @throws Exception 
-	 */
-	@Override
-	public String omniSendRevoke(String fromaddress, Long propertyId,String amount) throws Exception {
-		String object = this.sendCmd("omni_sendrevoke", new Object[] {fromaddress,propertyId,amount},String.class);
-		return object;
-	}
-	/**
-	 * 烧币
-	 * @param fromaddress
-	 * @param propertyId
-	 * @param amount
-	 * @return hash
-	 * @throws Exception 
-	 */
-	@Override
-	public Object omniSendGrant(String fromaddress, Long propertyId,String amount) throws Exception {
-		Object object = this.sendCmd("omni_sendgrant", new Object[] {fromaddress,"",propertyId,amount},String.class);
-		return object;
-	}
-	
-	/**
 	 * 获取某个地址某种资产类型的余额  omni_getbalance
 	 * @throws Exception 
 	 */
@@ -114,10 +90,15 @@ public class WalletServiceImpl implements WalletService {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public Object getOmniAllBalance(String address) throws Exception {
+	public List<Map<String, Object>>  getOmniAllBalance(String address)  {
 		Assert.isTrue(Tools.checkStringExist(address), "address be empty");
-		List<Map<String, Object>> object = this.sendCmd("omni_getallbalancesforaddress", new Object[] { address },ArrayList.class);
-		return object;
+		List<Map<String, Object>> list;
+		try {
+			list = this.sendCmd("omni_getallbalancesforaddress", new Object[] { address },ArrayList.class);
+		} catch (Exception e) {
+			list = new ArrayList<>();
+		}
+		return list;
 	}
 
 	// btc 获取钱包信息 getbalance
@@ -125,8 +106,8 @@ public class WalletServiceImpl implements WalletService {
 	@Override
 	public Map<String, Object> getBtcBalance(String address) throws Exception {
 		Assert.isTrue(Tools.checkStringExist(address), "address be empty");
-		if (this.omniValidateaddress(address)==false) {
-			this.sendCmd("importaddress", new Object[] {address,"",false},String.class);
+		if (this.validateAddress(address)==false) {
+			this.importAddress(address);
 		}
 		List<Map<String, Object>> list = null;
 		try {
@@ -175,23 +156,15 @@ public class WalletServiceImpl implements WalletService {
 	 * @return
 	 * @throws Exception
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<Map<String, Object>> getAllBalanceByAddress(String address) throws Exception {
 		Assert.isTrue(Tools.checkStringExist(address), "address be empty");
 		
-		if (this.omniValidateaddress(address)==false) {
-			this.sendCmd("importaddress", new Object[] {address,"",false},String.class);
+		if (this.validateAddress(address)==false) {
+			this.importAddress(address);
 		}
 		
-		List<Map<String, Object>> omniList = null;
-		try {
-			omniList = this.jsonRpcHttpClient.invoke("omni_getallbalancesforaddress", new Object[] { address }, List.class);
-			
-		} catch (Throwable e) {
-			e.printStackTrace();
-			omniList = new ArrayList<>();
-		}
+		List<Map<String, Object>> omniList =getOmniAllBalance(address);
 		
 		for (Map<String, Object> map : omniList) {
 			map.put("address", address);
@@ -262,7 +235,6 @@ public class WalletServiceImpl implements WalletService {
 	/**
 	 * btc的转账
 	 */
-	@SuppressWarnings({ "unchecked", "unused" })
 	@Override
 	public String btcRawTransaction(String fromBitCoinAddress,String privkey,String toBitCoinAddress,BigDecimal amount,BigDecimal mineFee,String note) throws Exception {
 		List<String> privkeys = null;
@@ -308,7 +280,6 @@ public class WalletServiceImpl implements WalletService {
 				if (scriptPubKey.length()==0) {
 					scriptPubKey = item.get("scriptPubKey").toString();
 				}
-//				node.put("sequence", 4214554); 
 				myList.add(node);
 				logger.info("item.get(amount) " +item.get("amount"));
 				balance = balance.add(new BigDecimal(item.get("amount").toString()));
@@ -318,21 +289,17 @@ public class WalletServiceImpl implements WalletService {
 			}
 		}
 		logger.info("balance "+balance);
-		logger.info("myList "+myList.size());
 		Assert.isTrue(myList.size()>0&&balance.compareTo(out)>-1, "not enough balance");
 		
 		if (myList.size()>0&&balance.compareTo(out)>-1) {
-			logger.info("begin ");
 			BigDecimal back= balance.subtract(out);
 			Map<String, Object> address= new HashMap<>();
 			address.put(toBitCoinAddress, amount);
 			address.put(fromBitCoinAddress, back);
 			
-			logger.info("createrawtransaction ");
 			String hexstring =  this.sendCmd("createrawtransaction", new Object[] {myList,address}, String.class);
 			
 			Map<String, Object> hexMap =  this.sendCmd("decoderawtransaction", new Object[] {hexstring}, Map.class);
-			logger.info("decoderawtransaction ");
 			logger.info(hexMap);
 			
 			for (Map<String, Object> map : myList) {
@@ -341,12 +308,12 @@ public class WalletServiceImpl implements WalletService {
 			
 			Map<String, Object> hex;
 			if (privkeys!=null&&privkeys.size()>0) {
-				hex =  this.sendCmd("signrawtransaction", new Object[] {hexstring,myList,privkeys,"ALL"}, Map.class);
+				hex =  this.sendCmd("signrawtransactionwithkey", new Object[] {hexstring,privkeys,myList,"ALL"}, Map.class);
 			}else {
-				hex =  this.sendCmd("signrawtransaction", new Object[] {hexstring,myList,null,"ALL"}, Map.class);
+				Assert.isTrue(isAddressCreateByOmnicore(fromBitCoinAddress), "the address is not created by omnicore");
+				hex =  this.sendCmd("signrawtransactionwithwallet", new Object[] {hexstring}, Map.class);
 			}
 			String hexStr = hex.get("hex").toString();
-			logger.info("signrawtransaction "+ hexStr);
 			hexMap =  this.sendCmd("decoderawtransaction", new Object[] {hexStr}, Map.class);
 			logger.info(hexMap);
 			
@@ -406,15 +373,6 @@ public class WalletServiceImpl implements WalletService {
 		String object = this.sendCmd("omni_sendunfreeze", new Object[] {fromAddress,toAddress,propertyId,amount},String.class);
 		return object;
 	}
-	//验证此地址是否是服务器生成的
-	private boolean omniValidateaddress(String address) throws Exception {
-		Map<String, Object> map = this.sendCmd("validateaddress", new Object[] {address},Map.class);
-		Boolean ismine = (Boolean) map.get("ismine");
-		if (ismine!=null&&ismine==true) {
-			return true;
-		}
-		return false;
-	}
 	
 	/**
 	 * 获取有关Omni事务的详细信息 omni_gettransaction
@@ -450,15 +408,14 @@ public class WalletServiceImpl implements WalletService {
 		Assert.isTrue(Tools.checkStringExist(fromBitCoinAddress),"fromBitCoinAddress can not be null");
 		Assert.isTrue(Tools.checkStringExist(toBitCoinAddress),"toBitCoinAddress can not be null");
 		
-//		Assert.isTrue(Tools.checkStringExist(privkey),"privkey can not be null");
 		Assert.isTrue(minerFee!=null&&minerFee.compareTo(BigDecimal.ZERO)==1,"minerFee must greater 0");
 		
 		logger.info("0.importaddress");
-		if (this.omniValidateaddress(fromBitCoinAddress)==false) {
-			this.sendCmd("importaddress", new Object[] {fromBitCoinAddress ,"",false},String.class);
+		if (this.validateAddress(fromBitCoinAddress)==false) {
+			this.importAddress(fromBitCoinAddress);
 		}
-		if (this.omniValidateaddress(toBitCoinAddress)==false) {
-			this.sendCmd("importaddress", new Object[] {toBitCoinAddress,"",false},String.class);
+		if (this.validateAddress(fromBitCoinAddress)==false) {
+			this.importAddress(fromBitCoinAddress);
 		}
 		
 		logger.info("1.读取指定地址的UTXO（listunspent）");
@@ -466,7 +423,6 @@ public class WalletServiceImpl implements WalletService {
 		List<String> fromAddress = new ArrayList<>();
 		fromAddress.add(fromBitCoinAddress);
 		List<Map<String, Object>> list = this.sendCmd("listunspent", new Object[] {1,Integer.MAX_VALUE,fromAddress},ArrayList.class);
-		logger.info("unspent list");
 		logger.info(list);
 		Assert.isTrue(list!=null&&list.isEmpty()==false, "empty balance");
 		//矿工费
@@ -488,23 +444,19 @@ public class WalletServiceImpl implements WalletService {
  		logger.info("2.构造发送代币类型和代币数量数据");
 //		2.构造发送代币类型和代币数量数据（payload）
 		String payload = this.sendCmd("omni_createpayload_simplesend", new Object[] {propertyId,amount.toString()}, String.class);
-		logger.info("2 payload "+payload);
 		
 		logger.info("3.构造交易基本数据（transaction base）");
 //		3.构造交易基本数据（transaction base）
 		Map<String, Object> address= new HashMap<>();
 		String createrawtransactionStr =  this.sendCmd("createrawtransaction", new Object[] {list,address}, String.class);
-		logger.info("3 createrawtransactionStr "+createrawtransactionStr);
 		
 //		4.在交易数据中加上omni代币数据  这一步把omni代币数据也组合到交易数据上
 		logger.info("4.在交易数据中加上omni代币数据  这一步把omni代币数据也组合到交易数据上");
 		String opreturn = this.sendCmd("omni_createrawtx_opreturn", new Object[] {createrawtransactionStr,payload}, String.class);
-		logger.info("4 opreturn "+opreturn);
 		
 //		5.在交易数据上加上接收地址
 		logger.info("5.在交易数据上加上接收地址");
 		String referenc = this.sendCmd("omni_createrawtx_reference", new Object[] {opreturn,toBitCoinAddress}, String.class);
-		logger.info("5 referenc "+referenc);
 		
 //		6.在交易数据上指定矿工费用
 		logger.info("6.在交易数据上指定矿工费用");
@@ -518,10 +470,6 @@ public class WalletServiceImpl implements WalletService {
 			node.put("value", item.get("amount"));
 			myList.add(node);
 		}
-		logger.info(referenc);
-		logger.info(myList);
-		logger.info(fromBitCoinAddress);
-		logger.info(minerFee);
 		
 		String change = this.sendCmd("omni_createrawtx_change", new Object[] {referenc,myList,fromBitCoinAddress,minerFee}, String.class);
 		logger.info("6 change "+change);
@@ -532,12 +480,12 @@ public class WalletServiceImpl implements WalletService {
 		if (Tools.checkStringExist(privkey)) {
 			List<String> privkeys = new ArrayList<>();
 			privkeys.add(privkey);
-			signrawtransaction =  this.sendCmd("signrawtransaction", new Object[] {change,list,privkeys,"ALL"}, Map.class);
+			signrawtransaction =  this.sendCmd("signrawtransactionwithkey", new Object[] {change,privkeys,list,"ALL"}, Map.class);
 		}else {
-			signrawtransaction =  this.sendCmd("signrawtransaction", new Object[] {change,list,null,"ALL"}, Map.class);
+			Assert.isTrue(isAddressCreateByOmnicore(fromBitCoinAddress), "the address is not created by omnicore");
+			signrawtransaction =  this.sendCmd("signrawtransactionwithwallet", new Object[] {change}, Map.class);
 		}
 		logger.info("7.交易签名 结果 ");
-		logger.info(signrawtransaction);
 		
 //		8.广播
 		logger.info("8.广播");
@@ -547,6 +495,7 @@ public class WalletServiceImpl implements WalletService {
 		return txId;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Map<String, Object>> listTransactions(Integer pageIndex, Integer pageSize) throws Exception {
 		if (pageIndex==null||pageIndex<1) {
@@ -558,21 +507,18 @@ public class WalletServiceImpl implements WalletService {
 		return this.sendCmd("listtransactions", new Object[] {"*",pageSize,(pageIndex-1)*pageSize,true}, ArrayList.class);
 	}
 	
+	@SuppressWarnings({ "unchecked" })
 	@Override
 	public List<Map<String, Object>> getOmniTransactions(String address) throws Exception {
 		List<Map<String, Object>> nodes = this.sendCmd("omni_listtransactions", new Object[] {address,10000}, ArrayList.class);
 		return nodes;
 	}
+	@SuppressWarnings({ "unchecked" })
 	@Override
 	public List<Map<String, Object>> getOmniPendingTransactions(String address) throws Exception {
 		List<Map<String, Object>> nodes = this.sendCmd("omni_listpendingtransactions", new Object[] {address}, ArrayList.class);
 		return nodes;
 	}
-	
-	@Autowired
-	private BtcTransactionUpdateLogService btcLogService;
-	@Autowired
-	private BtcTransactionService btcTransactionService;
 	
 	@Override
 	public void sycBlockTransactions() throws Exception {
@@ -606,19 +552,43 @@ public class WalletServiceImpl implements WalletService {
 		//分析数据 插入到交易表去
 		for (String txid : txids) {
 			
-			
-			
 		}
 	}
 	
-	public static void main(String[] args) {
-		
-		Integer num1 = 0x400000;
-		Integer num2 = 2*365*24*60*60;
-		num2 = num2/512;
-		Integer result = num1|num2; 
-		System.out.println(result);
-		
+	@SuppressWarnings("unchecked")
+	public Boolean validateAddress(String address) throws Exception {
+		Map<String, Object> map = this.sendCmd("getaddressinfo", new Object[] {address},Map.class);
+		Boolean ismine = (Boolean) map.get("ismine");
+		if (ismine!=null&&ismine==true) {
+			return true;
+		}
+		Boolean iswatchonly = (Boolean) map.get("iswatchonly");
+		if (iswatchonly!=null&&iswatchonly==true) {
+			return true;
+		}
+		return false;
 	}
 	
+	private void importAddress(String address){
+		try {
+			this.sendCmd("importaddress", new Object[] {address ,"",false},String.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private Boolean isAddressCreateByOmnicore(String address){
+		Map<String, Object> map;
+		try {
+			map = this.sendCmd("getaddressinfo", new Object[] {address},Map.class);
+			Boolean ismine = (Boolean) map.get("ismine");
+			if (ismine!=null&&ismine==true) {
+				return true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
 }

@@ -29,7 +29,7 @@
   
   <build>
   	<!-- walletAdmin walletAdminTest walletAdminDev-->
-		<finalName>walletAdminDev</finalName>
+		<finalName>walletAdmin</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

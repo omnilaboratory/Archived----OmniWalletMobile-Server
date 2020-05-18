@@ -22,7 +22,6 @@ import com.lx.server.pojo.FpUser;
 import com.lx.server.pojo.FpUserOmniAddress;
 import com.lx.server.service.FpUserOmniAddressService;
 import com.lx.server.service.FpUserService;
-import com.lx.server.service.HyperledgerService;
 import com.lx.server.service.WalletService;
 
 /**
@@ -43,9 +42,6 @@ public class FpUserServiceImpl extends MybatisBaseServiceImpl implements FpUserS
     
     @Autowired
 	private WalletService walletService;
-    
-    @Autowired
-	private HyperledgerService hyperledgerService;
     
     @Autowired
     private FpUserOmniAddressService addressService;

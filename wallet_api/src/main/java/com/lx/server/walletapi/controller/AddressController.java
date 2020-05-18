@@ -48,7 +48,7 @@ public class AddressController extends AbstractController{
 	private WalletAssetService assetService;
 	
 	@Autowired
-	private WalletService walletServcie;
+	private WalletService walletService;
 	
 	@Autowired
 	private CommonService commonService;
@@ -209,7 +209,7 @@ public class AddressController extends AbstractController{
 				String address = node.get("address").toString();
 				
 				//List of Assets which have transactions
-				List<Map<String, Object>> list = walletServcie.getAllBalanceByAddress(address);
+				List<Map<String, Object>> list = walletService.getAllBalanceByAddress(address);
 				
 				for (Map<String, Object> btcNode : list) {
 					btcNode.put("visible", true);

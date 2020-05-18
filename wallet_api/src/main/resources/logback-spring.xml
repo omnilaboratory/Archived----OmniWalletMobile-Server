@@ -9,9 +9,9 @@
 	<include resource="org/springframework/boot/logging/logback/base.xml" />
 	<appender name="rollingAppender"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${PRO_FILE_PATH}/applicationWalletApiTest.log</file>
+		<file>${PRO_FILE_PATH}/applicationWalletApi.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>${PRO_FILE_PATH}//applicationWalletApiTest-%d{yyyy-MM-dd}.log</fileNamePattern>
+			<fileNamePattern>${PRO_FILE_PATH}//applicationWalletApi-%d{yyyy-MM-dd}.log</fileNamePattern>
 			<maxHistory>60</maxHistory>
 		</rollingPolicy>
 		<encoder>
