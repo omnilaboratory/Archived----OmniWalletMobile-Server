@@ -7,7 +7,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSON;
@@ -46,7 +45,7 @@ public class KafkaComsumer {
 	private final Log logger = LogFactory.getLog(getClass());
 	
 	
-	@KafkaListener(topics = { "user.feedback" })
+//	@KafkaListener(topics = { "user.feedback" })
 	public void userFeedback(ConsumerRecord<?, ?> record) {
 		logger.info("user.feedback");
 		KafkaMessage info = getKafkaMsg(record);
@@ -62,7 +61,7 @@ public class KafkaComsumer {
 		userFeedbackService.insert(feedback);
 	}
 	
-	@KafkaListener(topics = { "wallet.LogTransaction" })
+//	@KafkaListener(topics = { "wallet.LogTransaction" })
 	public void walletLogTransaction(ConsumerRecord<?, ?> record) {
 		logger.info("wallet.LogTransaction");
 		KafkaMessage info = getKafkaMsg(record);
@@ -83,7 +82,7 @@ public class KafkaComsumer {
 	@Autowired
 	private LogUserAssetService logUserAssetService;
 	
-	@KafkaListener(topics = { "wallet.LogUserAsset" })
+//	@KafkaListener(topics = { "wallet.LogUserAsset" })
 	public void userAssetLog(ConsumerRecord<?, ?> record) {
 		logger.info("wallet.LogUserAsset");
 		KafkaMessage info = getKafkaMsg(record);

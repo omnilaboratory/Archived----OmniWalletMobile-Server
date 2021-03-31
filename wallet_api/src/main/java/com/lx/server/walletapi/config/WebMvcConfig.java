@@ -45,6 +45,7 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
 			.addInterceptor(globalJwtInterceptor)
 			.addPathPatterns("/api/**")
 			.excludePathPatterns("/api/common/**")
+//			.excludePathPatterns("/api/blockChain/**")
 			;
 		}
 		

@@ -11,7 +11,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -21,12 +20,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import com.alibaba.fastjson.JSON;
 import com.lx.server.bean.ResultTO;
-import com.lx.server.enums.EnumKafkaTopic;
-import com.lx.server.kafka.bean.KafkaMessage;
 import com.lx.server.pojo.LogTransaction;
 import com.lx.server.pojo.UserClient;
+import com.lx.server.service.LogTransactionService;
 import com.lx.server.service.WalletService;
 import com.lx.server.utils.AESUtil;
 import com.lx.server.utils.Tools;
@@ -43,8 +40,11 @@ public class BlockChainController extends AbstractController{
 	@Autowired
     private WalletService walletService;
 	
+//	@Autowired
+//    private KafkaTemplate<String, Object> kafkaTemplate;
+	
 	@Autowired
-    private KafkaTemplate<String, Object> kafkaTemplate;
+	private LogTransactionService logTransactionService;
     
     //	@GetMapping("go")
 	public String client() {
@@ -153,8 +153,10 @@ public class BlockChainController extends AbstractController{
     	logTransaction.setUserId(userClient.getId());
     	logTransaction.setTxid(txid);
     	logTransaction.setCreateTime(new Date());
-    	KafkaMessage message = new KafkaMessage(EnumKafkaTopic.LogTransaction.value,userClient.getId(), null, logTransaction);
-		this.kafkaTemplate.send(EnumKafkaTopic.LogTransaction.value, JSON.toJSONString(message));
+    	
+    	logTransactionService.insert(logTransaction);
+//    	KafkaMessage message = new KafkaMessage(EnumKafkaTopic.LogTransaction.value,userClient.getId(), null, logTransaction);
+//		this.kafkaTemplate.send(EnumKafkaTopic.LogTransaction.value, JSON.toJSONString(message));
 	}
     
     @ApiOperation("For testing purpose only: omni raw transaction absent encryption")

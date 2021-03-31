@@ -392,7 +392,6 @@ public class WalletServiceImpl implements WalletService {
 		try {
 			object = this.jsonRpcHttpClient.invoke(methodName, argument, clazz);
 		} catch (Throwable e) {
-			e.printStackTrace();
 			throw new Exception(e.getMessage());
 		}
 		return object;
